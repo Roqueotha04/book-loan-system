@@ -10,9 +10,17 @@ import java.util.List;
 @Entity
 public class User {
 
+    public User (String gmail, String username, String password){
+        this.gmail=gmail;
+        this.username=username;
+        this.password=password;
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    private String gmail;
 
     private String username;
 

@@ -13,6 +13,13 @@ import java.util.List;
 @Entity
 public class Book {
 
+    public Book (String name, int stock, BookGenre bookGenre, Publisher publisher){
+        this.name=name;
+        this.stock=stock;
+        this.genre= bookGenre;
+        this.publisher=publisher;
+    }
+
     @Id
     @GeneratedValue (strategy = GenerationType.IDENTITY)
     private Long id;
