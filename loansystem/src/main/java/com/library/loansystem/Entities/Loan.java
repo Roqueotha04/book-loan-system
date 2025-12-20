@@ -2,8 +2,10 @@ package com.library.loansystem.Entities;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@NoArgsConstructor
 @Entity
 public class Loan {
 

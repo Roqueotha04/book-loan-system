@@ -2,8 +2,10 @@ package com.library.loansystem.Entities;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@NoArgsConstructor
 @Entity
 @Table(name = "author_x_book")
 public class AuthorXBook {

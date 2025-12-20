@@ -27,6 +27,8 @@ public class DataLoader  implements ApplicationRunner{
             loadPublishers();
             loadAuthors();
             loadBooks();
+            loadUsers();
+            loadLoans();
 
         }
 
@@ -50,16 +52,16 @@ public class DataLoader  implements ApplicationRunner{
         private void loadAuthors() {
             if (authorRepository.count() == 0) {
                 List<Author> authors = List.of(
-                        new Author("George", "Orwell"),
-                        new Author("J.K.", "Rowling"),
-                        new Author("J.R.R.", "Tolkien"),
-                        new Author("Isaac", "Asimov"),
-                        new Author("Stephen", "King"),
-                        new Author("Agatha", "Christie"),
-                        new Author("Jane", "Austen"),
-                        new Author("Mariano", "Sigman"),
-                        new Author("Santiago", "Bilinkis"),
-                        new Author("Yuval", "Harari")
+                        new Author("George", "Orwell", "British"),
+                        new Author("J.K.", "Rowling", "British"),
+                        new Author("J.R.R.", "Tolkien", "British"),
+                        new Author("Isaac", "Asimov", "American"),
+                        new Author("Stephen", "King", "American"),
+                        new Author("Agatha", "Christie", "British"),
+                        new Author("Jane", "Austen", "British"),
+                        new Author("Mariano", "Sigman", "Argentinian"),
+                        new Author("Santiago", "Bilinkis", "Argentinian"),
+                        new Author("Yuval", "Harari", "Israeli")
                 );
                 authorRepository.saveAll(authors);
             }

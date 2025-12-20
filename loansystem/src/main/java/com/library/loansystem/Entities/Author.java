@@ -13,9 +13,10 @@ import java.util.List;
 @Entity
 public class Author {
 
-    public Author (String name, String lastName){
+    public Author (String name, String lastName, String nationality){
         this.name= name;
         this.lastName=lastName;
+        this.nationality=nationality;
     }
 
     @Id
@@ -26,6 +27,8 @@ public class Author {
 
     private String lastName;
 
-    @OneToMany (mappedBy = "author", cascade = CascadeType.PERSIST)
+    private String nationality;
+
+    @OneToMany (mappedBy = "author", cascade = { CascadeType.PERSIST, CascadeType.REMOVE }, orphanRemoval = true)
     private List<AuthorXBook> authorXBooks=new ArrayList<>();
 }
