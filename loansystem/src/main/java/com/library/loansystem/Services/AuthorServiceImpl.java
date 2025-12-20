@@ -21,7 +21,7 @@ public class AuthorServiceImpl implements AuthorService {
 
     @Override
     public Author findById(Long id) {
-        return authorRepository.findById(id).orElseThrow(()-> new ResourceNotFoundException("Resource not found 404"));
+        return authorRepository.findById(id).orElseThrow(()-> new ResourceNotFoundException("Resource not found - 404"));
     }
 
     @Override
