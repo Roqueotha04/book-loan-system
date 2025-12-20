@@ -1,6 +1,7 @@
 package com.library.loansystem.Controllers;
 
 import com.library.loansystem.DTO.AuthorRequest;
+import com.library.loansystem.DTO.AuthorResponse;
 import com.library.loansystem.Entities.Author;
 import com.library.loansystem.Services.AuthorService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,36 +14,39 @@ import java.util.List;
 @RequestMapping("/authors")
 public class AuthorController {
 
-    @Autowired
-    AuthorService authorService;
+    private final AuthorService authorService;
+
+    public AuthorController(AuthorService authorService) {
+        this.authorService = authorService;
+    }
 
     @GetMapping
-    public List<Author> getAll() {
+    public List<AuthorResponse> getAll() {
         return authorService.findAll();
     }
 
     @GetMapping("/{id}")
-    public Author getById(@PathVariable Long id) {
+    public AuthorResponse getById(@PathVariable Long id) {
         return authorService.findById(id);
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Author create (@RequestBody AuthorRequest author){
+    public AuthorResponse create(@RequestBody AuthorRequest author) {
         return authorService.save(author);
+    }
+
+    @PutMapping("/{id}")
+    public AuthorResponse update(
+            @PathVariable Long id,
+            @RequestBody AuthorRequest author
+    ) {
+        return authorService.update(id, author);
     }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void delete (@PathVariable Long id){
+    public void delete(@PathVariable Long id) {
         authorService.deleteById(id);
     }
-
-    @PutMapping("{id}")
-    @ResponseStatus(HttpStatus.OK)
-    public Author update (@PathVariable Long id, @RequestBody AuthorRequest author){
-        return authorService.update(id, author);
-    }
-
-
 }

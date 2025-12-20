@@ -1,5 +1,7 @@
 package com.library.loansystem.Controllers;
 
+import com.library.loansystem.DTO.PublisherRequest;
+import com.library.loansystem.DTO.PublisherResponse;
 import com.library.loansystem.Entities.Publisher;
 import com.library.loansystem.Services.PublisherService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,29 +14,39 @@ import java.util.List;
 @RequestMapping("/publishers")
 public class PublisherController {
 
-    @Autowired
-    PublisherService publisherService;
+        private final PublisherService publisherService;
 
-    @GetMapping()
-    public List<Publisher> findAll(){
-        return publisherService.findAll();
+        public PublisherController(PublisherService publisherService) {
+            this.publisherService = publisherService;
+        }
+
+        @GetMapping
+        public List<PublisherResponse> findAll() {
+            return publisherService.findAll();
+        }
+
+        @GetMapping("/{id}")
+        public PublisherResponse findById(@PathVariable Long id) {
+            return publisherService.findById(id);
+        }
+
+        @PostMapping
+        @ResponseStatus(HttpStatus.CREATED)
+        public PublisherResponse save(@RequestBody PublisherRequest request) {
+            return publisherService.save(request);
+        }
+
+        @PutMapping("/{id}")
+        public PublisherResponse update(
+                @PathVariable Long id,
+                @RequestBody PublisherRequest request
+        ) {
+            return publisherService.update(id, request);
+        }
+
+        @DeleteMapping("/{id}")
+        @ResponseStatus(HttpStatus.NO_CONTENT)
+        public void delete(@PathVariable Long id) {
+            publisherService.deleteById(id);
+        }
     }
-
-    @GetMapping("/{id}")
-    public Publisher findById (@PathVariable Long id){
-        return publisherService.findById(id);
-    }
-
-    @PostMapping
-    @ResponseStatus (HttpStatus.CREATED)
-    public Publisher save (@RequestBody Publisher publisher){
-        return publisherService.save(publisher);
-    }
-
-    @DeleteMapping("{id}")
-    @ResponseStatus (HttpStatus.NO_CONTENT)
-    public void delete (@PathVariable  Long id){
-        publisherService.deleteById(id);
-    }
-
-}

@@ -5,7 +5,6 @@ import com.library.loansystem.DTO.AuthorResponse;
 import com.library.loansystem.Entities.Author;
 import com.library.loansystem.Exceptions.ResourceNotFoundException;
 import com.library.loansystem.Repositories.AuthorRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -13,37 +12,58 @@ import java.util.List;
 @Service
 public class AuthorServiceImpl implements AuthorService {
 
-    @Autowired
-    AuthorRepository authorRepository;
+    private final AuthorRepository authorRepository;
+
+    public AuthorServiceImpl(AuthorRepository authorRepository) {
+        this.authorRepository = authorRepository;
+    }
 
     @Override
     public List<AuthorResponse> findAll() {
-        return authorRepository.findAll();
+            return authorRepository.findAll().stream()
+                    .map(this::toResponse)
+                    .toList();
     }
 
     @Override
     public AuthorResponse findById(Long id) {
-        return authorRepository.findById(id).orElseThrow(()-> new ResourceNotFoundException("Resource not found - 404"));
+        return toResponse(getAuthorOrThrow(id));
     }
 
     @Override
-    public AuthorResponse save(AuthorRequest author) {
-        return authorRepository.save(author);
+    public AuthorResponse save(AuthorRequest authorAux) {
+        Author author = new Author(authorAux.getName(), authorAux.getLastName(), authorAux.getNationality());
+        return toResponse(authorRepository.save(author));
     }
 
     @Override
     public void deleteById(Long id) {
-        Author author = findById(id);
+        Author author = getAuthorOrThrow(id);
         authorRepository.delete(author);
     }
 
     @Override
-    public AuthorResponse update(Long id, AuthorResponse authorAux) {
-        Author author = findById(id);
-        author.setName(author.getName());
+    public AuthorResponse update(Long id, AuthorRequest authorAux) {
+        Author author = getAuthorOrThrow(id);
+        author.setName(authorAux.getName());
         author.setLastName(authorAux.getLastName());
         author.setNationality(authorAux.getNationality());
 
-        return authorRepository.save(author);
+        return toResponse(authorRepository.save(author));
+    }
+
+    //Private utility methods
+    private AuthorResponse toResponse(Author author) {
+        return new AuthorResponse(
+                author.getId(),
+                author.getName(),
+                author.getLastName(),
+                author.getNationality()
+        );
+    }
+
+    private Author getAuthorOrThrow(Long id){
+        return authorRepository.findById(id).
+                orElseThrow(()-> new ResourceNotFoundException("Author not found with id: " +id));
     }
 }

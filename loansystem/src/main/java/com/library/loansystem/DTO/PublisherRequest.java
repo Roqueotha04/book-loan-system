@@ -7,8 +7,6 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class AuthorRequest {
+public class PublisherRequest {
     String name;
-    String lastName;
-    String nationality;
 }
