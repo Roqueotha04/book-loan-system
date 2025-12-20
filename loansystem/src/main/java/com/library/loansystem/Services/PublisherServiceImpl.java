@@ -30,7 +30,7 @@ public class PublisherServiceImpl implements PublisherService {
     }
 
     @Override
-    public void delete(Long id) {
+    public void deleteById(Long id) {
         Publisher publisher = findById(id);
         publisherRepository.delete(publisher);
     }

@@ -1,5 +1,7 @@
 package com.library.loansystem.Services;
 
+import com.library.loansystem.DTO.AuthorRequest;
+import com.library.loansystem.DTO.AuthorResponse;
 import com.library.loansystem.Entities.Author;
 import com.library.loansystem.Exceptions.ResourceNotFoundException;
 import com.library.loansystem.Repositories.AuthorRepository;
@@ -15,17 +17,17 @@ public class AuthorServiceImpl implements AuthorService {
     AuthorRepository authorRepository;
 
     @Override
-    public List<Author> findAll() {
+    public List<AuthorResponse> findAll() {
         return authorRepository.findAll();
     }
 
     @Override
-    public Author findById(Long id) {
+    public AuthorResponse findById(Long id) {
         return authorRepository.findById(id).orElseThrow(()-> new ResourceNotFoundException("Resource not found - 404"));
     }
 
     @Override
-    public Author save(Author author) {
+    public AuthorResponse save(AuthorRequest author) {
         return authorRepository.save(author);
     }
 
@@ -36,7 +38,7 @@ public class AuthorServiceImpl implements AuthorService {
     }
 
     @Override
-    public Author update(Long id, Author authorAux) {
+    public AuthorResponse update(Long id, AuthorResponse authorAux) {
         Author author = findById(id);
         author.setName(author.getName());
         author.setLastName(authorAux.getLastName());

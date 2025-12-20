@@ -9,5 +9,5 @@ public interface PublisherService {
     public List<Publisher> findAll();
     public Publisher findById(Long id);
     public Publisher save(Publisher publisher);
-    public void delete (Long id);
+    public void deleteById (Long id);
 }

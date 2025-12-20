@@ -1,5 +1,6 @@
 package com.library.loansystem.Controllers;
 
+import com.library.loansystem.DTO.AuthorRequest;
 import com.library.loansystem.Entities.Author;
 import com.library.loansystem.Services.AuthorService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +28,7 @@ public class AuthorController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Author create (@RequestBody Author author){
+    public Author create (@RequestBody AuthorRequest author){
         return authorService.save(author);
     }
 
@@ -39,7 +40,7 @@ public class AuthorController {
 
     @PutMapping("{id}")
     @ResponseStatus(HttpStatus.OK)
-    public Author update (@PathVariable Long id, @RequestBody Author author){
+    public Author update (@PathVariable Long id, @RequestBody AuthorRequest author){
         return authorService.update(id, author);
     }
 
