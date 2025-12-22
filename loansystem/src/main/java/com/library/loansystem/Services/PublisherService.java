@@ -17,4 +17,5 @@ public interface PublisherService {
     PublisherResponse update(Long id, PublisherRequest request);
 
     void deleteById(Long id);
+    public Publisher getPublisherOrThrow(Long id);
 }

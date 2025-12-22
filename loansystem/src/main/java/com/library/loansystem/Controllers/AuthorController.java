@@ -1,10 +1,8 @@
 package com.library.loansystem.Controllers;
 
-import com.library.loansystem.DTO.AuthorRequest;
-import com.library.loansystem.DTO.AuthorResponse;
-import com.library.loansystem.Entities.Author;
+import com.library.loansystem.DTO.Author.AuthorRequest;
+import com.library.loansystem.DTO.Author.AuthorResponse;
 import com.library.loansystem.Services.AuthorService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 

@@ -52,7 +52,7 @@ public class PublisherServiceImpl implements PublisherService {
 
     // Private utility methods
 
-    private Publisher getPublisherOrThrow(Long id) {
+    public Publisher getPublisherOrThrow(Long id) {
         return publisherRepository.findById(id)
                 .orElseThrow(() ->
                         new ResourceNotFoundException("Publisher not found with id: " + id));

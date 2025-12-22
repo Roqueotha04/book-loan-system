@@ -31,7 +31,7 @@ public class Book {
 
     private int stock;
 
-    @OneToMany(mappedBy = "book", cascade = CascadeType.PERSIST)
+    @OneToMany(mappedBy = "book", cascade = CascadeType.ALL)
     private List <AuthorXBook> authorXBooks= new ArrayList<>();
 
     @ManyToOne

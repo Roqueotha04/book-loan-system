@@ -10,16 +10,20 @@ import lombok.NoArgsConstructor;
 @Table(name = "author_x_book")
 public class AuthorXBook {
 
+    public AuthorXBook(Book book, Author author) {
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "book_id")
+    @JoinColumn(name = "book_id", nullable=false)
     private Book book;
 
     @ManyToOne
     @JoinColumn(name = "author_id")
     private Author author;
+
 
 }
