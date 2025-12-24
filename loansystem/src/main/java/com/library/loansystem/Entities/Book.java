@@ -9,15 +9,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Data
-@NoArgsConstructor
 @Entity
 public class Book {
 
     public Book (String name, int stock, BookGenre bookGenre, Publisher publisher){
         this.name=name;
         this.stock=stock;
+        this.active=true;
         this.genre= bookGenre;
         this.publisher=publisher;
+    }
+
+    public Book (){
+        this.active=true;
     }
 
     @Id
@@ -30,6 +34,8 @@ public class Book {
     private BookGenre genre;
 
     private int stock;
+
+    private Boolean active;
 
     @OneToMany(mappedBy = "book", cascade = CascadeType.ALL)
     private List <AuthorXBook> authorXBooks= new ArrayList<>();

@@ -9,6 +9,7 @@ import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -137,26 +138,26 @@ public class DataLoader  implements ApplicationRunner{
 
         List<Loan> loans = List.of(
                 // Neo (3)
-                new Loan(users.get(0), books.get(0)),
-                new Loan(users.get(0), books.get(1)),
-                new Loan(users.get(0), books.get(2)),
+                new Loan(users.get(0), books.get(0), LocalDate.now().plusDays(5)),
+                new Loan(users.get(0), books.get(1), LocalDate.now().plusDays(12)),
+                new Loan(users.get(0), books.get(2), LocalDate.now().plusDays(20)),
 
                 // Tony Stark (3)
-                new Loan(users.get(1), books.get(3)),
-                new Loan(users.get(1), books.get(4)),
-                new Loan(users.get(1), books.get(5)),
+                new Loan(users.get(1), books.get(3), LocalDate.now().plusDays(3)),
+                new Loan(users.get(1), books.get(4), LocalDate.now().plusDays(15)),
+                new Loan(users.get(1), books.get(5), LocalDate.now().plusDays(25)),
 
                 // Indiana Jones (2)
-                new Loan(users.get(2), books.get(6)),
-                new Loan(users.get(2), books.get(7)),
+                new Loan(users.get(2), books.get(6), LocalDate.now().plusDays(7)),
+                new Loan(users.get(2), books.get(7), LocalDate.now().plusDays(18)),
 
                 // Marty McFly (2)
-                new Loan(users.get(3), books.get(1)),
-                new Loan(users.get(3), books.get(8)),
+                new Loan(users.get(3), books.get(1), LocalDate.now().plusDays(10)),
+                new Loan(users.get(3), books.get(8), LocalDate.now().plusDays(22)),
 
                 // Tyler Durden (2)
-                new Loan(users.get(4), books.get(0)),
-                new Loan(users.get(4), books.get(3))
+                new Loan(users.get(4), books.get(0), LocalDate.now().plusDays(6)),
+                new Loan(users.get(4), books.get(3), LocalDate.now().plusDays(28))
         );
 
         loanRepository.saveAll(loans);

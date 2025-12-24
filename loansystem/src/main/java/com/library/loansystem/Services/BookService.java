@@ -12,6 +12,7 @@ public interface BookService {
     public BookResponse save(BookRequest bookRequest);
     public BookResponse update (Long id, BookRequest bookRequest);
     public void delete (Long id);
+    public BookResponse changeStatus (Long id);
     public BookResponse updateStock(Long id, int newStock);
     public Book toBook (BookRequest bookRequest);
 }

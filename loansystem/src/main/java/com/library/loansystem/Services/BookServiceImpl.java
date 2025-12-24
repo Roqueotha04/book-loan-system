@@ -9,8 +9,10 @@ import com.library.loansystem.Entities.Author;
 import com.library.loansystem.Entities.AuthorXBook;
 import com.library.loansystem.Entities.Book;
 import com.library.loansystem.Entities.Publisher;
+import com.library.loansystem.Exceptions.BusinessException;
 import com.library.loansystem.Exceptions.ResourceNotFoundException;
 import com.library.loansystem.Repositories.BookRepository;
+import com.library.loansystem.Repositories.LoanRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -21,12 +23,14 @@ public class BookServiceImpl implements BookService{
 
     private final BookMapper bookMapper;
     private final BookRepository bookRepository;
+    private final LoanService loanService;
     private final PublisherService publisherService;
     private final AuthorService authorService;
 
-    public BookServiceImpl(BookMapper bookMapper, BookRepository bookRepository, PublisherService publisherService, AuthorService authorService) {
+    public BookServiceImpl(BookMapper bookMapper, BookRepository bookRepository, LoanService loanService, PublisherService publisherService, AuthorService authorService) {
         this.bookMapper = bookMapper;
         this.bookRepository = bookRepository;
+        this.loanService = loanService;
         this.publisherService = publisherService;
         this.authorService = authorService;
     }
@@ -60,12 +64,26 @@ public class BookServiceImpl implements BookService{
 
     @Override
     public void delete(Long id) {
+        Book book = getBookOrThrow(id);
+        if(loanService.existsActiveLoanByBookId(book.getId())) throw new BusinessException("Cannot delete a book with active Loans");
+        bookRepository.delete(book);
+    }
 
+    public BookResponse changeStatus (Long id){
+        Book book = getBookOrThrow(id);
+        if (!book.getActive()){
+            book.setActive(true);
+        }else {
+            book.setActive(true);
+        }
+        return bookMapper.toResponse(bookRepository.save(book));
     }
 
     @Override
     public BookResponse updateStock(Long id, int newStock) {
-        return null;
+        Book book = getBookOrThrow(id);
+        book.setStock(newStock);
+        return bookMapper.toResponse(bookRepository.save(book));
     }
 
     public Book getBookOrThrow (Long id){
