@@ -16,6 +16,7 @@ import static org.mockito.Mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
+import java.util.Optional;
 
 @ExtendWith(MockitoExtension.class)
 public class AuthorServiceImplTest {
@@ -35,10 +36,9 @@ public class AuthorServiceImplTest {
         Author author = DataProvider.authorListMock().get(0);
         AuthorResponse authorResponse = DataProvider.authorResponseListMock().get(0);
 
+        //When
         when(authorRepository.findAll()).thenReturn(List.of(author));
         when(authorMapper.toResponse(author)).thenReturn(authorResponse);
-
-        //When
         List <AuthorResponse> result = authorService.findAll(); //returns authorResponse because of the service.
 
 
@@ -47,5 +47,22 @@ public class AuthorServiceImplTest {
         assertEquals("Mariano", result.get(0).getName());
         verify(this.authorRepository).findAll();
         verify(authorMapper).toResponse(author);
+    }
+
+    @Test
+    public void testFindById (){
+        Author author =  DataProvider.authorListMock().get(1);
+        AuthorResponse authorResponse = DataProvider.authorResponseListMock().get(1);
+
+        when(authorRepository.findById(1L)).thenReturn(Optional.ofNullable(author));
+        assertNotNull(author);
+        when(authorMapper.toResponse(author)).thenReturn(authorResponse);
+        AuthorResponse result = authorService.findById(1L);
+
+        assertNotNull(result);
+        assertEquals(authorResponse.getId(), result.getId());
+        assertEquals(authorResponse.getName(), result.getName());
+        assertEquals(authorResponse.getLastName(), result.getLastName());
+        assertEquals(authorResponse.getNationality(), result.getNationality());
     }
 }
