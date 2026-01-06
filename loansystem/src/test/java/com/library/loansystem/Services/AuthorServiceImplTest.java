@@ -1,6 +1,7 @@
 package com.library.loansystem.Services;
 
 import com.library.loansystem.DTO.Author.AuthorMapper;
+import com.library.loansystem.DTO.Author.AuthorRequest;
 import com.library.loansystem.DTO.Author.AuthorResponse;
 import com.library.loansystem.DataProvider;
 import com.library.loansystem.Entities.Author;
@@ -15,6 +16,7 @@ import static org.mockito.Mockito.*;
 
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import javax.xml.crypto.Data;
 import java.util.List;
 import java.util.Optional;
 
@@ -64,5 +66,21 @@ public class AuthorServiceImplTest {
         assertEquals(authorResponse.getName(), result.getName());
         assertEquals(authorResponse.getLastName(), result.getLastName());
         assertEquals(authorResponse.getNationality(), result.getNationality());
+    }
+
+    @Test
+    public void testSave (){
+        AuthorRequest authorRequest = new AuthorRequest("Paulo", "Cohelo", "Brazilian");
+        AuthorResponse authorResponse = new AuthorResponse(1L, "Paulo", "Cohelo", "Brazilian");
+        when(authorRepository.save(any(Author.class)))
+                .thenAnswer(invocation -> invocation.getArgument(0));
+
+        when(authorMapper.toResponse(any(Author.class)))
+                .thenReturn(authorResponse);
+
+        AuthorResponse result = authorService.save(authorRequest);
+
+        assertEquals(authorResponse.getName(), result.getName());
+        verify(authorRepository).save(any(Author.class));
     }
 }
