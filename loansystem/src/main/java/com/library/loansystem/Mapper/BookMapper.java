@@ -1,12 +1,11 @@
-package com.library.loansystem.DTO.Book;
+package com.library.loansystem.Mapper;
 
-import com.library.loansystem.DTO.Author.AuthorMapper;
-import com.library.loansystem.DTO.Author.AuthorResponse;
-import com.library.loansystem.DTO.PublisherResponse;
+import com.library.loansystem.DTO.Response.BookResponse;
+import com.library.loansystem.DTO.Response.AuthorResponse;
+import com.library.loansystem.DTO.Response.PublisherResponse;
 import com.library.loansystem.Entities.AuthorXBook;
 import com.library.loansystem.Entities.Book;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class BookMapper {

@@ -1,8 +1,8 @@
 package com.library.loansystem.Services;
 
-import com.library.loansystem.DTO.Author.AuthorMapper;
-import com.library.loansystem.DTO.Author.AuthorRequest;
-import com.library.loansystem.DTO.Author.AuthorResponse;
+import com.library.loansystem.Mapper.AuthorMapper;
+import com.library.loansystem.DTO.Request.AuthorRequest;
+import com.library.loansystem.DTO.Response.AuthorResponse;
 import com.library.loansystem.Entities.Author;
 import com.library.loansystem.Exceptions.ResourceNotFoundException;
 import com.library.loansystem.Repositories.AuthorRepository;

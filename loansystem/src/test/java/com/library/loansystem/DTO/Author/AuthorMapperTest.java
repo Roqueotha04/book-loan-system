@@ -1,7 +1,10 @@
 package com.library.loansystem.DTO.Author;
 
+import com.library.loansystem.DTO.Response.AuthorResponse;
 import com.library.loansystem.Entities.Author;
 import static org.junit.jupiter.api.Assertions.*;
+
+import com.library.loansystem.Mapper.AuthorMapper;
 import org.junit.jupiter.api.Test;
 
 public class AuthorMapperTest {

@@ -1,11 +1,10 @@
 package com.library.loansystem.Services;
 
-import com.library.loansystem.DTO.PublisherRequest;
-import com.library.loansystem.DTO.PublisherResponse;
+import com.library.loansystem.DTO.Request.PublisherRequest;
+import com.library.loansystem.DTO.Response.PublisherResponse;
 import com.library.loansystem.Entities.Publisher;
 import com.library.loansystem.Exceptions.ResourceNotFoundException;
 import com.library.loansystem.Repositories.PublisherRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

@@ -1,10 +1,8 @@
 package com.library.loansystem.Services;
 
-import com.library.loansystem.DTO.Author.AuthorResponse;
-import com.library.loansystem.DTO.Book.BookMapper;
-import com.library.loansystem.DTO.Book.BookRequest;
-import com.library.loansystem.DTO.Book.BookResponse;
-import com.library.loansystem.DTO.PublisherResponse;
+import com.library.loansystem.Mapper.BookMapper;
+import com.library.loansystem.DTO.Request.BookRequest;
+import com.library.loansystem.DTO.Response.BookResponse;
 import com.library.loansystem.Entities.Author;
 import com.library.loansystem.Entities.AuthorXBook;
 import com.library.loansystem.Entities.Book;
@@ -12,7 +10,6 @@ import com.library.loansystem.Entities.Publisher;
 import com.library.loansystem.Exceptions.BusinessException;
 import com.library.loansystem.Exceptions.ResourceNotFoundException;
 import com.library.loansystem.Repositories.BookRepository;
-import com.library.loansystem.Repositories.LoanRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -71,11 +68,7 @@ public class BookServiceImpl implements BookService{
 
     public BookResponse changeStatus (Long id){
         Book book = getBookOrThrow(id);
-        if (!book.getActive()){
-            book.setActive(true);
-        }else {
-            book.setActive(true);
-        }
+        book.setActive(!book.getActive());
         return bookMapper.toResponse(bookRepository.save(book));
     }
 

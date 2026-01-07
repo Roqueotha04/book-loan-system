@@ -1,4 +1,4 @@
-package com.library.loansystem.DTO;
+package com.library.loansystem.DTO.Response;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

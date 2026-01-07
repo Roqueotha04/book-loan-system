@@ -1,7 +1,7 @@
 package com.library.loansystem.Services;
 
-import com.library.loansystem.DTO.Book.BookRequest;
-import com.library.loansystem.DTO.Book.BookResponse;
+import com.library.loansystem.DTO.Request.BookRequest;
+import com.library.loansystem.DTO.Response.BookResponse;
 import com.library.loansystem.Entities.Book;
 
 import java.util.List;

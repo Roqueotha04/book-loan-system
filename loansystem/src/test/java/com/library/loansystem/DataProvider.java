@@ -1,6 +1,6 @@
 package com.library.loansystem;
 
-import com.library.loansystem.DTO.Author.AuthorResponse;
+import com.library.loansystem.DTO.Response.AuthorResponse;
 import com.library.loansystem.Entities.Author;
 
 import java.util.List;

@@ -1,7 +1,7 @@
 package com.library.loansystem.Controllers;
 
-import com.library.loansystem.DTO.Author.AuthorRequest;
-import com.library.loansystem.DTO.Author.AuthorResponse;
+import com.library.loansystem.DTO.Request.AuthorRequest;
+import com.library.loansystem.DTO.Response.AuthorResponse;
 import com.library.loansystem.Services.AuthorService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;

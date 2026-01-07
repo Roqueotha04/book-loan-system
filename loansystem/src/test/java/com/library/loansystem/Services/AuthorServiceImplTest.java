@@ -1,14 +1,13 @@
 package com.library.loansystem.Services;
 
-import com.library.loansystem.DTO.Author.AuthorMapper;
-import com.library.loansystem.DTO.Author.AuthorRequest;
-import com.library.loansystem.DTO.Author.AuthorResponse;
+import com.library.loansystem.Mapper.AuthorMapper;
+import com.library.loansystem.DTO.Request.AuthorRequest;
+import com.library.loansystem.DTO.Response.AuthorResponse;
 import com.library.loansystem.DataProvider;
 import com.library.loansystem.Entities.Author;
 import com.library.loansystem.Repositories.AuthorRepository;
 import static org.junit.jupiter.api.Assertions.*;
 
-import org.hibernate.mapping.Any;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -18,8 +17,6 @@ import static org.mockito.Mockito.*;
 
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import javax.xml.crypto.Data;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 

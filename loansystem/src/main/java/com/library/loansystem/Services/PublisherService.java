@@ -1,7 +1,7 @@
 package com.library.loansystem.Services;
 
-import com.library.loansystem.DTO.PublisherRequest;
-import com.library.loansystem.DTO.PublisherResponse;
+import com.library.loansystem.DTO.Request.PublisherRequest;
+import com.library.loansystem.DTO.Response.PublisherResponse;
 import com.library.loansystem.Entities.Publisher;
 
 import java.util.List;

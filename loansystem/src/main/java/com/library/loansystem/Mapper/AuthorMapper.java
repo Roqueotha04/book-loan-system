@@ -1,5 +1,6 @@
-package com.library.loansystem.DTO.Author;
+package com.library.loansystem.Mapper;
 
+import com.library.loansystem.DTO.Response.AuthorResponse;
 import com.library.loansystem.Entities.Author;
 
 public class AuthorMapper {
