@@ -1,5 +1,6 @@
 package com.library.loansystem.Services;
 
+import com.library.loansystem.Exceptions.ResourceNotFoundException;
 import com.library.loansystem.Mapper.AuthorMapper;
 import com.library.loansystem.DTO.Request.AuthorRequest;
 import com.library.loansystem.DTO.Response.AuthorResponse;
@@ -118,11 +119,28 @@ public class AuthorServiceImplTest {
     }
 
     @Test
-    public void testGetAuthorOrThrow (){
+    public void testGetAuthorOrThrow_ok() {
         Author author = DataProvider.authorListMock().get(1);
-        when(authorRepository.findById(1L)).thenReturn(Optional.of(author));
+
+        when(authorRepository.findById(1L))
+                .thenReturn(Optional.of(author));
+
         Author result = authorService.getAuthorOrThrow(1L);
-        assertSame(result, author);
+
+        assertNotNull(result);
+        assertSame(author, result);
+        verify(authorRepository).findById(1L);
+    }
+
+    @Test
+    public void testGetAuthorOrThrow_notFound() {
+        when(authorRepository.findById(1L))
+                .thenReturn(Optional.empty());
+
+        assertThrows(ResourceNotFoundException.class, () ->
+                authorService.getAuthorOrThrow(1L)
+        );
+
         verify(authorRepository).findById(1L);
     }
 }
