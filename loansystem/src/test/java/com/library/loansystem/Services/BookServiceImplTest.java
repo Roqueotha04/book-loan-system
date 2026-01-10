@@ -1,8 +1,12 @@
 package com.library.loansystem.Services;
 
+import com.library.loansystem.DTO.Request.BookRequest;
 import com.library.loansystem.DTO.Response.BookResponse;
 import com.library.loansystem.DataProvider;
+import com.library.loansystem.Entities.Author;
 import com.library.loansystem.Entities.Book;
+import com.library.loansystem.Entities.Enums.BookGenre;
+import com.library.loansystem.Entities.Publisher;
 import com.library.loansystem.Mapper.AuthorMapper;
 import com.library.loansystem.Mapper.BookMapper;
 import com.library.loansystem.Repositories.BookRepository;
@@ -17,7 +21,9 @@ import org.springframework.data.auditing.AuditingHandler;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 import javax.xml.crypto.Data;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @ExtendWith(MockitoExtension.class)
 public class BookServiceImplTest {
@@ -34,29 +40,61 @@ public class BookServiceImplTest {
     private BookServiceImpl bookService;
 
     @BeforeEach
-    void setUp(){
+    void setUp() {
         AuthorMapper authorMapper = new AuthorMapper();
         BookMapper bookMapper = new BookMapper(authorMapper);
 
-        bookService =  new BookServiceImpl(
-            bookMapper,
-            bookRepository,
-            loanService,
-            publisherService,
-            authorService
+        bookService = new BookServiceImpl(
+                bookMapper,
+                bookRepository,
+                loanService,
+                publisherService,
+                authorService
         );
     }
 
     @Test
-    public void testFindAll(){
+    public void testFindAll() {
         List<Book> bookList = DataProvider.bookListMock();
 
-        when (bookRepository.findAll()).thenReturn(bookList);
+        when(bookRepository.findAll()).thenReturn(bookList);
 
         List<BookResponse> result = bookService.findAll();
 
         assertEquals(bookList.size(), result.size());
         assertEquals(bookList.get(1).getName(), result.get(1).getName());
         verify(bookRepository).findAll();
+    }
+
+    @Test
+    public void findById() {
+        Book book = DataProvider.bookListMock().get(2);
+
+        when(bookRepository.findById(2L)).thenReturn(Optional.of(book));
+
+        BookResponse result = bookService.findById(2L);
+
+        assertEquals(book.getName(), result.getName());
+        verify(bookRepository).findById(2L);
+    }
+
+    @Test
+    public void save (){
+        BookRequest book = new BookRequest("The Age of Extremes",BookGenre.NON_FICTION, 12, 1L, List.of(1L,2L));
+
+
+        when(bookRepository.save(any(Book.class)))
+                .thenAnswer(invocation -> invocation.getArgument(0));
+        when(publisherService.getPublisherOrThrow(1L))
+                .thenReturn(new Publisher(1L, "Publisher 4"));
+        when(authorService.getAuthorOrThrow(anyLong()))
+                .thenAnswer(iteration -> new Author(1L,"Pepe", "Argento", "Argentinian"));
+
+        BookResponse result = bookService.save(book);
+
+        assertEquals(book.getName(),result.getName());
+        verify(bookRepository).save(any(Book.class));
+        verify(publisherService).getPublisherOrThrow(1L);
+        verify(authorService, atLeastOnce()).getAuthorOrThrow(anyLong());
     }
 }

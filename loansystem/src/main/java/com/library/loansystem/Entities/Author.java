@@ -1,6 +1,7 @@
 package com.library.loansystem.Entities;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -14,6 +15,13 @@ import java.util.List;
 public class Author {
 
     public Author (String name, String lastName, String nationality){
+        this.name= name;
+        this.lastName=lastName;
+        this.nationality=nationality;
+    }
+
+    public Author (Long id, String name, String lastName, String nationality){
+        this.id =id;
         this.name= name;
         this.lastName=lastName;
         this.nationality=nationality;

@@ -11,6 +11,8 @@ import lombok.NoArgsConstructor;
 public class AuthorXBook {
 
     public AuthorXBook(Book book, Author author) {
+        this.book=book;
+        this.author=author;
     }
 
     @Id
