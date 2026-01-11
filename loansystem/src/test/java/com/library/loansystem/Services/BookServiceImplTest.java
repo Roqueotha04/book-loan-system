@@ -97,4 +97,34 @@ public class BookServiceImplTest {
         verify(publisherService).getPublisherOrThrow(1L);
         verify(authorService, atLeastOnce()).getAuthorOrThrow(anyLong());
     }
+    
+    @Test
+    public void testDelete (){
+        Book book = new Book("The Age of Extremes",12, BookGenre.NON_FICTION,new Publisher(1L, "Publisher"));
+        
+        when(bookRepository.findById(2L))
+                .thenReturn(Optional.of(book));
+
+        bookService.delete(2L);
+
+        verify(bookRepository).findById(2L);
+        verify(bookRepository).delete(any(Book.class));
+    }
+
+    @Test
+    public void testUpdate (){
+        BookRequest bookRequest = new BookRequest("The Age of Extremes",BookGenre.NON_FICTION, 12, 1L, List.of(1L,2L));
+        Book book = new Book("The Age of Extremes 2",12, BookGenre.NON_FICTION,new Publisher(1L, "Publisher 2"));
+        when(bookRepository.findById(2L))
+                .thenReturn(Optional.of(book));
+        when(bookRepository.save(any(Book.class)))
+                .thenAnswer(iteration -> iteration.getArgument(0));
+
+        BookResponse result = bookService.update(2L, bookRequest);
+
+        assertNotEquals("The age of Extremes 2", result.getName());
+        assertEquals(book.getName(), result.getName());
+        verify(bookRepository).findById(2L);
+        verify(bookRepository).save(any(book.getClass()));
+    }
 }
