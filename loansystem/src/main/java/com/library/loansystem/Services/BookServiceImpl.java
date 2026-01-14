@@ -83,7 +83,7 @@ public class BookServiceImpl implements BookService{
         return bookRepository.findById(id).orElseThrow(()-> new ResourceNotFoundException("Book not found with id: " +id));
     }
 
-    public Book toBook (BookRequest bookRequest){
+    private Book toBook (BookRequest bookRequest){
         Book book = new Book();
         book.setName(bookRequest.getName());
         book.setGenre(bookRequest.getGenre());

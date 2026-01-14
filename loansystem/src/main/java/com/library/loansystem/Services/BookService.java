@@ -14,5 +14,4 @@ public interface BookService {
     public void delete (Long id);
     public BookResponse changeStatus (Long id);
     public BookResponse updateStock(Long id, int newStock);
-    public Book toBook (BookRequest bookRequest);
 }

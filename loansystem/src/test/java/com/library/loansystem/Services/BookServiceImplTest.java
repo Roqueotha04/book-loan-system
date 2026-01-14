@@ -7,6 +7,8 @@ import com.library.loansystem.Entities.Author;
 import com.library.loansystem.Entities.Book;
 import com.library.loansystem.Entities.Enums.BookGenre;
 import com.library.loansystem.Entities.Publisher;
+import com.library.loansystem.Exceptions.BusinessException;
+import com.library.loansystem.Exceptions.ResourceNotFoundException;
 import com.library.loansystem.Mapper.AuthorMapper;
 import com.library.loansystem.Mapper.BookMapper;
 import com.library.loansystem.Repositories.BookRepository;
@@ -99,16 +101,40 @@ public class BookServiceImplTest {
     }
     
     @Test
-    public void testDelete (){
+    public void testDelete_ok (){
         Book book = new Book("The Age of Extremes",12, BookGenre.NON_FICTION,new Publisher(1L, "Publisher"));
-        
+        book.setId(2L);
         when(bookRepository.findById(2L))
                 .thenReturn(Optional.of(book));
+
+        when(loanService.existsActiveLoanByBookId(book.getId()))
+                .thenReturn(false);
 
         bookService.delete(2L);
 
         verify(bookRepository).findById(2L);
+        verify(loanService).existsActiveLoanByBookId(book.getId());
         verify(bookRepository).delete(any(Book.class));
+    }
+
+    @Test
+    public void testDelete_BusinessException(){
+        Book book = new Book("The Age of Extremes",12, BookGenre.NON_FICTION,new Publisher(1L, "Publisher"));
+        book.setId(2L);
+        when(bookRepository.findById(book.getId()))
+                .thenReturn(Optional.of(book));
+
+        when(loanService.existsActiveLoanByBookId(book.getId()))
+                .thenReturn(true);
+
+      //The only call to the method should be in the assertThrows
+        //bookService.delete(2L);
+
+        assertThrows(BusinessException.class, () -> bookService.delete(book.getId()));
+
+        verify(bookRepository).findById(book.getId());
+        verify(loanService).existsActiveLoanByBookId(book.getId());
+        verify(bookRepository, never()).delete(any(Book.class));
     }
 
     @Test
@@ -122,9 +148,73 @@ public class BookServiceImplTest {
 
         BookResponse result = bookService.update(2L, bookRequest);
 
-        assertNotEquals("The age of Extremes 2", result.getName());
+        assertNotEquals("The Age of Extremes 2", result.getName());
         assertEquals(book.getName(), result.getName());
         verify(bookRepository).findById(2L);
-        verify(bookRepository).save(any(book.getClass()));
+        verify(bookRepository).save(any(Book.class));
     }
+
+    @Test
+    public void testChangeStatusFalse(){
+        Book book = new Book("The Age of Extremes 2",12, BookGenre.NON_FICTION,new Publisher(1L, "Publisher 2"));
+
+        when(bookRepository.findById(2L)).thenReturn(Optional.of(book));
+        when(bookRepository.save(any(Book.class)))
+                .thenAnswer(invocation -> invocation.getArgument(0));
+        BookResponse result = bookService.changeStatus(2L);
+        assertEquals(false, result.getActive());
+        verify(bookRepository).findById(2L);
+        verify(bookRepository).save(any(Book.class));
+    }
+
+    @Test
+    public void testChangeStatusTrue(){
+        Book book = new Book("The Age of Extremes 2",12, BookGenre.NON_FICTION,new Publisher(1L, "Publisher 2"));
+        book.setActive(false);
+        when(bookRepository.findById(2L)).thenReturn(Optional.of(book));
+        when(bookRepository.save(any(Book.class)))
+                .thenAnswer(invocation -> invocation.getArgument(0));
+
+        BookResponse result = bookService.changeStatus(2L);
+        assertEquals(true, result.getActive());
+        verify(bookRepository).findById(2L);
+        verify(bookRepository).save(any(Book.class));
+    }
+
+    @Test
+    public void testUpdateStock(){
+        Book book = new Book("The Age of Extremes 2",12, BookGenre.NON_FICTION,new Publisher(1L, "Publisher 2"));
+
+        when(bookRepository.findById(2L)).thenReturn(Optional.of(book));
+        when(bookRepository.save(any(Book.class)))
+                .thenAnswer(invocation -> invocation.getArgument(0));
+
+        BookResponse result = bookService.updateStock(2L, 5);
+
+        assertEquals(5, result.getStock());
+        verify(bookRepository).findById(2L);
+        verify(bookRepository).save(any(Book.class));
+    }
+
+    @Test
+    public void testGetBookOrThrow (){
+        Book book = new Book("The Age of Extremes 2",12, BookGenre.NON_FICTION,new Publisher(1L, "Publisher 2"));
+        when(bookRepository.findById(2L)).thenReturn(Optional.of(book));
+
+        Book result = bookService.getBookOrThrow(2L);
+
+        assertNotNull(result);
+        assertEquals(book.getName(),result.getName());
+        verify(bookRepository).findById(2L);
+    }
+
+    @Test
+    public void testGetBookOrThrow_NotFound (){
+        when(bookRepository.findById(2L)).thenReturn(Optional.empty());
+
+        assertThrows(ResourceNotFoundException.class, ()->bookService.getBookOrThrow(2L));
+
+        verify(bookRepository).findById(2L);
+    }
+
 }
