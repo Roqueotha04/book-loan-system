@@ -2,7 +2,9 @@ package com.library.loansystem.Services;
 
 import com.library.loansystem.Entities.Loan;
 import com.library.loansystem.Repositories.LoanRepository;
+import org.springframework.stereotype.Service;
 
+@Service
 public class LoanServiceImpl implements LoanService {
 
     private final LoanRepository loanRepository;

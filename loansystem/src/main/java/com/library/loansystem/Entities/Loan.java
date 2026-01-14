@@ -2,12 +2,15 @@ package com.library.loansystem.Entities;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.springframework.cglib.core.Local;
 
 import java.time.LocalDate;
 
-@Data
+@Getter
+@Setter
 @Entity
 public class Loan {
 

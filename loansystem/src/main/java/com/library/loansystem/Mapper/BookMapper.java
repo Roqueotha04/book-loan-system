@@ -5,9 +5,11 @@ import com.library.loansystem.DTO.Response.AuthorResponse;
 import com.library.loansystem.DTO.Response.PublisherResponse;
 import com.library.loansystem.Entities.AuthorXBook;
 import com.library.loansystem.Entities.Book;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 
+@Component
 public class BookMapper {
 
     private final AuthorMapper authorMapper;
