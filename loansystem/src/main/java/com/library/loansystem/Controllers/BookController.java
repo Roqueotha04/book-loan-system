@@ -45,7 +45,7 @@ public class BookController {
     )
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public BookResponse save(@RequestBody BookRequest bookRequest) {
+    public BookResponse save(@Valid @RequestBody BookRequest bookRequest) {
         return bookService.save(bookRequest);
     }
 
@@ -54,7 +54,7 @@ public class BookController {
             description = "Updates the book with the specified ID using the provided data."
     )
     @PutMapping("/{id}")
-    public BookResponse update(@PathVariable Long id, @RequestBody BookRequest bookRequest) {
+    public BookResponse update(@PathVariable Long id,@Valid @RequestBody BookRequest bookRequest) {
         return bookService.update(id, bookRequest);
     }
 

@@ -81,13 +81,22 @@ public class BookServiceImplTest {
     }
 
     @Test
-    public void findByIsbn(){
+    public void findByIsbn_ok(){
         Book book = DataProvider.bookListMock().get(2);
 
         when(bookRepository.findByIsbn("1234")).thenReturn(Optional.of(book));
         BookResponse result = bookService.findByIsbn("1234");
 
         assertEquals(book.getName(), result.getName());
+        verify(bookRepository).findByIsbn("1234");
+    }
+
+    @Test
+    public void findByIsbn_notFound(){
+
+        when(bookRepository.findByIsbn("1234")).thenReturn(Optional.empty());
+
+        assertThrows(ResourceNotFoundException.class, () -> bookService.findByIsbn("1234"));
         verify(bookRepository).findByIsbn("1234");
     }
 

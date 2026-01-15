@@ -4,6 +4,7 @@ import com.library.loansystem.DTO.Request.AuthorRequest;
 import com.library.loansystem.DTO.Response.AuthorResponse;
 import com.library.loansystem.Services.AuthorService;
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -43,7 +44,7 @@ public class AuthorController {
     )
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public AuthorResponse create(@RequestBody AuthorRequest author) {
+    public AuthorResponse create(@Valid @RequestBody AuthorRequest author) {
         return authorService.save(author);
     }
 
@@ -54,7 +55,7 @@ public class AuthorController {
     @PutMapping("/{id}")
     public AuthorResponse update(
             @PathVariable Long id,
-            @RequestBody AuthorRequest author
+            @Valid @RequestBody AuthorRequest author
     ) {
         return authorService.update(id, author);
     }

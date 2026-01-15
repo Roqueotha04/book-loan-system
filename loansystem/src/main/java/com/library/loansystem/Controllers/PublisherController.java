@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -49,7 +50,7 @@ public class PublisherController {
     )
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public PublisherResponse save(@RequestBody PublisherRequest request) {
+    public PublisherResponse save(@Valid @RequestBody PublisherRequest request) {
         return publisherService.save(request);
     }
 
@@ -60,7 +61,7 @@ public class PublisherController {
     @PutMapping("/{id}")
     public PublisherResponse update(
             @PathVariable Long id,
-            @RequestBody PublisherRequest request
+            @Valid @RequestBody PublisherRequest request
     ) {
         return publisherService.update(id, request);
     }
