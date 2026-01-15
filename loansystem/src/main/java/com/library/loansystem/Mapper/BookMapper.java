@@ -24,6 +24,7 @@ public class BookMapper {
         bookResponse.setName(book.getName());
         bookResponse.setStock(book.getStock());
         bookResponse.setGenre(book.getGenre());
+        bookResponse.setIsbn(book.getIsbn());
         bookResponse.setActive(book.getActive());
         bookResponse.setPublisher(new PublisherResponse(book.getPublisher().getId(),book.getPublisher().getName()));
 

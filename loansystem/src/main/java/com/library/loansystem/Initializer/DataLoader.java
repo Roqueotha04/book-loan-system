@@ -67,7 +67,7 @@ public class DataLoader  implements ApplicationRunner{
                 authorRepository.saveAll(authors);
             }
         }
-        private void loadBooks() {
+    private void loadBooks() {
 
         if (bookRepository.count() > 0) {
             return;
@@ -76,31 +76,31 @@ public class DataLoader  implements ApplicationRunner{
         List<Author> authors = authorRepository.findAll();
         List<Publisher> publishers = publisherRepository.findAll();
 
-        Book book1 = new Book("1984", 15, BookGenre.FICTION, publishers.get(0));
+        Book book1 = new Book("1984", 15, BookGenre.FICTION, "9780451524935", publishers.get(0));
         addAuthorToBook(book1, authors.get(0)); // Orwell
 
-        Book book2 = new Book("Harry Potter and the Philosopher's Stone", 20, BookGenre.FANTASY, publishers.get(9));
+        Book book2 = new Book("Harry Potter and the Philosopher's Stone", 20, BookGenre.FANTASY, "9780747532699", publishers.get(9));
         addAuthorToBook(book2, authors.get(1)); // Rowling
 
-        Book book3 = new Book("The Lord of the Rings", 12, BookGenre.FANTASY, publishers.get(1));
+        Book book3 = new Book("The Lord of the Rings", 12, BookGenre.FANTASY, "9780618640157", publishers.get(1));
         addAuthorToBook(book3, authors.get(2)); // Tolkien
 
-        Book book4 = new Book("Foundation", 10, BookGenre.SCIENCE_FICTION, publishers.get(1));
+        Book book4 = new Book("Foundation", 10, BookGenre.SCIENCE_FICTION, "9780553293357", publishers.get(1));
         addAuthorToBook(book4, authors.get(3)); // Asimov
 
-        Book book5 = new Book("The Shining", 8, BookGenre.HORROR, publishers.get(0));
+        Book book5 = new Book("The Shining", 8, BookGenre.HORROR, "9780307743657", publishers.get(0));
         addAuthorToBook(book5, authors.get(4)); // King
 
-        Book book6 = new Book("Murder on the Orient Express", 9, BookGenre.MYSTERY, publishers.get(1));
+        Book book6 = new Book("Murder on the Orient Express", 9, BookGenre.MYSTERY, "9780062693662", publishers.get(1));
         addAuthorToBook(book6, authors.get(5)); // Christie
 
-        Book book7 = new Book("Pride and Prejudice", 11, BookGenre.FICTION, publishers.get(0));
+        Book book7 = new Book("Pride and Prejudice", 11, BookGenre.FICTION, "9780141439518", publishers.get(0));
         addAuthorToBook(book7, authors.get(6)); // Austen
 
-        Book book8 = new Book("Sapiens", 14, BookGenre.NON_FICTION, publishers.get(1));
+        Book book8 = new Book("Sapiens", 14, BookGenre.NON_FICTION, "9780062316097", publishers.get(1));
         addAuthorToBook(book8, authors.get(9)); // Harari
 
-        Book book9 = new Book("Artificial", 18, BookGenre.NON_FICTION, publishers.get(0));
+        Book book9 = new Book("Artificial", 18, BookGenre.NON_FICTION, "9789876298523", publishers.get(0));
         addAuthorToBook(book9, authors.get(7)); // Sigman
         addAuthorToBook(book9, authors.get(8)); // Bilinkis
 
@@ -109,7 +109,8 @@ public class DataLoader  implements ApplicationRunner{
                 book6, book7, book8, book9
         ));
     }
-        private void addAuthorToBook(Book book, Author author) {
+
+    private void addAuthorToBook(Book book, Author author) {
         AuthorXBook link = new AuthorXBook();
         link.setBook(book);
         link.setAuthor(author);

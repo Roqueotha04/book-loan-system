@@ -15,11 +15,12 @@ import java.util.List;
 @Entity
 public class Book {
 
-    public Book (String name, int stock, BookGenre bookGenre, Publisher publisher){
+    public Book (String name, int stock, BookGenre bookGenre,String isbn, Publisher publisher){
         this.name=name;
         this.stock=stock;
         this.active=true;
         this.genre= bookGenre;
+        this.isbn = isbn;
         this.publisher=publisher;
     }
 
@@ -32,6 +33,8 @@ public class Book {
     private Long id;
 
     private String name;
+
+    private String isbn;
 
     @Enumerated(EnumType.STRING)
     private BookGenre genre;

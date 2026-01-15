@@ -55,6 +55,7 @@ public class BookServiceImpl implements BookService{
         Book book = getBookOrThrow(id);
         book.setName(bookRequest.getName());
         book.setGenre(bookRequest.getGenre());
+        book.setIsbn(bookRequest.getIsbn());
         book.setStock(bookRequest.getStock());
        return bookMapper.toResponse(bookRepository.save(book));
     }
@@ -79,8 +80,14 @@ public class BookServiceImpl implements BookService{
         return bookMapper.toResponse(bookRepository.save(book));
     }
 
+
     public Book getBookOrThrow (Long id){
         return bookRepository.findById(id).orElseThrow(()-> new ResourceNotFoundException("Book not found with id: " +id));
+    }
+
+    public BookResponse findByIsbn(String isbn){
+        Book book=bookRepository.findByIsbn(isbn).orElseThrow(()-> new ResourceNotFoundException("Book not found with isbn: " +isbn));
+        return bookMapper.toResponse(book);
     }
 
     private Book toBook (BookRequest bookRequest){
@@ -88,6 +95,7 @@ public class BookServiceImpl implements BookService{
         book.setName(bookRequest.getName());
         book.setGenre(bookRequest.getGenre());
         book.setStock(bookRequest.getStock());
+        book.setIsbn(bookRequest.getIsbn());
         book.setLoanList(new ArrayList<>());
         //Publisher
         Publisher publisher =  publisherService.getPublisherOrThrow(bookRequest.getPublisherID());

@@ -15,6 +15,7 @@ public class BookRequest {
     private String name;
     private BookGenre genre;
     private int stock;
+    private String isbn;
     private Long publisherID;
     private List<Long> authorsIds = new ArrayList<>();
 

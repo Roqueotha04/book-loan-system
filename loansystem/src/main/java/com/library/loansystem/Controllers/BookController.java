@@ -78,6 +78,15 @@ public class BookController {
     }
 
     @Operation(
+            summary = "Find book by ISBN",
+            description = "Returns the book with the specified ID, if it exists."
+    )
+    @GetMapping("/isbn/{isbn}")
+    public BookResponse findByIsbn (@PathVariable String isbn){
+        return bookService.findByIsbn(isbn);
+    }
+
+    @Operation(
             summary = "Update book stock",
             description = "Updates the stock quantity of a book with the provided value."
     )

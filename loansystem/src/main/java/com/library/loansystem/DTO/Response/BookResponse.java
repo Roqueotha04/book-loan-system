@@ -16,6 +16,7 @@ public class BookResponse {
     private BookGenre genre;
     private int stock;
     private Boolean active;
+    private String isbn;
     private PublisherResponse publisher;
     private List<AuthorResponse> authors;
 }
