@@ -74,13 +74,6 @@ Minimal integration tests for REST endpoints.
 
 Coverage reports are generated with JaCoCo.
 
-Non-core classes (controllers, DTOs, configuration, initializers) are excluded from coverage checks.
-
-> Validation errors are returned as JSON in the format: json
-{
-"fieldName": "error message"
-}
----
 ### Documentation
 
 Swagger/OpenAPI is integrated:
