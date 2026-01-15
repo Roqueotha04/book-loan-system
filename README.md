@@ -19,14 +19,17 @@ The system includes **robust DTO validations**, **centralized exception handling
 ---
 
 ## Project Structure
-com.bookloan.loansystem
-├── controller → REST endpoints
-├── service → Business logic
-├── mapper → DTO ↔ Entity conversions
-├── dto → Request & Response objects with validations
-├── entity → JPA entities
-├── exception → Custom exception classes
-└── config → Configuration (Swagger, etc.)
+
+- **Controllers** → REST endpoints for all entities
+- **Services** → Business logic
+- **Mapper** → DTO ↔ Entity conversions
+- **DTO** → Request & Response objects with validations
+- **Entities** → JPA entities
+- **Exceptions** → Custom exception classes
+- **Repositories** → Spring Data repositories
+- **Configuration** → Application configuration (Swagger, etc.)
+- **Initializer** → Database and data initialization
+
 
 - DTOs include **field-level validations** to ensure correct input.
 - All exceptions are handled by a **single GlobalExceptionHandler**, providing consistent responses.
