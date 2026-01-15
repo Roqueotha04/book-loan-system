@@ -18,25 +18,6 @@ The system includes **robust DTO validations**, **centralized exception handling
 
 ---
 
-## Project Structure
-
-- **Controllers** → REST endpoints for all entities
-- **Services** → Business logic
-- **Mapper** → DTO ↔ Entity conversions
-- **DTO** → Request & Response objects with validations
-- **Entities** → JPA entities
-- **Exceptions** → Custom exception classes
-- **Repositories** → Spring Data repositories
-- **Configuration** → Application configuration (Swagger, etc.)
-- **Initializer** → Database and data initialization
-
-
-- DTOs include **field-level validations** to ensure correct input.
-- All exceptions are handled by a **single GlobalExceptionHandler**, providing consistent responses.
-- **JaCoCo** coverage applies to **services and mappers**, with a goal of **80%+ coverage**.
-
----
-
 ## Key Endpoints
 
 ### Publisher
@@ -71,10 +52,28 @@ Loan and User CRUD are under development, new features will be soon.
 
 > Validation errors are returned as JSON in the format: json
 {
-  "fieldName": "error message"
-}
-
+"fieldName": "error message"
+}       
 ---
+
+## Project Structure
+
+## Project Structure
+
+- 📦 **Controllers** → REST API endpoints
+- ⚙️ **Services** → Business logic
+- 🔄 **Mapper** → Convert DTO ↔ Entity
+- 📝 **DTO** → Request/Response objects with **field validations**
+- 🏛️ **Entities** → JPA entities (database tables)
+- 🗃️ **Repositories** → Spring Data repositories
+- ❗ **Exceptions** → Custom exceptions, handled by **GlobalExceptionHandler**
+- ⚙️ **Configuration** → App settings (Swagger, CORS, etc.)
+- 🚀 **Initializer** → DB setup & sample data
+
+**Extras:**
+- **GlobalExceptionHandler** ensures consistent error responses
+- **JaCoCo** coverage on services & mappers, target **80%+**
+
 ### Testing & Coverage
 
 Unit tests cover services and mappers using JUnit 5 and Mockito.
