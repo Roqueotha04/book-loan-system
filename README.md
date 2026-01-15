@@ -65,11 +65,6 @@ The system includes **robust DTO validations**, **centralized exception handling
 
 Loan and User CRUD are under development, new features will be soon.
 
-> Validation errors are returned as JSON in the format: json
-{
-"fieldName": "error message"
-}       
-
 ---
 ### Testing & Coverage
 
@@ -81,6 +76,10 @@ Coverage reports are generated with JaCoCo.
 
 Non-core classes (controllers, DTOs, configuration, initializers) are excluded from coverage checks.
 
+> Validation errors are returned as JSON in the format: json
+{
+"fieldName": "error message"
+}
 ---
 ### Documentation
 
