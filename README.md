@@ -56,6 +56,8 @@ The system includes **robust DTO validations**, **centralized exception handling
 - `POST /books` → Create a book (validated, ISBN required)
 - `PUT /books/{id}` → Update a book
 - `DELETE /books/{id}` → Delete a book
+- `PATCH /books/{id}/STATUS` → Update book status
+- `PATCH /books/{id}/STOCK` → Update book stock
 
 ### Loan
 - CRUD for loaning books to users.
