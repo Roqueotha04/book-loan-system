@@ -20,7 +20,8 @@ public class BookRequest {
     @NotNull
     private BookGenre genre;
 
-    @Size(min = 0, max = 1000)
+    @Min(0)
+    @Max(1000)
     private int stock;
 
     @NotBlank
