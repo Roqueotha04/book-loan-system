@@ -1,4 +1,6 @@
 package com.library.loansystem.DTO.Request;
 
-public record UserRequest(String gmail, String username, String password) {
-}
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+
+public record UserRequest(@gmail String gmail, @NotBlank @Size(max = 50) String username, @NotBlank @Size(min = 8, max = 100)String password) {}
