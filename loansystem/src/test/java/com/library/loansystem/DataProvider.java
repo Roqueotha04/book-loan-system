@@ -7,6 +7,7 @@ import com.library.loansystem.Entities.Author;
 import com.library.loansystem.Entities.Book;
 import com.library.loansystem.Entities.Enums.BookGenre;
 import com.library.loansystem.Entities.Publisher;
+import com.library.loansystem.Entities.User;
 
 import java.util.List;
 
@@ -34,6 +35,14 @@ public class DataProvider {
                 new Book("1984", 15, BookGenre.FICTION, "8789876298523",new Publisher(1L, "Publisher 1")),
                 new Book("Harry Potter and the Philosopher's Stone", 20, BookGenre.FANTASY, "8789876298524",new Publisher(2L,"Publisher 2")),
                 new Book("The Lord of the Rings", 12, BookGenre.FANTASY,"8789876298525", new Publisher(3L,"Publisher 3"))
+        );
+    }
+
+    public static List<User> userListMock(){
+        return List.of(
+                new User("lionelmessi10@gmail.com", "lionel", "messi"),
+                new User("denzelwashington@gmail.com", "denzel", "washington"),
+                new User("cristianocr7@gmail.com", "cristiano", "ronaldo")
         );
     }
 }

@@ -1,4 +1,4 @@
 package com.library.loansystem.DTO.Response;
 
-public record UserResponse(Long id, String gmail, String username) {
+public record UserResponse(Long id, String email, String username) {
 }

@@ -15,8 +15,8 @@ import java.util.List;
 @Entity
 public class User {
 
-    public User (String gmail, String username, String password){
-        this.gmail=gmail;
+    public User (String email, String username, String password){
+        this.email=email;
         this.username=username;
         this.password=password;
     }
@@ -25,7 +25,7 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String gmail;
+    private String email;
 
     private String username;
 
