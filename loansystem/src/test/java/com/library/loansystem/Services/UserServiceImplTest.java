@@ -1,8 +1,10 @@
 package com.library.loansystem.Services;
 
+import com.library.loansystem.DTO.Request.UserRequest;
 import com.library.loansystem.DTO.Response.UserResponse;
 import com.library.loansystem.DataProvider;
 import com.library.loansystem.Entities.User;
+import com.library.loansystem.Exceptions.BusinessException;
 import com.library.loansystem.Exceptions.ResourceNotFoundException;
 import com.library.loansystem.Mapper.UserMapper;
 import com.library.loansystem.Repositories.UserRepository;
@@ -55,6 +57,26 @@ public class UserServiceImplTest {
         assertNotNull(result);
         assertEquals(user.getUsername(), result.username());
         verify(userRepository).findById(2L);
+    }
+
+    @Test
+    public void testSave_ok (){
+        UserRequest userRequest = new UserRequest("angeldimaria@gmail.com", "fideo", "dimaria");
+        when(userRepository.save(any(User.class)))
+                .thenAnswer(invocation -> invocation.getArgument(0));
+
+        UserResponse result = userService.save(userRequest);
+        assertEquals(userRequest.email(), result.email());
+        assertEquals(userRequest.username(), result.username());
+        verify(userRepository).save(any(User.class));
+    }
+    @Test
+    public void testSave_BusinessException (){
+        UserRequest userRequest = new UserRequest("angeldimaria@gmail.com", "fideo", "dimaria");
+        when(userRepository.existsByEmail(userRequest.email())).thenReturn(true);
+
+        assertThrows(BusinessException.class, ()-> userService.save(userRequest));
+        verify(userRepository, never()).save(any(User.class));
     }
 
     @Test

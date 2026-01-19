@@ -3,6 +3,7 @@ package com.library.loansystem.Services;
 import com.library.loansystem.DTO.Request.UserRequest;
 import com.library.loansystem.DTO.Response.UserResponse;
 import com.library.loansystem.Entities.User;
+import com.library.loansystem.Exceptions.BusinessException;
 import com.library.loansystem.Exceptions.ResourceNotFoundException;
 import com.library.loansystem.Mapper.UserMapper;
 import com.library.loansystem.Repositories.UserRepository;
@@ -33,7 +34,10 @@ public class UserServiceImpl implements UserService{
 
     @Override
     public UserResponse save(UserRequest userRequest) {
-        return null;
+       if (userRepository.existsByEmail(userRequest.email())) throw new BusinessException("Email already in use");
+       if (userRepository.existsByUsername(userRequest.username())) throw new BusinessException("Username already in use");
+       User user = toUser(userRequest);
+       return userMapper.toResponse(userRepository.save(user));
     }
 
     @Override
@@ -49,6 +53,10 @@ public class UserServiceImpl implements UserService{
     @Override
     public User getUserOrThrow(Long id) {
         return userRepository.findById(id).orElseThrow(() ->new ResourceNotFoundException("User not found with id: " + id));
+    }
+
+    private User toUser (UserRequest userRequest){
+        return new User(userRequest.email(), userRequest.username(), userRequest.password());
     }
 
 
