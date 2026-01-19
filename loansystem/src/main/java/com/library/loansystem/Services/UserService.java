@@ -12,4 +12,5 @@ public interface UserService {
     public UserResponse save(UserRequest userRequest);
     public void delete (Long id);
     public UserResponse update (Long id, UserRequest userRequest);
+    public User getUserOrThrow(Long id);
 }

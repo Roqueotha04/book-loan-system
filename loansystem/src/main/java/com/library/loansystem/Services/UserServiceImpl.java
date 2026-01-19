@@ -3,6 +3,7 @@ package com.library.loansystem.Services;
 import com.library.loansystem.DTO.Request.UserRequest;
 import com.library.loansystem.DTO.Response.UserResponse;
 import com.library.loansystem.Entities.User;
+import com.library.loansystem.Exceptions.ResourceNotFoundException;
 import com.library.loansystem.Mapper.UserMapper;
 import com.library.loansystem.Repositories.UserRepository;
 import org.springframework.stereotype.Service;
@@ -27,7 +28,7 @@ public class UserServiceImpl implements UserService{
 
     @Override
     public UserResponse findById(Long id) {
-        return null;
+        return userMapper.toResponse(getUserOrThrow(id));
     }
 
     @Override
@@ -44,5 +45,11 @@ public class UserServiceImpl implements UserService{
     public UserResponse update(Long id, UserRequest userRequest) {
         return null;
     }
+
+    @Override
+    public User getUserOrThrow(Long id) {
+        return userRepository.findById(id).orElseThrow(() ->new ResourceNotFoundException("User not found with id: " + id));
+    }
+
 
 }

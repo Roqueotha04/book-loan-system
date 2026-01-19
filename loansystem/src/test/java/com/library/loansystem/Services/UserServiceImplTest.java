@@ -3,6 +3,7 @@ package com.library.loansystem.Services;
 import com.library.loansystem.DTO.Response.UserResponse;
 import com.library.loansystem.DataProvider;
 import com.library.loansystem.Entities.User;
+import com.library.loansystem.Exceptions.ResourceNotFoundException;
 import com.library.loansystem.Mapper.UserMapper;
 import com.library.loansystem.Repositories.UserRepository;
 import static org.junit.jupiter.api.Assertions.*;
@@ -13,6 +14,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.mockito.Mockito.*;
 
@@ -41,5 +43,36 @@ public class UserServiceImplTest {
         assertEquals(userList.size(), result.size());
         assertEquals(userList.get(1).getEmail(), result.get(1).email());
         verify(userRepository).findAll();
+    }
+
+    @Test
+    public void testFindById(){
+        User user = DataProvider.userListMock().get(1);
+
+        when(userRepository.findById(2L)).thenReturn(Optional.of(user));
+        UserResponse result = userService.findById(2L);
+
+        assertNotNull(result);
+        assertEquals(user.getUsername(), result.username());
+        verify(userRepository).findById(2L);
+    }
+
+    @Test
+    public void testGetUserOrThrow_ok(){
+        User user = DataProvider.userListMock().get(2);
+
+        when(userRepository.findById(2L)).thenReturn(Optional.of(user));
+        User result = userService.getUserOrThrow(2L);
+        assertNotNull(result);
+        assertEquals(user.getUsername(), result.getUsername());
+        verify(userRepository).findById(2L);
+    }
+
+    @Test
+    public void testGetUserOrThrow_NotFound(){
+
+        when(userRepository.findById(2L)).thenReturn(Optional.empty());
+        assertThrows(ResourceNotFoundException.class, () -> userService.getUserOrThrow(2L));
+        verify(userRepository).findById(2L);
     }
 }

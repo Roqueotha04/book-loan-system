@@ -111,6 +111,7 @@ public class PublisherServiceImplTest {
 
         assertNotNull(result);
         assertEquals(publisher.getName(), result.getName());
+        verify(publisherRepository).findById(0L);
     }
 
     @Test
