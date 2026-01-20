@@ -15,6 +15,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import javax.xml.crypto.Data;
 import java.util.List;
 import java.util.Optional;
 
@@ -80,6 +81,106 @@ public class UserServiceImplTest {
 
         assertThrows(BusinessException.class, ()-> userService.save(userRequest));
         verify(userRepository, never()).save(any(User.class));
+    }
+
+    @Test
+    public void testDelete_ok(){
+        User user = DataProvider.userListMock().get(1);
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+
+
+        userService.deletePermanently(1L);
+        verify(userRepository).findById(1L);
+        verify(userRepository).delete(any(User.class));
+    }
+
+    @Test
+    public void testDelete_hasActiveLoans(){
+        when(loanService.existsActiveLoanByUserId(1L)).thenReturn(true);
+
+        assertThrows(BusinessException.class, ()-> userService.deletePermanently(1L));
+
+        verify(loanService).existsActiveLoanByUserId(1L);
+        verify(userRepository, never()).findById(1L);
+        verify(userRepository, never()).delete(any(User.class));
+    }
+
+    @Test
+    public void testDeactivate_ok(){
+        User user = DataProvider.userListMock().get(1);
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+        when(userRepository.save(any(User.class)))
+                .thenAnswer(invocation -> invocation.getArgument(0));
+
+        UserResponse result = userService.deactivate(1L);
+        assertEquals(false, result.active());
+        verify(userRepository).findById(1L);
+        verify(userRepository).save(any(User.class));
+    }
+
+    @Test
+    public void testDeactivate_hasActiveLoans(){
+        when(loanService.existsActiveLoanByUserId(1L)).thenReturn(true);
+        assertThrows(BusinessException.class, ()-> userService.deactivate(1L));
+        verify(loanService).existsActiveLoanByUserId(1L);
+        verify(userRepository, never()).findById(1L);
+        verify(userRepository, never()).save(any(User.class));
+    }
+
+    @Test
+    public void testDeactivate_userAlreadyInactive(){
+        User user = DataProvider.userListMock().get(1);
+        user.setActive(false);
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+
+        assertThrows(BusinessException.class, ()-> userService.deactivate(1L));
+
+        verify(loanService).existsActiveLoanByUserId(1L);
+        verify(userRepository).findById(1L);
+        verify(userRepository, never()).save(any(User.class));
+    }
+
+    @Test
+    public void testActivate_ok(){
+        User user = DataProvider.userListMock().get(1);
+        user.setActive(false);
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+        when(userRepository.save(any(User.class)))
+                .thenAnswer(invocation -> invocation.getArgument(0));
+
+        UserResponse result = userService.activate(1L);
+        assertEquals(true, result.active());
+
+        verify(userRepository).findById(1L);
+        verify(userRepository).save(any(User.class));
+    }
+
+    @Test
+    public void testActivate_alreadyActive(){
+        User user = DataProvider.userListMock().get(1);
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+
+        assertThrows(BusinessException.class, ()-> userService.activate(1L));
+
+        verify(userRepository).findById(1L);
+        verify(userRepository, never()).save(any(User.class));
+    }
+
+    @Test
+    public void testUpdate(){
+        User user = DataProvider.userListMock().get(1);
+        UserRequest userRequest = new UserRequest("messi@gmail.com", "Lionel modified", "Messi modified");
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+        when(userRepository.save(any(User.class)))
+                .thenAnswer(invocation -> invocation.getArgument(0));
+
+        UserResponse result = userService.update(1L, userRequest);
+
+        assertEquals(user.getEmail(), result.email());
+        assertEquals(user.getUsername(), result.username());
+
+        verify(userRepository).findById(1L);
+        verify(userRepository).save(any(User.class));
     }
 
 
