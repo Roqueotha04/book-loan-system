@@ -17,4 +17,7 @@ public class LoanServiceImpl implements LoanService {
     public Boolean existsActiveLoanByBookId(Long bookId) {
         return loanRepository.existsByBookIdAndActiveTrue(bookId);
     }
+
+    @Override
+    public Boolean existsActiveLoanByUserId(Long userId){return loanRepository.existsByUserIdAndActiveTrue(userId);}
 }

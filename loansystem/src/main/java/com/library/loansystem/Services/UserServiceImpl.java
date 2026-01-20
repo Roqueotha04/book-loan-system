@@ -14,10 +14,12 @@ import java.util.List;
 @Service
 public class UserServiceImpl implements UserService{
     private final UserRepository userRepository;
+    private final LoanService loanService;
     private final UserMapper userMapper;
 
-    public UserServiceImpl(UserRepository userRepository, UserMapper userMapper) {
+    public UserServiceImpl(UserRepository userRepository, LoanService loanService, UserMapper userMapper) {
         this.userRepository = userRepository;
+        this.loanService = loanService;
         this.userMapper = userMapper;
     }
 
@@ -41,13 +43,35 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public void delete(Long id) {
+    public void deletePermanently(Long id) {
+        validateNoActiveLoans(id);
+        userRepository.delete(getUserOrThrow(id));
+    }
 
+    @Override
+    public UserResponse deactivate(Long id) {
+        validateNoActiveLoans(id);
+        User user = getUserOrThrow(id);
+        if (!user.getActive()) throw new BusinessException("User is already inactive");
+        user.setActive(false);
+        return userMapper.toResponse(userRepository.save(user));
+    }
+
+    @Override
+    public UserResponse activate(Long id) {
+        User user = getUserOrThrow(id);
+        if (user.getActive()) throw new BusinessException("User is already active");
+        user.setActive(true);
+        return userMapper.toResponse(userRepository.save(user));
     }
 
     @Override
     public UserResponse update(Long id, UserRequest userRequest) {
-        return null;
+        User user = getUserOrThrow(id);
+        user.setEmail(userRequest.email());
+        user.setUsername(userRequest.username());
+        user.setPassword(userRequest.password());
+        return userMapper.toResponse(userRepository.save(user));
     }
 
     @Override
@@ -57,6 +81,12 @@ public class UserServiceImpl implements UserService{
 
     private User toUser (UserRequest userRequest){
         return new User(userRequest.email(), userRequest.username(), userRequest.password());
+    }
+
+    private void validateNoActiveLoans(Long userId) {
+        if (loanService.existsActiveLoanByUserId(userId)) {
+            throw new BusinessException("User has active loans");
+        }
     }
 
 

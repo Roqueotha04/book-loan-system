@@ -10,7 +10,9 @@ public interface UserService {
     public List<UserResponse> findAll();
     public UserResponse findById(Long id);
     public UserResponse save(UserRequest userRequest);
-    public void delete (Long id);
+    public void deletePermanently (Long id);
+    public UserResponse deactivate(Long id);
+    public UserResponse activate(Long id);
     public UserResponse update (Long id, UserRequest userRequest);
     public User getUserOrThrow(Long id);
 }

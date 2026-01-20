@@ -26,12 +26,15 @@ public class UserServiceImplTest {
     @Mock
     private UserRepository userRepository;
 
+    @Mock
+    private LoanService loanService;
+
     private UserServiceImpl userService;
 
     @BeforeEach
     void setUp (){
         UserMapper userMapper = new UserMapper();
-        userService = new UserServiceImpl(userRepository, userMapper);
+        userService = new UserServiceImpl(userRepository, loanService, userMapper);
     }
 
     @Test
@@ -78,6 +81,8 @@ public class UserServiceImplTest {
         assertThrows(BusinessException.class, ()-> userService.save(userRequest));
         verify(userRepository, never()).save(any(User.class));
     }
+
+
 
     @Test
     public void testGetUserOrThrow_ok(){

@@ -7,4 +7,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface LoanRepository extends JpaRepository<Loan, Long> {
     public Boolean existsByBookIdAndActiveTrue(Long bookId);
+    public Boolean existsByUserIdAndActiveTrue(Long userId);
 }
