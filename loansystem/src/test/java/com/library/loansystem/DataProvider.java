@@ -3,12 +3,10 @@ package com.library.loansystem;
 import com.library.loansystem.DTO.Response.AuthorResponse;
 import com.library.loansystem.DTO.Response.BookResponse;
 import com.library.loansystem.DTO.Response.PublisherResponse;
-import com.library.loansystem.Entities.Author;
-import com.library.loansystem.Entities.Book;
+import com.library.loansystem.Entities.*;
 import com.library.loansystem.Entities.Enums.BookGenre;
-import com.library.loansystem.Entities.Publisher;
-import com.library.loansystem.Entities.User;
 
+import java.time.LocalDate;
 import java.util.List;
 
 public class DataProvider {
@@ -43,6 +41,14 @@ public class DataProvider {
                 new User("lionelmessi10@gmail.com", "lionel", "messi"),
                 new User("denzelwashington@gmail.com", "denzel", "washington"),
                 new User("cristianocr7@gmail.com", "cristiano", "ronaldo")
+        );
+    }
+
+    public static List <Loan> loanListMock(){
+        return List.of(
+                new Loan(userListMock().get(0), bookListMock().get(0), LocalDate.now().plusDays(3)),
+                new Loan(userListMock().get(1), bookListMock().get(1), LocalDate.now().plusDays(10)),
+                new Loan(userListMock().get(2), bookListMock().get(2), LocalDate.now().plusDays(15))
         );
     }
 }
