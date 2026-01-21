@@ -1,4 +1,13 @@
 package com.library.loansystem.DTO.Response;
 
-public record LoanResponse() {
+import java.time.LocalDate;
+
+public record LoanResponse(Long id,
+                           Long bookId,
+                           String bookName,
+                           Long userId,
+                           String username,
+                           LocalDate startDate,
+                           LocalDate dueDate,
+                           LocalDate endDate) {
 }

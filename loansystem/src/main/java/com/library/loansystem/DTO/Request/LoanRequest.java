@@ -1,4 +1,9 @@
 package com.library.loansystem.DTO.Request;
 
-public record LoanRequest() {
+import jakarta.validation.constraints.Future;
+import jakarta.validation.constraints.NotNull;
+
+import java.time.LocalDate;
+
+public record LoanRequest(@NotNull @Future LocalDate dueDate, @NotNull Long userId, @NotNull Long bookId) {
 }

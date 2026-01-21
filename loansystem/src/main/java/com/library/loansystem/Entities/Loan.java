@@ -14,12 +14,13 @@ import java.time.LocalDate;
 @Entity
 public class Loan {
 
-    public Loan (User user, Book book, LocalDate endDate){
+    public Loan (User user, Book book, LocalDate dueDate){
         this.book=book;
         this.user=user;
         this.active=true;
         this.startDate= LocalDate.of(LocalDate.now().getYear(), LocalDate.now().getMonth(), LocalDate.now().getDayOfMonth());
-        this.endDate = endDate;
+        this.dueDate = dueDate;
+        this.endDate = null;
     }
 
     public Loan (){
@@ -34,6 +35,8 @@ public class Loan {
     private Boolean active;
 
     private LocalDate startDate;
+
+    private LocalDate dueDate;
 
     private LocalDate endDate;
 
