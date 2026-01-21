@@ -183,8 +183,6 @@ public class UserServiceImplTest {
         verify(userRepository).save(any(User.class));
     }
 
-
-
     @Test
     public void testGetUserOrThrow_ok(){
         User user = DataProvider.userListMock().get(2);
