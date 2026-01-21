@@ -15,4 +15,5 @@ public interface BookService {
     public BookResponse changeStatus (Long id);
     public BookResponse updateStock(Long id, int newStock);
     public BookResponse findByIsbn(String isbn);
+    public Book getBookOrThrow (Long id);
 }

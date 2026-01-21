@@ -1,8 +1,11 @@
 package com.library.loansystem.Services;
 
+import com.library.loansystem.DTO.Request.LoanRequest;
 import com.library.loansystem.DTO.Response.LoanResponse;
 import com.library.loansystem.DataProvider;
+import com.library.loansystem.Entities.Book;
 import com.library.loansystem.Entities.Loan;
+import com.library.loansystem.Entities.User;
 import com.library.loansystem.Mapper.LoanMapper;
 import com.library.loansystem.Repositories.LoanRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -12,6 +15,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import javax.xml.crypto.Data;
+import java.time.LocalDate;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -21,15 +25,47 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 public class LoanServiceImplTest {
 
+    private static final LocalDate FIXED_DATE = LocalDate.of(2026, 1, 21);
+
     @Mock
     private LoanRepository loanRepository;
+
+    @Mock
+    private UserService userService;
+
+    @Mock
+    private BookService bookService;
 
     private LoanServiceImpl loanService;
 
     @BeforeEach
     void setUp (){
         LoanMapper loanMapper = new LoanMapper();
-        loanService = new LoanServiceImpl(loanRepository, loanMapper);
+        loanService = new LoanServiceImpl(loanRepository, loanMapper, userService, bookService);
+    }
+
+    @Test
+    public void testCreateLoan(){
+        User user = DataProvider.userListMock().get(0);
+        user.setId(1L);
+        Book book = DataProvider.bookListMock().get(0);
+        book.setId(1L);
+        LoanRequest loanRequest = new LoanRequest(FIXED_DATE.plusDays(10), user.getId(), book.getId());
+
+        when(bookService.getBookOrThrow(1L)).thenReturn(book);
+        when(userService.getUserOrThrow(1L)).thenReturn(user);
+        when(loanRepository.save(any(Loan.class)))
+                .thenAnswer(invocation -> invocation.getArgument(0));
+
+        LoanResponse result = loanService.createLoan(loanRequest);
+        assertEquals(loanRequest.dueDate(), result.dueDate());
+        assertEquals(loanRequest.bookId(), result.bookId());
+        assertEquals(loanRequest.userId(), result.userId());
+
+        verify(bookService).getBookOrThrow(1L);
+        verify(userService).getUserOrThrow(1L);
+        verify(bookService).updateStock(book.getId(), book.getStock() - 1);
+        verify(loanRepository).save(any(Loan.class));
     }
 
     @Test
@@ -48,21 +84,78 @@ public class LoanServiceImplTest {
     }
 
     @Test
-    public void testFindActiveLoans(){
-        List<Loan> loanList = DataProvider.loanListMock();
-        loanList.get(1).setActive(false);
+    public void testFindActiveLoans() {
+        List<Loan> activeLoans = DataProvider.loanListMock();
+        activeLoans.forEach(loan -> loan.setActive(true));
 
-        when(loanRepository.findAll())
-                .thenReturn(loanList);
-
+        when(loanRepository.findByActiveTrue()).thenReturn(activeLoans);
         List<LoanResponse> result = loanService.findActiveLoans();
 
-        assertEquals(loanList.stream().filter(Loan::getActive).count(), result.size());
+        assertNotNull(result);
+        assertEquals(activeLoans.size(), result.size());
 
-        verify(loanRepository).findAll();
+        verify(loanRepository).findByActiveTrue();
+    }
+
+    @Test
+    public void testFindReturnedLoans() {
+
+        List<Loan> returnedLoans = DataProvider.loanListMock();
+        returnedLoans.forEach(loan -> loan.setActive(false));
+
+        when(loanRepository.findByActiveFalse()).thenReturn(returnedLoans);
+        List<LoanResponse> result = loanService.findReturnedLoans();
+
+        assertNotNull(result);
+        assertEquals(returnedLoans.size(), result.size());
+        verify(loanRepository).findByActiveFalse();
+    }
+
+    @Test
+    public void testFindOverdueLoans() {
+        List<Loan> overdueLoans = DataProvider.loanListMock();
+        overdueLoans.forEach(loan -> {
+            loan.setActive(true);
+            loan.setDueDate(FIXED_DATE.minusDays(1));
+        });
+
+        when(loanRepository.findByActiveTrueAndDueDateBefore(FIXED_DATE)).thenReturn(overdueLoans);
+        List<LoanResponse> result = loanService.findOverdueLoans();
+
+        assertNotNull(result);
+        assertEquals(overdueLoans.size(), result.size());
+        verify(loanRepository).findByActiveTrueAndDueDateBefore(FIXED_DATE);
     }
 
 
+    @Test
+    public void testFindByUser() {
+        List<Loan> userLoans = DataProvider.loanListMock();
+        userLoans.forEach(loan -> loan.setActive(true));
+        Long userId = 1L;
+
+        when(loanRepository.findByUserIdAndActiveTrue(userId))
+                .thenReturn(userLoans);
+        List<LoanResponse> result = loanService.findByUser(userId);
+
+        assertNotNull(result);
+        assertEquals(userLoans.size(), result.size());
+        verify(loanRepository).findByUserIdAndActiveTrue(userId);
+    }
+
+    @Test
+    public void testFindByBook() {
+        List<Loan> bookLoans = DataProvider.loanListMock();
+        bookLoans.forEach(loan -> loan.setActive(true));
+        Long bookId = 1L;
+
+        when(loanRepository.findByBookIdAndActiveTrue(bookId)).thenReturn(bookLoans);
+        List<LoanResponse> result = loanService.findByBook(bookId);
+
+        assertNotNull(result);
+        assertEquals(bookLoans.size(), result.size());
+        verify(loanRepository).findByBookIdAndActiveTrue(bookId);
+    }
 
     @Test
     public void testExistsActiveLoanByUserId(){

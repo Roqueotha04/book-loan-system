@@ -1,25 +1,35 @@
 package com.library.loansystem.Services;
 
+import com.library.loansystem.DTO.Request.LoanRequest;
 import com.library.loansystem.DTO.Response.LoanResponse;
 import com.library.loansystem.Entities.Loan;
 
 import java.util.List;
 
 public interface LoanService {
-    public Boolean existsActiveLoanByBookId(Long bookId);
 
-    public Boolean existsActiveLoanByUserId(Long userId);
 
-    LoanResponse createLoan(Long userId, Long bookId);
+    LoanResponse createLoan(LoanRequest loanRequest);
 
     LoanResponse returnLoan(Long loanId);
-
-    Loan getLoanOrThrow(Long id);
 
     List<LoanResponse> findAll();
 
     List<LoanResponse> findActiveLoans();
 
+    List<LoanResponse> findReturnedLoans();
+
+    List<LoanResponse> findOverdueLoans();
+
     List<LoanResponse> findByUser(Long userId);
 
+    List<LoanResponse> findByBook(Long bookId);
+
+    public LoanResponse findById(Long id);
+
+    Loan getLoanOrThrow(Long id);
+
+    public Boolean existsActiveLoanByBookId(Long bookId);
+
+    public Boolean existsActiveLoanByUserId(Long userId);
 }
