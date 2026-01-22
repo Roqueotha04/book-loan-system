@@ -5,6 +5,7 @@ import com.library.loansystem.DTO.Response.LoanResponse;
 import com.library.loansystem.Entities.Book;
 import com.library.loansystem.Entities.Loan;
 import com.library.loansystem.Entities.User;
+import com.library.loansystem.Exceptions.BadRequestException;
 import com.library.loansystem.Exceptions.BusinessException;
 import com.library.loansystem.Exceptions.ResourceNotFoundException;
 import com.library.loansystem.Mapper.LoanMapper;
@@ -120,6 +121,11 @@ public class LoanServiceImpl implements LoanService {
 
     private void validateLoan(User user, Book book, LocalDate dueDate) {
 
+        //Error 400
+        if (dueDate.isBefore(LocalDate.now().plusDays(MIN_LOAN_DAYS)) || dueDate.isAfter(LocalDate.now().plusDays(MAX_LOAN_DAYS))) {
+            throw new BadRequestException("Loan duration must be between 1 and 30 days");
+        }
+
         if (!user.getActive())
             throw new BusinessException("User is inactive");
 
@@ -128,10 +134,6 @@ public class LoanServiceImpl implements LoanService {
 
         if (book.getStock() <= 0)
             throw new BusinessException("Book has no available stock");
-
-        if (dueDate.isBefore(LocalDate.now().plusDays(MIN_LOAN_DAYS)) || dueDate.isAfter(LocalDate.now().plusDays(MAX_LOAN_DAYS))) {
-            throw new BusinessException("Loan duration must be between 1 and 30 days");
-        }
 
         if (loanRepository.countByUserIdAndActiveTrue(user.getId()) >= MAX_LOANS_PER_USER)
             throw new BusinessException("User reached maximum active loans");
