@@ -18,6 +18,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import javax.xml.crypto.Data;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -73,6 +74,44 @@ public class LoanServiceImplTest {
     }
 
     @Test
+    void shouldPropagateExceptionFromValidator() {
+        User user = DataProvider.userListMock().get(1);
+        Book book = DataProvider.bookListMock().get(1);
+        LocalDate dueDate = LocalDate.now().plusDays(10);
+        when(userService.getUserOrThrow(any())).thenReturn(user);
+        when(bookService.getBookOrThrow(any())).thenReturn(book);
+
+        doThrow(new RuntimeException())
+                .when(loanValidator).validateLoan(any(), any(), any());
+
+        assertThrows(RuntimeException.class,
+                () -> loanService.createLoan(new LoanRequest(dueDate, 1L, 1L)));
+
+        verify(loanRepository, never()).save(any(Loan.class));
+        verify(bookService, never()).updateStock(anyLong(), anyInt());
+    }
+
+    @Test
+    public void testReturnLoan(){
+        Loan loan = DataProvider.loanListMock().get(0);
+
+        when(loanRepository.findById(1L))
+                .thenReturn(Optional.of(loan));
+        when(loanRepository.save(any(Loan.class)))
+                .thenAnswer(invocation -> invocation.getArgument(0));
+
+        LoanResponse result = loanService.returnLoan(1L);
+        assertNotNull(result.endDate());
+        assertFalse(loan.getActive());
+        assertEquals(loan.getUser().getId(), result.userId());
+        assertEquals(loan.getBook().getId(), result.bookId());
+
+        verify(loanRepository).findById(1L);
+        verify(loanRepository).save(any(Loan.class));
+    }
+
+
+    @Test
     public void testFindAll(){
         List<Loan> loanList = DataProvider.loanListMock();
 
@@ -123,12 +162,12 @@ public class LoanServiceImplTest {
             loan.setDueDate(FIXED_DATE.minusDays(1));
         });
 
-        when(loanRepository.findByActiveTrueAndDueDateBefore(FIXED_DATE)).thenReturn(overdueLoans);
+        when(loanRepository.findByActiveTrueAndDueDateBefore(any(LocalDate.class))).thenReturn(overdueLoans);
         List<LoanResponse> result = loanService.findOverdueLoans();
 
         assertNotNull(result);
         assertEquals(overdueLoans.size(), result.size());
-        verify(loanRepository).findByActiveTrueAndDueDateBefore(FIXED_DATE);
+        verify(loanRepository).findByActiveTrueAndDueDateBefore(any(LocalDate.class));
     }
 
 
