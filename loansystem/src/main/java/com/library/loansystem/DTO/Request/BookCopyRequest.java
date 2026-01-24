@@ -1,4 +1,6 @@
 package com.library.loansystem.DTO.Request;
 
-public class BookCopyRequest {
+import com.library.loansystem.Entities.Enums.BookCopyState;
+
+public record BookCopyRequest(Long BookId, BookCopyState state) {
 }

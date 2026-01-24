@@ -1,7 +1,6 @@
 package com.library.loansystem.Controllers;
 
 import com.library.loansystem.DTO.Request.BookRequest;
-import com.library.loansystem.DTO.Request.UpdateStockRequest;
 import com.library.loansystem.DTO.Response.BookResponse;
 import com.library.loansystem.Services.BookService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -86,14 +85,6 @@ public class BookController {
         return bookService.findByIsbn(isbn);
     }
 
-    @Operation(
-            summary = "Update book stock",
-            description = "Updates the stock quantity of a book with the provided value."
-    )
-    @PatchMapping("/{id}/stock")
-    public BookResponse updateStock(@PathVariable Long id, @Valid @RequestBody UpdateStockRequest newStock) {
-        return bookService.updateStock(id, newStock.stock());
-    }
 }
 
 

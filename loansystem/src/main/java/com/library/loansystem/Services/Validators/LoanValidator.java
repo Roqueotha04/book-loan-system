@@ -5,9 +5,11 @@ import com.library.loansystem.Entities.User;
 import com.library.loansystem.Exceptions.BadRequestException;
 import com.library.loansystem.Exceptions.BusinessException;
 import com.library.loansystem.Repositories.LoanRepository;
+import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
 
+@Component
 public class LoanValidator {
     private static final int MAX_LOAN_DAYS = 30;
     private static final int MIN_LOAN_DAYS = 1;
@@ -32,8 +34,7 @@ public class LoanValidator {
         if (!book.getActive())
             throw new BusinessException("Book is inactive");
 
-        if (book.getStock() <= 0)
-            throw new BusinessException("Book has no available stock");
+        /// Add available copies validation
 
         if (loanRepository.countByUserIdAndActiveTrue(user.getId()) >= MAX_LOANS_PER_USER)
             throw new BusinessException("User reached maximum active loans");

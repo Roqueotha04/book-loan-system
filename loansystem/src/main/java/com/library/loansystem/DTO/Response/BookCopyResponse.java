@@ -1,4 +1,6 @@
 package com.library.loansystem.DTO.Response;
 
-public class BookCopyResponse {
+import com.library.loansystem.Entities.Enums.BookCopyState;
+
+public record BookCopyResponse(Long id, String bookName, BookCopyState bookCopyState) {
 }

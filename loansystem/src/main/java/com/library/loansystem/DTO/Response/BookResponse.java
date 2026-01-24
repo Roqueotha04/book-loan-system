@@ -14,7 +14,6 @@ public class BookResponse {
     private Long id;
     private String name;
     private BookGenre genre;
-    private int stock;
     private Boolean active;
     private String isbn;
     private PublisherResponse publisher;

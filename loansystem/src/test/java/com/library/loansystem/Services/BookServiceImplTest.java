@@ -38,6 +38,8 @@ public class BookServiceImplTest {
     private PublisherService publisherService;
     @Mock
     private AuthorService authorService;
+    @Mock
+    private BookCopyService bookCopyService;
 
     private BookServiceImpl bookService;
 
@@ -51,6 +53,7 @@ public class BookServiceImplTest {
                 bookRepository,
                 loanService,
                 publisherService,
+                bookCopyService,
                 authorService
         );
     }
@@ -102,7 +105,7 @@ public class BookServiceImplTest {
 
     @Test
     public void save (){
-        BookRequest book = new BookRequest("The Age of Extremes",BookGenre.NON_FICTION, 12,"8789876298523", 1L, List.of(1L,2L));
+        BookRequest book = new BookRequest("The Age of Extremes",BookGenre.NON_FICTION,"8789876298523", 1L, List.of(1L,2L));
 
 
         when(bookRepository.save(any(Book.class)))
@@ -122,7 +125,7 @@ public class BookServiceImplTest {
     
     @Test
     public void testDelete_ok (){
-        Book book = new Book("The Age of Extremes",12, BookGenre.NON_FICTION,"8789876298523",new Publisher(1L, "Publisher"));
+        Book book = new Book("The Age of Extremes", BookGenre.NON_FICTION,"8789876298523",new Publisher(1L, "Publisher"));
         book.setId(2L);
         when(bookRepository.findById(2L))
                 .thenReturn(Optional.of(book));
@@ -139,7 +142,7 @@ public class BookServiceImplTest {
 
     @Test
     public void testDelete_BusinessException(){
-        Book book = new Book("The Age of Extremes",12, BookGenre.NON_FICTION,"8789876298523",new Publisher(1L, "Publisher"));
+        Book book = new Book("The Age of Extremes", BookGenre.NON_FICTION,"8789876298523",new Publisher(1L, "Publisher"));
         book.setId(2L);
         when(bookRepository.findById(book.getId()))
                 .thenReturn(Optional.of(book));
@@ -159,8 +162,8 @@ public class BookServiceImplTest {
 
     @Test
     public void testUpdate (){
-        BookRequest bookRequest = new BookRequest("The Age of Extremes",BookGenre.NON_FICTION, 12,"8789876298523", 1L, List.of(1L,2L));
-        Book book = new Book("The Age of Extremes 2",12, BookGenre.NON_FICTION,"8789876298523",new Publisher(1L, "Publisher 2"));
+        BookRequest bookRequest = new BookRequest("The Age of Extremes",BookGenre.NON_FICTION,"8789876298523", 1L, List.of(1L,2L));
+        Book book = new Book("The Age of Extremes 2", BookGenre.NON_FICTION,"8789876298523",new Publisher(1L, "Publisher 2"));
         when(bookRepository.findById(2L))
                 .thenReturn(Optional.of(book));
         when(bookRepository.save(any(Book.class)))
@@ -171,7 +174,6 @@ public class BookServiceImplTest {
         assertNotEquals("The Age of Extremes 2", result.getName());
         assertEquals("The Age of Extremes", result.getName());
         assertEquals(BookGenre.NON_FICTION, result.getGenre());
-        assertEquals(12, result.getStock());
         assertEquals("8789876298523", result.getIsbn());
         verify(bookRepository).findById(2L);
         verify(bookRepository).save(any(Book.class));
@@ -179,7 +181,7 @@ public class BookServiceImplTest {
 
     @Test
     public void testChangeStatusFalse(){
-        Book book = new Book("The Age of Extremes 2",12, BookGenre.NON_FICTION,"8789876298523",new Publisher(1L, "Publisher 2"));
+        Book book = new Book("The Age of Extremes 2", BookGenre.NON_FICTION,"8789876298523",new Publisher(1L, "Publisher 2"));
 
         when(bookRepository.findById(2L)).thenReturn(Optional.of(book));
         when(bookRepository.save(any(Book.class)))
@@ -192,7 +194,7 @@ public class BookServiceImplTest {
 
     @Test
     public void testChangeStatusTrue(){
-        Book book = new Book("The Age of Extremes 2",12, BookGenre.NON_FICTION,"8789876298523",new Publisher(1L, "Publisher 2"));
+        Book book = new Book("The Age of Extremes 2", BookGenre.NON_FICTION,"8789876298523",new Publisher(1L, "Publisher 2"));
         book.setActive(false);
         when(bookRepository.findById(2L)).thenReturn(Optional.of(book));
         when(bookRepository.save(any(Book.class)))
@@ -204,24 +206,10 @@ public class BookServiceImplTest {
         verify(bookRepository).save(any(Book.class));
     }
 
-    @Test
-    public void testUpdateStock(){
-        Book book = new Book("The Age of Extremes 2",12, BookGenre.NON_FICTION,"8789876298523",new Publisher(1L, "Publisher 2"));
-
-        when(bookRepository.findById(2L)).thenReturn(Optional.of(book));
-        when(bookRepository.save(any(Book.class)))
-                .thenAnswer(invocation -> invocation.getArgument(0));
-
-        BookResponse result = bookService.updateStock(2L, 5);
-
-        assertEquals(5, result.getStock());
-        verify(bookRepository).findById(2L);
-        verify(bookRepository).save(any(Book.class));
-    }
 
     @Test
     public void testGetBookOrThrow (){
-        Book book = new Book("The Age of Extremes 2",12, BookGenre.NON_FICTION,"8789876298523",new Publisher(1L, "Publisher 2"));
+        Book book = new Book("The Age of Extremes 2", BookGenre.NON_FICTION,"8789876298523",new Publisher(1L, "Publisher 2"));
         when(bookRepository.findById(2L)).thenReturn(Optional.of(book));
 
         Book result = bookService.getBookOrThrow(2L);

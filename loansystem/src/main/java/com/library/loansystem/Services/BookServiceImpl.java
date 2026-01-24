@@ -2,6 +2,7 @@ package com.library.loansystem.Services;
 
 import com.library.loansystem.Entities.BookCopy;
 import com.library.loansystem.Entities.Enums.BookCopyState;
+import com.library.loansystem.Entities.Enums.BookGenre;
 import com.library.loansystem.Mapper.BookMapper;
 import com.library.loansystem.DTO.Request.BookRequest;
 import com.library.loansystem.DTO.Response.BookResponse;
@@ -60,7 +61,6 @@ public class BookServiceImpl implements BookService{
         book.setName(bookRequest.getName());
         book.setGenre(bookRequest.getGenre());
         book.setIsbn(bookRequest.getIsbn());
-        book.setStock(bookRequest.getStock());
        return bookMapper.toResponse(bookRepository.save(book));
     }
 
@@ -72,22 +72,11 @@ public class BookServiceImpl implements BookService{
         bookRepository.delete(book);
     }
 
-    //delete
     public BookResponse changeStatus (Long id){
         Book book = getBookOrThrow(id);
         book.setActive(!book.getActive());
         return bookMapper.toResponse(bookRepository.save(book));
     }
-
-    //delete
-    @Override
-    public BookResponse updateStock(Long id, int newStock) {
-        Book book = getBookOrThrow(id);
-        book.setStock(newStock);
-        return bookMapper.toResponse(bookRepository.save(book));
-    }
-
-
 
 
     public Book getBookOrThrow (Long id){
@@ -102,8 +91,8 @@ public class BookServiceImpl implements BookService{
     }
 
     @Override
-    public List<BookResponse> findByGenre(String genre) {
-        return bookRepository.findByGenreIgnoreCase(genre).stream()
+    public List<BookResponse> findByGenre(BookGenre genre) {
+        return bookRepository.findByGenre(genre).stream()
                 .map(bookMapper::toResponse)
                 .toList();
     }
@@ -125,7 +114,6 @@ public class BookServiceImpl implements BookService{
         Book book = new Book();
         book.setName(bookRequest.getName());
         book.setGenre(bookRequest.getGenre());
-        book.setStock(bookRequest.getStock());
         book.setIsbn(bookRequest.getIsbn());
         book.setBookCopyList(new ArrayList<>());
         //Publisher

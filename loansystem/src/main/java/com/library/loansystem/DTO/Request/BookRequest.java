@@ -20,10 +20,6 @@ public class BookRequest {
     @NotNull
     private BookGenre genre;
 
-    @Min(0)
-    @Max(1000)
-    private int stock;
-
     @NotBlank
     @Pattern(regexp = "\\d{10}|\\d{13}", message = "ISBN must be 10 or 13 digits")
     private String isbn;

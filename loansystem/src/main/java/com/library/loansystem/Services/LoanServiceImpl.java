@@ -95,9 +95,7 @@ public class LoanServiceImpl implements LoanService {
         Book book = bookService.getBookOrThrow(loanRequest.bookId());
         loanValidator.validateLoan(user, book, loanRequest.dueDate());
         BookCopy copy = bookCopyService.selectAvailableCopy(book.getId());
-
-        copy.setState(BookCopyState.LOANED);
-        bookCopyRepository.save(copy);
+        bookCopyService.patchState(copy.getId(), BookCopyState.LOANED);
 
         Loan loan = new Loan(user, copy, loanRequest.dueDate());
 
@@ -112,6 +110,7 @@ public class LoanServiceImpl implements LoanService {
         if (!loan.getActive()) throw new BusinessException("Loan has been already returned");
         loan.setActive(false);
         loan.setEndDate(LocalDate.now());
+        bookCopyService.patchState(loan.getBookCopy().getId(), BookCopyState.AVAILABLE);
         return loanMapper.toResponse(loanRepository.save(loan));
     }
 
