@@ -49,7 +49,7 @@ public class Book {
     @ManyToOne
     private Publisher publisher;
 
-    @OneToMany (mappedBy = "book", cascade = CascadeType.PERSIST)
-    private List <Loan> loanList = new ArrayList<>();
+    @OneToMany
+    private List<BookCopy> bookCopyList = new ArrayList<>();
 
 }

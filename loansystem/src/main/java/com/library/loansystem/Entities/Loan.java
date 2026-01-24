@@ -14,8 +14,8 @@ import java.time.LocalDate;
 @Entity
 public class Loan {
 
-    public Loan (User user, Book book, LocalDate dueDate){
-        this.book=book;
+    public Loan (User user, BookCopy bookCopy, LocalDate dueDate){
+        this.bookCopy=bookCopy;
         this.user=user;
         this.active=true;
         this.startDate= LocalDate.of(LocalDate.now().getYear(), LocalDate.now().getMonth(), LocalDate.now().getDayOfMonth());
@@ -44,5 +44,5 @@ public class Loan {
     private User user;
 
     @ManyToOne
-    private Book book;
+    private BookCopy bookCopy;
 }

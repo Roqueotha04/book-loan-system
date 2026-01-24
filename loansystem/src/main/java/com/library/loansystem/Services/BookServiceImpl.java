@@ -60,6 +60,7 @@ public class BookServiceImpl implements BookService{
        return bookMapper.toResponse(bookRepository.save(book));
     }
 
+    /// ?
     @Override
     public void delete(Long id) {
         Book book = getBookOrThrow(id);
@@ -67,12 +68,14 @@ public class BookServiceImpl implements BookService{
         bookRepository.delete(book);
     }
 
+    //delete
     public BookResponse changeStatus (Long id){
         Book book = getBookOrThrow(id);
         book.setActive(!book.getActive());
         return bookMapper.toResponse(bookRepository.save(book));
     }
 
+    //delete
     @Override
     public BookResponse updateStock(Long id, int newStock) {
         Book book = getBookOrThrow(id);
@@ -85,6 +88,28 @@ public class BookServiceImpl implements BookService{
         return bookRepository.findById(id).orElseThrow(()-> new ResourceNotFoundException("Book not found with id: " +id));
     }
 
+    @Override
+    public List<BookResponse> findByNameContaining(String name) {
+        return bookRepository.findByNameContainingIgnoreCase(name).stream()
+                .map(bookMapper::toResponse)
+                .toList();
+    }
+
+    @Override
+    public List<BookResponse> findByGenre(String genre) {
+        return bookRepository.findByGenreIgnoreCase(genre).stream()
+                .map(bookMapper::toResponse)
+                .toList();
+    }
+
+    @Override
+    public List<BookResponse> findByAuthor(Long authorId) {
+        return bookRepository.findByAuthorXBooks_Author_Id(authorId).stream()
+                .map(bookMapper::toResponse)
+                .toList();
+    }
+
+
     public BookResponse findByIsbn(String isbn){
         Book book=bookRepository.findByIsbn(isbn).orElseThrow(()-> new ResourceNotFoundException("Book not found with isbn: " +isbn));
         return bookMapper.toResponse(book);
@@ -96,7 +121,7 @@ public class BookServiceImpl implements BookService{
         book.setGenre(bookRequest.getGenre());
         book.setStock(bookRequest.getStock());
         book.setIsbn(bookRequest.getIsbn());
-        book.setLoanList(new ArrayList<>());
+        book.setBookCopyList(new ArrayList<>());
         //Publisher
         Publisher publisher =  publisherService.getPublisherOrThrow(bookRequest.getPublisherID());
         book.setPublisher(publisher);
