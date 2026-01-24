@@ -19,7 +19,7 @@ public class LoanValidator {
         this.loanRepository = loanRepository;
     }
 
-    private void validateLoan(User user, Book book, LocalDate dueDate) {
+    public void validateLoan(User user, Book book, LocalDate dueDate) {
 
         //Error 400
         if (dueDate.isBefore(LocalDate.now().plusDays(MIN_LOAN_DAYS)) || dueDate.isAfter(LocalDate.now().plusDays(MAX_LOAN_DAYS))) {

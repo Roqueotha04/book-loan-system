@@ -10,6 +10,7 @@ import com.library.loansystem.Exceptions.BusinessException;
 import com.library.loansystem.Exceptions.ResourceNotFoundException;
 import com.library.loansystem.Mapper.LoanMapper;
 import com.library.loansystem.Repositories.LoanRepository;
+import com.library.loansystem.Services.Validators.LoanValidator;
 import org.springframework.cglib.core.Local;
 import org.springframework.stereotype.Service;
 
@@ -19,7 +20,7 @@ import java.util.List;
 @Service
 public class LoanServiceImpl implements LoanService {
 
-
+    private final LoanValidator loanValidator;
 
     private final LoanRepository loanRepository;
 
@@ -29,7 +30,8 @@ public class LoanServiceImpl implements LoanService {
 
     private final BookService bookService;
 
-    public LoanServiceImpl(LoanRepository loanRepository, LoanMapper loanMapper, UserService userService, BookService bookService) {
+    public LoanServiceImpl(LoanValidator loanValidator, LoanRepository loanRepository, LoanMapper loanMapper, UserService userService, BookService bookService) {
+        this.loanValidator = loanValidator;
         this.loanRepository = loanRepository;
         this.loanMapper = loanMapper;
         this.userService = userService;
@@ -88,7 +90,7 @@ public class LoanServiceImpl implements LoanService {
         User user = userService.getUserOrThrow(loanRequest.userId());
         Book book = bookService.getBookOrThrow(loanRequest.bookId());
 
-        validateLoan(user, book, loanRequest.dueDate());
+        loanValidator.validateLoan(user, book, loanRequest.dueDate());
 
         bookService.updateStock(book.getId(), book.getStock()-1);
         Loan loan = new Loan(user, book, loanRequest.dueDate());

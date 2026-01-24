@@ -8,6 +8,7 @@ import com.library.loansystem.Entities.Loan;
 import com.library.loansystem.Entities.User;
 import com.library.loansystem.Mapper.LoanMapper;
 import com.library.loansystem.Repositories.LoanRepository;
+import com.library.loansystem.Services.Validators.LoanValidator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -28,6 +29,9 @@ public class LoanServiceImplTest {
     private static final LocalDate FIXED_DATE = LocalDate.of(2026, 1, 21);
 
     @Mock
+    private LoanValidator loanValidator;
+
+    @Mock
     private LoanRepository loanRepository;
 
     @Mock
@@ -41,7 +45,7 @@ public class LoanServiceImplTest {
     @BeforeEach
     void setUp (){
         LoanMapper loanMapper = new LoanMapper();
-        loanService = new LoanServiceImpl(loanRepository, loanMapper, userService, bookService);
+        loanService = new LoanServiceImpl(loanValidator, loanRepository, loanMapper, userService, bookService);
     }
 
     @Test
