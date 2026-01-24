@@ -5,6 +5,7 @@ import com.library.loansystem.DTO.Request.PublisherRequest;
 import com.library.loansystem.DTO.Response.PublisherResponse;
 import com.library.loansystem.DataProvider;
 import com.library.loansystem.Entities.Publisher;
+import com.library.loansystem.Exceptions.BusinessException;
 import com.library.loansystem.Exceptions.ResourceNotFoundException;
 import com.library.loansystem.Repositories.PublisherRepository;
 import static org.junit.jupiter.api.Assertions.*;
@@ -70,6 +71,17 @@ public class PublisherServiceImplTest {
         assertEquals(publisherRequest.getName(), result.getName());
         verify(publisherRepository).save(any(Publisher.class));
     }
+
+    @Test
+    public void testSave_DuplicateName_ThrowsException() {
+        PublisherRequest publisherRequest = new PublisherRequest("Pearson");
+        when(publisherRepository.existsByName(publisherRequest.getName())).thenReturn(true);
+
+        assertThrows(BusinessException.class, () -> publisherService.save(publisherRequest));
+
+        verify(publisherRepository, never()).save(any(Publisher.class));
+    }
+
 
     @Test
     public void testUpdate(){

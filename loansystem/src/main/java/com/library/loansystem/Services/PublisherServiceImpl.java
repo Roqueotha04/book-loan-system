@@ -3,6 +3,7 @@ package com.library.loansystem.Services;
 import com.library.loansystem.DTO.Request.PublisherRequest;
 import com.library.loansystem.DTO.Response.PublisherResponse;
 import com.library.loansystem.Entities.Publisher;
+import com.library.loansystem.Exceptions.BusinessException;
 import com.library.loansystem.Exceptions.ResourceNotFoundException;
 import com.library.loansystem.Repositories.PublisherRepository;
 import org.springframework.stereotype.Service;
@@ -32,6 +33,9 @@ public class PublisherServiceImpl implements PublisherService {
 
     @Override
     public PublisherResponse save(PublisherRequest request) {
+        if (publisherRepository.existsByName(request.getName())) {
+            throw new BusinessException("Publisher with this name already exists");
+        }
         Publisher publisher = new Publisher(request.getName());
         return toResponse(publisherRepository.save(publisher));
     }
