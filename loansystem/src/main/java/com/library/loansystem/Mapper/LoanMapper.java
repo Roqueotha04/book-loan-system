@@ -9,8 +9,9 @@ public class LoanMapper {
     public LoanResponse toResponse(Loan loan) {
         return new LoanResponse(
                 loan.getId(),
-                loan.getBook().getId(),
-                loan.getBook().getName(),
+                loan.getBookCopy().getBook().getIsbn(),
+                loan.getBookCopy().getId(),
+                loan.getBookCopy().getBook().getName(),
                 loan.getUser().getId(),
                 loan.getUser().getUsername(),
                 loan.getStartDate(),

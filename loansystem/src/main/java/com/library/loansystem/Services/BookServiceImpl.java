@@ -1,5 +1,7 @@
 package com.library.loansystem.Services;
 
+import com.library.loansystem.Entities.BookCopy;
+import com.library.loansystem.Entities.Enums.BookCopyState;
 import com.library.loansystem.Mapper.BookMapper;
 import com.library.loansystem.DTO.Request.BookRequest;
 import com.library.loansystem.DTO.Response.BookResponse;
@@ -22,13 +24,15 @@ public class BookServiceImpl implements BookService{
     private final BookRepository bookRepository;
     private final LoanService loanService;
     private final PublisherService publisherService;
+    private final BookCopyService bookcopyService;
     private final AuthorService authorService;
 
-    public BookServiceImpl(BookMapper bookMapper, BookRepository bookRepository, LoanService loanService, PublisherService publisherService, AuthorService authorService) {
+    public BookServiceImpl(BookMapper bookMapper, BookRepository bookRepository, LoanService loanService, PublisherService publisherService, BookCopyService bookcopyService, AuthorService authorService) {
         this.bookMapper = bookMapper;
         this.bookRepository = bookRepository;
         this.loanService = loanService;
         this.publisherService = publisherService;
+        this.bookcopyService = bookcopyService;
         this.authorService = authorService;
     }
 
@@ -82,6 +86,8 @@ public class BookServiceImpl implements BookService{
         book.setStock(newStock);
         return bookMapper.toResponse(bookRepository.save(book));
     }
+
+
 
 
     public Book getBookOrThrow (Long id){

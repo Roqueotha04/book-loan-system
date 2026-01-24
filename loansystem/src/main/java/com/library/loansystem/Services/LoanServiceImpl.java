@@ -3,15 +3,15 @@ package com.library.loansystem.Services;
 import com.library.loansystem.DTO.Request.LoanRequest;
 import com.library.loansystem.DTO.Response.LoanResponse;
 import com.library.loansystem.Entities.Book;
+import com.library.loansystem.Entities.BookCopy;
+import com.library.loansystem.Entities.Enums.BookCopyState;
 import com.library.loansystem.Entities.Loan;
 import com.library.loansystem.Entities.User;
-import com.library.loansystem.Exceptions.BadRequestException;
 import com.library.loansystem.Exceptions.BusinessException;
 import com.library.loansystem.Exceptions.ResourceNotFoundException;
 import com.library.loansystem.Mapper.LoanMapper;
 import com.library.loansystem.Repositories.LoanRepository;
 import com.library.loansystem.Services.Validators.LoanValidator;
-import org.springframework.cglib.core.Local;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -26,14 +26,17 @@ public class LoanServiceImpl implements LoanService {
 
     private final LoanMapper loanMapper;
 
+    private final BookCopyService bookCopyService;
+
     private final UserService userService;
 
     private final BookService bookService;
 
-    public LoanServiceImpl(LoanValidator loanValidator, LoanRepository loanRepository, LoanMapper loanMapper, UserService userService, BookService bookService) {
+    public LoanServiceImpl(LoanValidator loanValidator, LoanRepository loanRepository, LoanMapper loanMapper, BookCopyService bookCopyService, UserService userService, BookService bookService) {
         this.loanValidator = loanValidator;
         this.loanRepository = loanRepository;
         this.loanMapper = loanMapper;
+        this.bookCopyService = bookCopyService;
         this.userService = userService;
         this.bookService = bookService;
     }
@@ -87,13 +90,17 @@ public class LoanServiceImpl implements LoanService {
 
     @Override
     public LoanResponse createLoan(LoanRequest loanRequest) {
+
         User user = userService.getUserOrThrow(loanRequest.userId());
         Book book = bookService.getBookOrThrow(loanRequest.bookId());
-
         loanValidator.validateLoan(user, book, loanRequest.dueDate());
+        BookCopy copy = bookCopyService.selectAvailableCopy(book.getId());
 
-        bookService.updateStock(book.getId(), book.getStock()-1);
-        Loan loan = new Loan(user, book, loanRequest.dueDate());
+        copy.setState(BookCopyState.LOANED);
+        bookCopyRepository.save(copy);
+
+        Loan loan = new Loan(user, copy, loanRequest.dueDate());
+
         return loanMapper.toResponse(loanRepository.save(loan));
     }
 

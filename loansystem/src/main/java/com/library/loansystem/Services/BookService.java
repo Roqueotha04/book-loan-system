@@ -3,6 +3,8 @@ package com.library.loansystem.Services;
 import com.library.loansystem.DTO.Request.BookRequest;
 import com.library.loansystem.DTO.Response.BookResponse;
 import com.library.loansystem.Entities.Book;
+import com.library.loansystem.Entities.BookCopy;
+import com.library.loansystem.Entities.Enums.BookCopyState;
 
 import java.util.List;
 
