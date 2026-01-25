@@ -5,6 +5,7 @@ import com.library.loansystem.DTO.Response.BookResponse;
 import com.library.loansystem.DataProvider;
 import com.library.loansystem.Entities.Author;
 import com.library.loansystem.Entities.Book;
+import com.library.loansystem.Entities.Enums.BookCopyState;
 import com.library.loansystem.Entities.Enums.BookGenre;
 import com.library.loansystem.Entities.Publisher;
 import com.library.loansystem.Exceptions.BusinessException;
@@ -126,13 +127,13 @@ public class BookServiceImplTest {
         when(bookRepository.findById(2L))
                 .thenReturn(Optional.of(book));
 
-        when(loanService.existsActiveLoanByBookId(book.getId()))
+        when(bookRepository.hasLoanedCopies(book.getId(), BookCopyState.LOANED))
                 .thenReturn(false);
 
         bookService.delete(2L);
 
         verify(bookRepository).findById(2L);
-        verify(loanService).existsActiveLoanByBookId(book.getId());
+        verify(bookRepository).hasLoanedCopies(book.getId(), BookCopyState.LOANED);
         verify(bookRepository).delete(any(Book.class));
     }
 
@@ -143,7 +144,7 @@ public class BookServiceImplTest {
         when(bookRepository.findById(book.getId()))
                 .thenReturn(Optional.of(book));
 
-        when(loanService.existsActiveLoanByBookId(book.getId()))
+        when(bookRepository.hasLoanedCopies(book.getId(), BookCopyState.LOANED))
                 .thenReturn(true);
 
       //The only call to the method should be in the assertThrows
@@ -152,7 +153,7 @@ public class BookServiceImplTest {
         assertThrows(BusinessException.class, () -> bookService.delete(book.getId()));
 
         verify(bookRepository).findById(book.getId());
-        verify(loanService).existsActiveLoanByBookId(book.getId());
+        verify(bookRepository).hasLoanedCopies(book.getId(), BookCopyState.LOANED);
         verify(bookRepository, never()).delete(any(Book.class));
     }
 

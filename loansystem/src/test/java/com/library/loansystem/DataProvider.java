@@ -4,6 +4,7 @@ import com.library.loansystem.DTO.Response.AuthorResponse;
 import com.library.loansystem.DTO.Response.BookResponse;
 import com.library.loansystem.DTO.Response.PublisherResponse;
 import com.library.loansystem.Entities.*;
+import com.library.loansystem.Entities.Enums.BookCopyState;
 import com.library.loansystem.Entities.Enums.BookGenre;
 
 import java.time.LocalDate;
@@ -46,9 +47,17 @@ public class DataProvider {
 
     public static List <Loan> loanListMock(){
         return List.of(
-                new Loan(userListMock().get(0), bookListMock().get(0), LocalDate.now().plusDays(3)),
-                new Loan(userListMock().get(1), bookListMock().get(1), LocalDate.now().plusDays(10)),
-                new Loan(userListMock().get(2), bookListMock().get(2), LocalDate.now().plusDays(15))
+                new Loan(userListMock().get(0), bookCopyListMock().get(0), LocalDate.now().plusDays(3)),
+                new Loan(userListMock().get(1), bookCopyListMock().get(1), LocalDate.now().plusDays(10)),
+                new Loan(userListMock().get(2), bookCopyListMock().get(2), LocalDate.now().plusDays(15))
+        );
+    }
+
+    public static List <BookCopy> bookCopyListMock(){
+        return List.of(
+               new BookCopy(bookListMock().get(0), BookCopyState.AVAILABLE),
+               new BookCopy(bookListMock().get(1), BookCopyState.AVAILABLE),
+               new BookCopy(bookListMock().get(2), BookCopyState.AVAILABLE)
         );
     }
 }

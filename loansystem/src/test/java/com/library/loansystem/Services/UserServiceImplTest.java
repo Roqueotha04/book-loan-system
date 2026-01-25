@@ -93,11 +93,11 @@ public class UserServiceImplTest {
 
     @Test
     public void testDelete_hasActiveLoans(){
-        when(loanService.existsActiveLoanByUserId(1L)).thenReturn(true);
+        when(userRepository.hasActiveLoans(1L)).thenReturn(true);
 
         assertThrows(BusinessException.class, ()-> userService.deletePermanently(1L));
 
-        verify(loanService).existsActiveLoanByUserId(1L);
+        verify(userRepository).hasActiveLoans(1L);
         verify(userRepository, never()).findById(1L);
         verify(userRepository, never()).delete(any(User.class));
     }
@@ -117,9 +117,9 @@ public class UserServiceImplTest {
 
     @Test
     public void testDeactivate_hasActiveLoans(){
-        when(loanService.existsActiveLoanByUserId(1L)).thenReturn(true);
+        when(userRepository.hasActiveLoans(1L)).thenReturn(true);
         assertThrows(BusinessException.class, ()-> userService.deactivate(1L));
-        verify(loanService).existsActiveLoanByUserId(1L);
+        verify(userRepository).hasActiveLoans(1L);
         verify(userRepository, never()).findById(1L);
         verify(userRepository, never()).save(any(User.class));
     }
@@ -129,10 +129,11 @@ public class UserServiceImplTest {
         User user = DataProvider.userListMock().get(1);
         user.setActive(false);
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+        when(userRepository.hasActiveLoans(1L)).thenReturn(false);
 
         assertThrows(BusinessException.class, ()-> userService.deactivate(1L));
 
-        verify(loanService).existsActiveLoanByUserId(1L);
+
         verify(userRepository).findById(1L);
         verify(userRepository, never()).save(any(User.class));
     }

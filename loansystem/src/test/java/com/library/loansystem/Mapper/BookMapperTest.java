@@ -22,7 +22,6 @@ public class BookMapperTest {
         assertNotNull(result);
         assertEquals(book.getId(), result.getId());
         assertEquals(book.getName(), result.getName());
-        assertEquals(book.getStock(), result.getStock());
         assertEquals(book.getGenre(), result.getGenre());
         assertEquals(book.getActive(), result.getActive());
         assertEquals(book.getIsbn(), result.getIsbn());

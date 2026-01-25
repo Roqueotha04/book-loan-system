@@ -4,7 +4,7 @@ import java.time.LocalDate;
 
 public record LoanResponse(Long id,
                            String isbn,
-                           Long bookId,
+                           Long bookCopyId,
                            String bookName,
                            Long userId,
                            String username,

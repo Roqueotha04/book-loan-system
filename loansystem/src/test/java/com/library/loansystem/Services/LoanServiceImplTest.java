@@ -4,6 +4,8 @@ import com.library.loansystem.DTO.Request.LoanRequest;
 import com.library.loansystem.DTO.Response.LoanResponse;
 import com.library.loansystem.DataProvider;
 import com.library.loansystem.Entities.Book;
+import com.library.loansystem.Entities.BookCopy;
+import com.library.loansystem.Entities.Enums.BookCopyState;
 import com.library.loansystem.Entities.Loan;
 import com.library.loansystem.Entities.User;
 import com.library.loansystem.Mapper.LoanMapper;
@@ -36,6 +38,9 @@ public class LoanServiceImplTest {
     private LoanRepository loanRepository;
 
     @Mock
+    private BookCopyService bookCopyService;
+
+    @Mock
     private UserService userService;
 
     private LoanServiceImpl loanService;
@@ -43,7 +48,7 @@ public class LoanServiceImplTest {
     @BeforeEach
     void setUp (){
         LoanMapper loanMapper = new LoanMapper();
-        loanService = new LoanServiceImpl(loanValidator, loanRepository, loanMapper, userService);
+        loanService = new LoanServiceImpl(loanValidator, loanRepository, loanMapper, bookCopyService, userService);
     }
 
     @Test
@@ -52,31 +57,34 @@ public class LoanServiceImplTest {
         user.setId(1L);
         Book book = DataProvider.bookListMock().get(0);
         book.setId(1L);
+        BookCopy bookCopy = DataProvider.bookCopyListMock().get(0);
+        bookCopy.setId(1L);
         LoanRequest loanRequest = new LoanRequest(FIXED_DATE.plusDays(10), user.getId(), book.getId());
 
-        when(bookService.getBookOrThrow(1L)).thenReturn(book);
+        when(bookCopyService.selectAvailableCopyOrThrow(1L)).thenReturn(bookCopy);
         when(userService.getUserOrThrow(1L)).thenReturn(user);
         when(loanRepository.save(any(Loan.class)))
                 .thenAnswer(invocation -> invocation.getArgument(0));
 
         LoanResponse result = loanService.createLoan(loanRequest);
         assertEquals(loanRequest.dueDate(), result.dueDate());
-        assertEquals(loanRequest.bookId(), result.bookId());
+        assertEquals(book.getIsbn(), result.isbn());
+        assertEquals(bookCopy.getId(), result.bookCopyId());
         assertEquals(loanRequest.userId(), result.userId());
 
-        verify(bookService).getBookOrThrow(1L);
+        verify(bookCopyService).selectAvailableCopyOrThrow(1L);
         verify(userService).getUserOrThrow(1L);
-        verify(bookService).updateStock(book.getId(), book.getStock() - 1);
+        verify(bookCopyService).patchState(1L, BookCopyState.LOANED);
         verify(loanRepository).save(any(Loan.class));
     }
 
     @Test
     void shouldPropagateExceptionFromValidator() {
         User user = DataProvider.userListMock().get(1);
-        Book book = DataProvider.bookListMock().get(1);
+        BookCopy bookCopy = DataProvider.bookCopyListMock().get(1);
         LocalDate dueDate = LocalDate.now().plusDays(10);
         when(userService.getUserOrThrow(any())).thenReturn(user);
-        when(bookService.getBookOrThrow(any())).thenReturn(book);
+        when(bookCopyService.selectAvailableCopyOrThrow(any())).thenReturn(bookCopy);
 
         doThrow(new RuntimeException())
                 .when(loanValidator).validateLoan(any(), any(), any());
@@ -85,7 +93,7 @@ public class LoanServiceImplTest {
                 () -> loanService.createLoan(new LoanRequest(dueDate, 1L, 1L)));
 
         verify(loanRepository, never()).save(any(Loan.class));
-        verify(bookService, never()).updateStock(anyLong(), anyInt());
+        verify(bookCopyService, never()).patchState(anyLong(), any(BookCopyState.class));
     }
 
     @Test
@@ -101,7 +109,7 @@ public class LoanServiceImplTest {
         assertNotNull(result.endDate());
         assertFalse(loan.getActive());
         assertEquals(loan.getUser().getId(), result.userId());
-        assertEquals(loan.getBook().getId(), result.bookId());
+        assertEquals(loan.getBookCopy().getId(), result.bookCopyId());
 
         verify(loanRepository).findById(1L);
         verify(loanRepository).save(any(Loan.class));
@@ -118,7 +126,7 @@ public class LoanServiceImplTest {
         List<LoanResponse> result = loanService.findAll();
 
         assertEquals(loanList.size(), result.size());
-        assertEquals(loanList.get(1).getBook().getName(), result.get(1).bookName());
+        assertEquals(loanList.get(1).getBookCopy().getId(), result.get(1).bookCopyId());
         assertEquals(loanList.get(1).getUser().getUsername(), result.get(1).username());
         verify(loanRepository).findAll();
     }

@@ -43,12 +43,6 @@ public class BookCopyServiceImpl implements BookCopyService{
     }
 
     @Override
-    public BookCopy selectAvailableCopy(Long bookId) {
-        return bookCopyRepository
-                .findFirstByBookIdAndState(bookId, BookCopyState.AVAILABLE).orElseThrow(() -> new BusinessException("No copies available"));
-    }
-
-    @Override
     public Boolean existsLoanedCopyByBookId(Long bookId) {
         return bookCopyRepository.existsByBookIdAndState(bookId, BookCopyState.LOANED);
     }
