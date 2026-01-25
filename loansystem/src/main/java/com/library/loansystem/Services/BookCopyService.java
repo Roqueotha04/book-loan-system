@@ -13,6 +13,8 @@ public interface BookCopyService {
     public BookCopyResponse save(BookCopyRequest bookCopyRequest);
     public BookCopyResponse patchState(Long id, BookCopyState bookCopyState);
     public BookCopy selectAvailableCopy (Long bookId);
+    public Boolean existsLoanedCopyByBookId(Long bookId);
+    public BookCopy selectAvailableCopyOrThrow(Long bookId);
     public BookCopy getBookCopyOrThrow (Long id);
 
 }

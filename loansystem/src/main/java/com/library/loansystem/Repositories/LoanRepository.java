@@ -9,12 +9,12 @@ import java.util.List;
 
 @Repository
 public interface LoanRepository extends JpaRepository<Loan, Long> {
-    public Boolean existsByBookIdAndActiveTrue(Long bookId);
+    public Boolean existsByBookCopyBookIdAndActiveTrue(Long bookId);
     public Boolean existsByUserIdAndActiveTrue(Long userId);
-    public Boolean existsByUserIdAndBookIdAndActiveTrue (Long userId, Long bookId);
+    public Boolean existsByUserIdAndBookCopyBookIdAndActiveTrue (Long userId, Long bookCopyId);
     public Boolean existsByUserIdAndActiveTrueAndDueDateBefore(Long userId, LocalDate date);
     List<Loan> findByUserIdAndActiveTrue(Long userId);
-    List<Loan> findByBookIdAndActiveTrue (Long bookId);
+    List<Loan> findByBookCopyBookIdAndActiveTrue (Long bookCopyId);
     List<Loan> findByActiveTrueAndDueDateBefore(LocalDate date);
     List<Loan> findByActiveTrue();
     List<Loan> findByActiveFalse();

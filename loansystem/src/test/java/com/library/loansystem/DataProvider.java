@@ -30,9 +30,9 @@ public class DataProvider {
 
     public static List<Book> bookListMock(){
         return List.of(
-                new Book("1984", 15, BookGenre.FICTION, "8789876298523",new Publisher(1L, "Publisher 1")),
-                new Book("Harry Potter and the Philosopher's Stone", 20, BookGenre.FANTASY, "8789876298524",new Publisher(2L,"Publisher 2")),
-                new Book("The Lord of the Rings", 12, BookGenre.FANTASY,"8789876298525", new Publisher(3L,"Publisher 3"))
+                new Book("1984", BookGenre.FICTION, "8789876298523",new Publisher(1L, "Publisher 1")),
+                new Book("Harry Potter and the Philosopher's Stone", BookGenre.FANTASY, "8789876298524",new Publisher(2L,"Publisher 2")),
+                new Book("The Lord of the Rings", BookGenre.FANTASY,"8789876298525", new Publisher(3L,"Publisher 3"))
         );
     }
 

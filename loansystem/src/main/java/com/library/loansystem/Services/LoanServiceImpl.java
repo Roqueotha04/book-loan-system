@@ -30,15 +30,12 @@ public class LoanServiceImpl implements LoanService {
 
     private final UserService userService;
 
-    private final BookService bookService;
-
-    public LoanServiceImpl(LoanValidator loanValidator, LoanRepository loanRepository, LoanMapper loanMapper, BookCopyService bookCopyService, UserService userService, BookService bookService) {
+    public LoanServiceImpl(LoanValidator loanValidator, LoanRepository loanRepository, LoanMapper loanMapper, BookCopyService bookCopyService, UserService userService) {
         this.loanValidator = loanValidator;
         this.loanRepository = loanRepository;
         this.loanMapper = loanMapper;
         this.bookCopyService = bookCopyService;
         this.userService = userService;
-        this.bookService = bookService;
     }
 
     @Override
@@ -78,7 +75,7 @@ public class LoanServiceImpl implements LoanService {
 
     @Override
     public List<LoanResponse> findByBook(Long bookId) {
-        return loanRepository.findByBookIdAndActiveTrue(bookId).stream()
+        return loanRepository.findByBookCopyBookIdAndActiveTrue(bookId).stream()
                 .map(loanMapper::toResponse)
                 .toList();
     }
@@ -92,12 +89,13 @@ public class LoanServiceImpl implements LoanService {
     public LoanResponse createLoan(LoanRequest loanRequest) {
 
         User user = userService.getUserOrThrow(loanRequest.userId());
-        Book book = bookService.getBookOrThrow(loanRequest.bookId());
-        loanValidator.validateLoan(user, book, loanRequest.dueDate());
-        BookCopy copy = bookCopyService.selectAvailableCopy(book.getId());
-        bookCopyService.patchState(copy.getId(), BookCopyState.LOANED);
+        BookCopy bookCopy = bookCopyService.selectAvailableCopyOrThrow(
+                loanRequest.bookId()
+        );
+        loanValidator.validateLoan(user, bookCopy, loanRequest.dueDate());
+        bookCopyService.patchState(bookCopy.getId(), BookCopyState.LOANED);
 
-        Loan loan = new Loan(user, copy, loanRequest.dueDate());
+        Loan loan = new Loan(user, bookCopy, loanRequest.dueDate());
 
         return loanMapper.toResponse(loanRepository.save(loan));
     }
@@ -121,7 +119,7 @@ public class LoanServiceImpl implements LoanService {
 
     @Override
     public Boolean existsActiveLoanByBookId(Long bookId) {
-        return loanRepository.existsByBookIdAndActiveTrue(bookId);
+        return loanRepository.existsByBookCopyBookIdAndActiveTrue(bookId);
     }
 
     @Override

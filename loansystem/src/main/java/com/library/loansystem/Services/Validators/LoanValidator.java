@@ -1,6 +1,7 @@
 package com.library.loansystem.Services.Validators;
 
 import com.library.loansystem.Entities.Book;
+import com.library.loansystem.Entities.BookCopy;
 import com.library.loansystem.Entities.User;
 import com.library.loansystem.Exceptions.BadRequestException;
 import com.library.loansystem.Exceptions.BusinessException;
@@ -21,7 +22,7 @@ public class LoanValidator {
         this.loanRepository = loanRepository;
     }
 
-    public void validateLoan(User user, Book book, LocalDate dueDate) {
+    public void validateLoan(User user, BookCopy bookCopy, LocalDate dueDate) {
 
         //Error 400
         if (dueDate.isBefore(LocalDate.now().plusDays(MIN_LOAN_DAYS)) || dueDate.isAfter(LocalDate.now().plusDays(MAX_LOAN_DAYS))) {
@@ -31,7 +32,7 @@ public class LoanValidator {
         if (!user.getActive())
             throw new BusinessException("User is inactive");
 
-        if (!book.getActive())
+        if (!bookCopy.getBook().getActive())
             throw new BusinessException("Book is inactive");
 
         /// Add available copies validation
@@ -39,7 +40,7 @@ public class LoanValidator {
         if (loanRepository.countByUserIdAndActiveTrue(user.getId()) >= MAX_LOANS_PER_USER)
             throw new BusinessException("User reached maximum active loans");
 
-        if (loanRepository.existsByUserIdAndBookIdAndActiveTrue(user.getId(), book.getId()))
+        if (loanRepository.existsByUserIdAndBookCopyBookIdAndActiveTrue(user.getId(), bookCopy.getBook().getId()))
             throw new BusinessException("User already has this book on loan");
 
         if (loanRepository.existsByUserIdAndActiveTrueAndDueDateBefore(user.getId(), LocalDate.now())) {

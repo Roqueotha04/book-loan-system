@@ -23,17 +23,13 @@ public class BookServiceImpl implements BookService{
 
     private final BookMapper bookMapper;
     private final BookRepository bookRepository;
-    private final LoanService loanService;
     private final PublisherService publisherService;
-    private final BookCopyService bookcopyService;
     private final AuthorService authorService;
 
-    public BookServiceImpl(BookMapper bookMapper, BookRepository bookRepository, LoanService loanService, PublisherService publisherService, BookCopyService bookcopyService, AuthorService authorService) {
+    public BookServiceImpl(BookMapper bookMapper, BookRepository bookRepository, PublisherService publisherService, AuthorService authorService) {
         this.bookMapper = bookMapper;
         this.bookRepository = bookRepository;
-        this.loanService = loanService;
         this.publisherService = publisherService;
-        this.bookcopyService = bookcopyService;
         this.authorService = authorService;
     }
 
@@ -64,11 +60,14 @@ public class BookServiceImpl implements BookService{
        return bookMapper.toResponse(bookRepository.save(book));
     }
 
-    /// ?
     @Override
     public void delete(Long id) {
         Book book = getBookOrThrow(id);
-        if(loanService.existsActiveLoanByBookId(book.getId())) throw new BusinessException("Cannot delete a book with active Loans");
+
+        if (bookRepository.hasLoanedCopies(id, BookCopyState.LOANED)) {
+            throw new BusinessException("Cannot delete a book with loaned copies");
+        }
+
         bookRepository.delete(book);
     }
 

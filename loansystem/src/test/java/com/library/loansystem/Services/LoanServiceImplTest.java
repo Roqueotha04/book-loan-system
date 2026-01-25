@@ -38,15 +38,12 @@ public class LoanServiceImplTest {
     @Mock
     private UserService userService;
 
-    @Mock
-    private BookService bookService;
-
     private LoanServiceImpl loanService;
 
     @BeforeEach
     void setUp (){
         LoanMapper loanMapper = new LoanMapper();
-        loanService = new LoanServiceImpl(loanValidator, loanRepository, loanMapper, userService, bookService);
+        loanService = new LoanServiceImpl(loanValidator, loanRepository, loanMapper, userService);
     }
 
     @Test
@@ -192,12 +189,12 @@ public class LoanServiceImplTest {
         bookLoans.forEach(loan -> loan.setActive(true));
         Long bookId = 1L;
 
-        when(loanRepository.findByBookIdAndActiveTrue(bookId)).thenReturn(bookLoans);
+        when(loanRepository.findByBookCopyBookIdAndActiveTrue(bookId)).thenReturn(bookLoans);
         List<LoanResponse> result = loanService.findByBook(bookId);
 
         assertNotNull(result);
         assertEquals(bookLoans.size(), result.size());
-        verify(loanRepository).findByBookIdAndActiveTrue(bookId);
+        verify(loanRepository).findByBookCopyBookIdAndActiveTrue(bookId);
     }
 
     @Test
@@ -213,12 +210,12 @@ public class LoanServiceImplTest {
 
     @Test
     public void testExistsActiveLoanByBookId(){
-        when(loanRepository.existsByBookIdAndActiveTrue(1L))
+        when(loanRepository.existsByBookCopyBookIdAndActiveTrue(1L))
                 .thenReturn(true);
 
         Boolean result = loanService.existsActiveLoanByBookId(1L);
 
         assertTrue(result);
-        verify(loanRepository).existsByBookIdAndActiveTrue(1L);
+        verify(loanRepository).existsByBookCopyBookIdAndActiveTrue(1L);
     }
 }

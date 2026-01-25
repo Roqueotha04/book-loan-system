@@ -27,15 +27,12 @@ public class UserServiceImplTest {
     @Mock
     private UserRepository userRepository;
 
-    @Mock
-    private LoanService loanService;
-
     private UserServiceImpl userService;
 
     @BeforeEach
     void setUp (){
         UserMapper userMapper = new UserMapper();
-        userService = new UserServiceImpl(userRepository, loanService, userMapper);
+        userService = new UserServiceImpl(userRepository, userMapper);
     }
 
     @Test

@@ -38,8 +38,6 @@ public class BookServiceImplTest {
     private PublisherService publisherService;
     @Mock
     private AuthorService authorService;
-    @Mock
-    private BookCopyService bookCopyService;
 
     private BookServiceImpl bookService;
 
@@ -51,9 +49,7 @@ public class BookServiceImplTest {
         bookService = new BookServiceImpl(
                 bookMapper,
                 bookRepository,
-                loanService,
                 publisherService,
-                bookCopyService,
                 authorService
         );
     }

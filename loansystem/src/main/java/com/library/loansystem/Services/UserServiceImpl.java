@@ -14,12 +14,10 @@ import java.util.List;
 @Service
 public class UserServiceImpl implements UserService{
     private final UserRepository userRepository;
-    private final LoanService loanService;
     private final UserMapper userMapper;
 
-    public UserServiceImpl(UserRepository userRepository, LoanService loanService, UserMapper userMapper) {
+    public UserServiceImpl(UserRepository userRepository, UserMapper userMapper) {
         this.userRepository = userRepository;
-        this.loanService = loanService;
         this.userMapper = userMapper;
     }
 
@@ -84,7 +82,7 @@ public class UserServiceImpl implements UserService{
     }
 
     private void validateNoActiveLoans(Long userId) {
-        if (loanService.existsActiveLoanByUserId(userId)) {
+        if (userRepository.hasActiveLoans(userId)) {
             throw new BusinessException("User has active loans");
         }
     }

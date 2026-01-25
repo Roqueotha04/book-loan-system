@@ -11,4 +11,6 @@ import java.util.Optional;
 @Repository
 public interface BookCopyRepository extends JpaRepository<BookCopy, Long> {
     public Optional<BookCopy> findFirstByBookIdAndState (Long bookId, BookCopyState state);
+    boolean existsByBookIdAndState(Long bookId, BookCopyState state);
+
 }
