@@ -43,7 +43,7 @@ public class GlobalExceptionHandler {
 
         if (ex.getMessage() != null && ex.getMessage().contains("not one of the values accepted for Enum")) {
             response.put("error", "Invalid value");
-            response.put("message", "Invalid value for one of the fields. Please check the allowed options.");
+            response.put("message", "Invalid value for one of the fields. Please check the allowed options." );
         } else {
             response.put("error", "Malformed JSON");
             response.put("message", "The request body is not a valid JSON or has incorrect data types.");
