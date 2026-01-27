@@ -12,5 +12,6 @@ import java.util.Optional;
 @Repository
 public interface BookCopyRepository extends JpaRepository<BookCopy, Long> {
     public Optional<BookCopy> findFirstByBookIdAndState (Long bookId, BookCopyState state);
-    List<BookCopy> findByBookIdAndState(Long bookId, BookCopyState state);
+    List<BookCopy> findByBookIsbnAndState(String Isbn, BookCopyState state);
+    List<BookCopy> findByBookIsbn(String Isbn);
 }

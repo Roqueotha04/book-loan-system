@@ -3,6 +3,7 @@ package com.library.loansystem.Exceptions;
 import org.apache.coyote.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -34,6 +35,21 @@ public class GlobalExceptionHandler {
         e.getBindingResult().getFieldErrors()
                 .forEach(err -> errors.put(err.getField(), err.getDefaultMessage()));
         return ResponseEntity.badRequest().body(errors);
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<Map<String, String>> handleInvalidJson(HttpMessageNotReadableException ex) {
+        Map<String, String> response = new HashMap<>();
+
+        if (ex.getMessage() != null && ex.getMessage().contains("not one of the values accepted for Enum")) {
+            response.put("error", "Invalid value");
+            response.put("message", "Invalid value for one of the fields. Please check the allowed options.");
+        } else {
+            response.put("error", "Malformed JSON");
+            response.put("message", "The request body is not a valid JSON or has incorrect data types.");
+        }
+
+        return ResponseEntity.badRequest().body(response);
     }
 
     @ExceptionHandler(Exception.class)

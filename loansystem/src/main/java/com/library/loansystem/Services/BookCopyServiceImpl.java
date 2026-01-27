@@ -6,6 +6,7 @@ import com.library.loansystem.Entities.Book;
 import com.library.loansystem.Entities.BookCopy;
 import com.library.loansystem.Entities.Enums.BookCopyState;
 import com.library.loansystem.Exceptions.BusinessException;
+import com.library.loansystem.Exceptions.ResourceNotFoundException;
 import com.library.loansystem.Mapper.BookCopyMapper;
 import com.library.loansystem.Repositories.BookCopyRepository;
 import org.springframework.stereotype.Service;
@@ -24,23 +25,32 @@ public class BookCopyServiceImpl implements BookCopyService{
         this.bookService = bookService;
     }
 
+
     @Override
-    public List<BookCopyResponse> findAllByBook(Long bookId) {
+    public List<BookCopyResponse> findAll() {
         return bookCopyRepository.findAll().stream()
                 .map(bookCopyMapper::toResponse)
                 .toList();
     }
 
     @Override
-    public List<BookCopyResponse> findAvailableByBook(Long bookId) {
-        return bookCopyRepository.findByBookIdAndState(bookId, BookCopyState.AVAILABLE).stream()
+    public List<BookCopyResponse> findAllByBook(String Isbn) {
+        return bookCopyRepository.findByBookIsbn(Isbn).stream()
+                .map(bookCopyMapper::toResponse)
+                .toList();
+    }
+
+
+    @Override
+    public List<BookCopyResponse> findAvailableByBook(String Isbn) {
+        return bookCopyRepository.findByBookIsbnAndState(Isbn, BookCopyState.AVAILABLE).stream()
                 .map(bookCopyMapper::toResponse)
                 .toList();
     }
 
     @Override
     public BookCopyResponse save(BookCopyRequest bookCopyRequest) {
-        Book book = bookService.getBookOrThrow(bookCopyRequest.BookId());
+        Book book = bookService.getBookOrThrow(bookCopyRequest.bookId());
         BookCopy bookCopy = new BookCopy(book, bookCopyRequest.state());
         return bookCopyMapper.toResponse(bookCopyRepository.save(bookCopy));
     }
@@ -48,6 +58,7 @@ public class BookCopyServiceImpl implements BookCopyService{
     @Override
     public BookCopyResponse patchState(Long id, BookCopyState bookCopyState) {
         BookCopy bookCopy = getBookCopyOrThrow(id);
+        bookCopy.setState(bookCopyState);
         return bookCopyMapper.toResponse(bookCopyRepository.save(bookCopy));
     }
 
@@ -68,7 +79,7 @@ public class BookCopyServiceImpl implements BookCopyService{
 
     @Override
     public BookCopy getBookCopyOrThrow(Long id) {
-        return bookCopyRepository.findById(id).orElseThrow(()-> new BusinessException("Could not found BookCopy with id: " +id));
+        return bookCopyRepository.findById(id).orElseThrow(()-> new ResourceNotFoundException("Could not found BookCopy with id: " +id));
     }
 
 

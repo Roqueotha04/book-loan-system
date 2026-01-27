@@ -9,8 +9,9 @@ import com.library.loansystem.Entities.Enums.BookCopyState;
 import java.util.List;
 
 public interface BookCopyService {
-    public List <BookCopyResponse> findAllByBook(Long bookId);
-    public List<BookCopyResponse> findAvailableByBook(Long bookId);
+    public List<BookCopyResponse> findAll();
+    public List <BookCopyResponse> findAllByBook(String Isbn);
+    public List<BookCopyResponse> findAvailableByBook(String Isbn);
     public BookCopyResponse save(BookCopyRequest bookCopyRequest);
     public BookCopyResponse patchState(Long id, BookCopyState bookCopyState);
     public void delete(Long id);
