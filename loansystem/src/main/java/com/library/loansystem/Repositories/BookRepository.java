@@ -6,6 +6,7 @@ import com.library.loansystem.Entities.Enums.BookCopyState;
 import com.library.loansystem.Entities.Enums.BookGenre;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -19,13 +20,10 @@ public interface BookRepository extends JpaRepository<Book, Long> {
     public List<Book> findByGenre(BookGenre genre);
     public List<Book> findByAuthorXBooks_Author_Id(Long authorId);
 
-    @Query(""" 
-        SELECT COUNT(c) > 0
-        FROM Book b
-        JOIN b.bookCopyList c
-        WHERE b.id = :bookId
-        AND c.state = :state""")
-    boolean hasLoanedCopies(Long bookId, BookCopyState state);
+    @Query("SELECT CASE WHEN COUNT(c) > 0 THEN true ELSE false END FROM Book b JOIN b.bookCopyList c WHERE b.id = :id")
+    boolean hasCopies(@Param("id") Long id);
+
+
 
 
 

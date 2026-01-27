@@ -10,9 +10,10 @@ import java.util.List;
 
 public interface BookCopyService {
     public List <BookCopyResponse> findAllByBook(Long bookId);
+    public List<BookCopyResponse> findAvailableByBook(Long bookId);
     public BookCopyResponse save(BookCopyRequest bookCopyRequest);
     public BookCopyResponse patchState(Long id, BookCopyState bookCopyState);
-    public Boolean existsLoanedCopyByBookId(Long bookId);
+    public void delete(Long id);
     public BookCopy selectAvailableCopyOrThrow(Long bookId);
     public BookCopy getBookCopyOrThrow (Long id);
 

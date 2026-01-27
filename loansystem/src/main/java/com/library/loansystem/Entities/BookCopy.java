@@ -26,8 +26,9 @@ public class BookCopy {
     @ManyToOne
     Book book;
 
+    @Enumerated(EnumType.STRING)
     private BookCopyState state;
 
-    @OneToMany (mappedBy = "bookCopy", cascade = CascadeType.PERSIST)
+    @OneToMany (mappedBy = "bookCopy", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Loan> loanList = new ArrayList<>();
 }

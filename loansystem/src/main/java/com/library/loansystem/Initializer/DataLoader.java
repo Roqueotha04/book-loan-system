@@ -31,6 +31,7 @@ public class DataLoader  implements ApplicationRunner{
             loadPublishers();
             loadAuthors();
             loadBooks();
+            loadBookCopies();
             loadUsers();
             loadLoans();
 
@@ -121,6 +122,9 @@ public class DataLoader  implements ApplicationRunner{
     }
 
     private void loadBookCopies() {
+        if (bookCopyRepository.count() > 0) {
+            return;
+        }
         List<Book> books = bookRepository.findAll();
         List<BookCopy> bookCopies = new ArrayList<>();
 

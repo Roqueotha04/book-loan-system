@@ -64,9 +64,7 @@ public class BookServiceImpl implements BookService{
     public void delete(Long id) {
         Book book = getBookOrThrow(id);
 
-        if (bookRepository.hasLoanedCopies(id, BookCopyState.LOANED)) {
-            throw new BusinessException("Cannot delete a book with loaned copies");
-        }
+        if (bookRepository.hasCopies(id)) throw  new BusinessException("Cannot delete a book with existing copies");
 
         bookRepository.delete(book);
     }

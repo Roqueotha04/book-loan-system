@@ -26,7 +26,16 @@ public class BookCopyServiceImpl implements BookCopyService{
 
     @Override
     public List<BookCopyResponse> findAllByBook(Long bookId) {
-        return List.of();
+        return bookCopyRepository.findAll().stream()
+                .map(bookCopyMapper::toResponse)
+                .toList();
+    }
+
+    @Override
+    public List<BookCopyResponse> findAvailableByBook(Long bookId) {
+        return bookCopyRepository.findByBookIdAndState(bookId, BookCopyState.AVAILABLE).stream()
+                .map(bookCopyMapper::toResponse)
+                .toList();
     }
 
     @Override
@@ -43,9 +52,12 @@ public class BookCopyServiceImpl implements BookCopyService{
     }
 
     @Override
-    public Boolean existsLoanedCopyByBookId(Long bookId) {
-        return bookCopyRepository.existsByBookIdAndState(bookId, BookCopyState.LOANED);
+    public void delete(Long id) {
+        BookCopy bookCopy = getBookCopyOrThrow(id);
+        if (bookCopy.getState().equals(BookCopyState.LOANED)) throw new BusinessException("Cannot delete a loaned copy");
+        bookCopyRepository.delete(bookCopy);
     }
+
 
     @Override
     public BookCopy selectAvailableCopyOrThrow(Long bookId) {
@@ -53,7 +65,6 @@ public class BookCopyServiceImpl implements BookCopyService{
                 .findFirstByBookIdAndState(bookId, BookCopyState.AVAILABLE)
                 .orElseThrow(() -> new BusinessException("No available copies for this book"));
     }
-
 
     @Override
     public BookCopy getBookCopyOrThrow(Long id) {

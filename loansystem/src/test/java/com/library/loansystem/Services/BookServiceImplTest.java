@@ -127,13 +127,13 @@ public class BookServiceImplTest {
         when(bookRepository.findById(2L))
                 .thenReturn(Optional.of(book));
 
-        when(bookRepository.hasLoanedCopies(book.getId(), BookCopyState.LOANED))
+        when(bookRepository.hasCopies(book.getId()))
                 .thenReturn(false);
 
         bookService.delete(2L);
 
         verify(bookRepository).findById(2L);
-        verify(bookRepository).hasLoanedCopies(book.getId(), BookCopyState.LOANED);
+        verify(bookRepository).hasCopies(book.getId());
         verify(bookRepository).delete(any(Book.class));
     }
 
@@ -144,16 +144,13 @@ public class BookServiceImplTest {
         when(bookRepository.findById(book.getId()))
                 .thenReturn(Optional.of(book));
 
-        when(bookRepository.hasLoanedCopies(book.getId(), BookCopyState.LOANED))
+        when(bookRepository.hasCopies(book.getId()))
                 .thenReturn(true);
-
-      //The only call to the method should be in the assertThrows
-        //bookService.delete(2L);
 
         assertThrows(BusinessException.class, () -> bookService.delete(book.getId()));
 
         verify(bookRepository).findById(book.getId());
-        verify(bookRepository).hasLoanedCopies(book.getId(), BookCopyState.LOANED);
+        verify(bookRepository).hasCopies(book.getId());
         verify(bookRepository, never()).delete(any(Book.class));
     }
 
