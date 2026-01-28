@@ -2,6 +2,7 @@ package com.library.loansystem.Services;
 
 import com.library.loansystem.DTO.Request.LoanRequest;
 import com.library.loansystem.DTO.Response.LoanResponse;
+import com.library.loansystem.Entities.Enums.LoanStatus;
 import com.library.loansystem.Entities.Loan;
 
 import java.util.List;
@@ -13,17 +14,11 @@ public interface LoanService {
 
     LoanResponse returnLoan(Long loanId);
 
-    List<LoanResponse> findAll();
+    List<LoanResponse> findAll(LoanStatus status);
 
-    List<LoanResponse> findActiveLoans();
+    List<LoanResponse> findByUser(Long userId, LoanStatus status);
 
-    List<LoanResponse> findReturnedLoans();
-
-    List<LoanResponse> findOverdueLoans();
-
-    List<LoanResponse> findByUser(Long userId);
-
-    List<LoanResponse> findByBook(String isbn);
+    List<LoanResponse> findByBook(String isbn, LoanStatus status);
 
     public LoanResponse findById(Long id);
 

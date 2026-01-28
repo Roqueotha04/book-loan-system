@@ -5,6 +5,7 @@ import com.library.loansystem.DTO.Response.LoanResponse;
 import com.library.loansystem.Entities.Book;
 import com.library.loansystem.Entities.BookCopy;
 import com.library.loansystem.Entities.Enums.BookCopyState;
+import com.library.loansystem.Entities.Enums.LoanStatus;
 import com.library.loansystem.Entities.Loan;
 import com.library.loansystem.Entities.User;
 import com.library.loansystem.Exceptions.BusinessException;
@@ -15,6 +16,8 @@ import com.library.loansystem.Services.Validators.LoanValidator;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -38,46 +41,52 @@ public class LoanServiceImpl implements LoanService {
         this.userService = userService;
     }
 
-    @Override
-    public List<LoanResponse> findAll() {
-        return loanRepository.findAll().stream()
-                .map(loanMapper::toResponse)
-                .toList();
+    public List<LoanResponse> findAll(LoanStatus status) {
+        List<Loan> loans;
+
+        if (status == null) {
+            loans = loanRepository.findAll();
+        } else {
+            loans = switch (status) {
+                case ACTIVE -> loanRepository.findByEndDateIsNull();
+                case RETURNED -> loanRepository.findByEndDateIsNotNull();
+                case OVERDUE -> loanRepository.findByEndDateIsNullAndDueDateBefore(LocalDate.now());
+            };
+        }
+
+        return loans.stream().map(loanMapper::toResponse).toList();
     }
 
     @Override
-    public List<LoanResponse> findActiveLoans() {
-        return loanRepository.findByEndDateIsNull().stream()
-                .map(loanMapper::toResponse)
-                .toList();
+    public List<LoanResponse> findByUser(Long userId, LoanStatus status) {
+        List<Loan> loans;
+
+        if (status == null) {
+            loans=loanRepository.findByUserId(userId);
+        }else {
+            loans=switch (status) {
+                case ACTIVE -> loanRepository.findByUserIdAndEndDateIsNull(userId);
+                case RETURNED -> loanRepository.findByUserIdAndEndDateIsNotNull(userId);
+                case OVERDUE -> loanRepository.findOverdue(userId, LocalDate.now());
+            };
+        }
+        return loans.stream().map(loanMapper::toResponse).toList();
     }
 
     @Override
-    public List<LoanResponse> findReturnedLoans() {
-        return loanRepository.findByEndDateIsNotNull().stream()
-                .map(loanMapper::toResponse)
-                .toList();
-    }
+    public List<LoanResponse> findByBook(String isbn, LoanStatus status) {
+        List<Loan> loans;
 
-    @Override
-    public List<LoanResponse> findOverdueLoans() {
-        return loanRepository.findByEndDateIsNullAndDueDateBefore(LocalDate.now()).stream()
-                .map(loanMapper::toResponse)
-                .toList();
-    }
-
-    @Override
-    public List<LoanResponse> findByUser(Long userId) {
-        return loanRepository.findByUserIdAndEndDateIsNull(userId).stream()
-                .map(loanMapper::toResponse)
-                .toList();
-    }
-
-    @Override
-    public List<LoanResponse> findByBook(String isbn) {
-        return loanRepository.findByBookCopyBookIsbnAndEndDateIsNull(isbn).stream()
-                .map(loanMapper::toResponse)
-                .toList();
+        if (status == null) {
+            loans = loanRepository.findByBookCopyBookIsbn(isbn);
+        } else {
+            loans = switch (status) {
+                case ACTIVE -> loanRepository.findByBookCopyBookIsbnAndEndDateIsNull(isbn);
+                case RETURNED -> loanRepository.findByBookCopyBookIsbnAndEndDateIsNotNull(isbn);
+                case OVERDUE -> loanRepository.findOverdueByIsbn(isbn, LocalDate.now());
+            };
+        }
+        return loans.stream().map(loanMapper::toResponse).toList();
     }
 
     @Override

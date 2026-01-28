@@ -2,6 +2,7 @@ package com.library.loansystem.Controllers;
 
 import com.library.loansystem.DTO.Request.LoanRequest;
 import com.library.loansystem.DTO.Response.LoanResponse;
+import com.library.loansystem.Entities.Enums.LoanStatus;
 import com.library.loansystem.Services.LoanService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
@@ -40,39 +41,12 @@ public class LoanController {
     }
 
     @Operation(
-            summary = "Get all loans",
-            description = "Returns a list of all loans in the system."
+            summary = "Get loans with filters",
+            description = "Returns a list of loans. Can be filtered by status (active, returned, overdue)."
     )
     @GetMapping
-    public List<LoanResponse> findAll() {
-        return loanService.findAll();
-    }
-
-    @Operation(
-            summary = "Get active loans",
-            description = "Returns all active (not returned) loans."
-    )
-    @GetMapping("/active")
-    public List<LoanResponse> findActiveLoans() {
-        return loanService.findActiveLoans();
-    }
-
-    @Operation(
-            summary = "Get returned loans",
-            description = "Returns all returned loans."
-    )
-    @GetMapping("/returned")
-    public List<LoanResponse> findReturnedLoans() {
-        return loanService.findReturnedLoans();
-    }
-
-    @Operation(
-            summary = "Get overdue loans",
-            description = "Returns all active loans that are overdue."
-    )
-    @GetMapping("/overdue")
-    public List<LoanResponse> findOverdueLoans() {
-        return loanService.findOverdueLoans();
+    public List<LoanResponse> findAll(@RequestParam(required = false)LoanStatus status) {
+        return loanService.findAll(status);
     }
 
     @Operation(
@@ -80,8 +54,9 @@ public class LoanController {
             description = "Returns all active loans for a specific user."
     )
     @GetMapping("/user/{userId}")
-    public List<LoanResponse> findByUser(@PathVariable Long userId) {
-        return loanService.findByUser(userId);
+    public List <LoanResponse> findByUser(@PathVariable ("userId") Long userId,
+                                          @RequestParam(required = false) LoanStatus status){
+        return loanService.findByUser(userId, status);
     }
 
     @Operation(
@@ -89,8 +64,10 @@ public class LoanController {
             description = "Returns all active loans for a specific book."
     )
     @GetMapping("/book/{isbn}")
-    public List<LoanResponse> findByBookIsbn(@PathVariable String isbn) {
-        return loanService.findByBook(isbn);
+    public List<LoanResponse> findByBookIsbn(@PathVariable ("isbn") String isbn,
+                                             @RequestParam (required = false) LoanStatus status)
+    {
+        return loanService.findByBook(isbn, status);
     }
 
     @Operation(

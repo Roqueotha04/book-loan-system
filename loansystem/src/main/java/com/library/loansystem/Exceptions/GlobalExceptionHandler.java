@@ -7,6 +7,7 @@ import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -49,6 +50,14 @@ public class GlobalExceptionHandler {
             response.put("message", "The request body is not a valid JSON or has incorrect data types.");
         }
 
+        return ResponseEntity.badRequest().body(response);
+    }
+
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<Map<String, String>> handleTypeMismatch(MethodArgumentTypeMismatchException ex) {
+        Map<String, String> response = new HashMap<>();
+        response.put("error", "Invalid query parameter");
+        response.put("message", "The value is not valid for the parameter: " + ex.getName());
         return ResponseEntity.badRequest().body(response);
     }
 
