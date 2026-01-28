@@ -47,35 +47,35 @@ public class LoanServiceImpl implements LoanService {
 
     @Override
     public List<LoanResponse> findActiveLoans() {
-        return loanRepository.findByActiveTrue().stream()
+        return loanRepository.findByEndDateIsNull().stream()
                 .map(loanMapper::toResponse)
                 .toList();
     }
 
     @Override
     public List<LoanResponse> findReturnedLoans() {
-        return loanRepository.findByActiveFalse().stream()
+        return loanRepository.findByEndDateIsNotNull().stream()
                 .map(loanMapper::toResponse)
                 .toList();
     }
 
     @Override
     public List<LoanResponse> findOverdueLoans() {
-        return loanRepository.findByActiveTrueAndDueDateBefore(LocalDate.now()).stream()
+        return loanRepository.findByEndDateIsNullAndDueDateBefore(LocalDate.now()).stream()
                 .map(loanMapper::toResponse)
                 .toList();
     }
 
     @Override
     public List<LoanResponse> findByUser(Long userId) {
-        return loanRepository.findByUserIdAndActiveTrue(userId).stream()
+        return loanRepository.findByUserIdAndEndDateIsNull(userId).stream()
                 .map(loanMapper::toResponse)
                 .toList();
     }
 
     @Override
-    public List<LoanResponse> findByBook(Long bookId) {
-        return loanRepository.findByBookCopyBookIdAndActiveTrue(bookId).stream()
+    public List<LoanResponse> findByBook(String isbn) {
+        return loanRepository.findByBookCopyBookIsbnAndEndDateIsNull(isbn).stream()
                 .map(loanMapper::toResponse)
                 .toList();
     }
@@ -105,8 +105,7 @@ public class LoanServiceImpl implements LoanService {
     @Override
     public LoanResponse returnLoan(Long id) {
         Loan loan = getLoanOrThrow(id);
-        if (!loan.getActive()) throw new BusinessException("Loan has been already returned");
-        loan.setActive(false);
+        if (loan.getEndDate() != null) throw new BusinessException("Loan has been already returned");
         loan.setEndDate(LocalDate.now());
         bookCopyService.patchState(loan.getBookCopy().getId(), BookCopyState.AVAILABLE);
         return loanMapper.toResponse(loanRepository.save(loan));
@@ -119,11 +118,11 @@ public class LoanServiceImpl implements LoanService {
 
     @Override
     public Boolean existsActiveLoanByBookId(Long bookId) {
-        return loanRepository.existsByBookCopyBookIdAndActiveTrue(bookId);
+        return loanRepository.existsByBookCopyBookIdAndEndDateIsNull(bookId);
     }
 
     @Override
-    public Boolean existsActiveLoanByUserId(Long userId){return loanRepository.existsByUserIdAndActiveTrue(userId);}
+    public Boolean existsActiveLoanByUserId(Long userId){return loanRepository.existsByUserIdAndEndDateIsNull(userId);}
 
 
 }

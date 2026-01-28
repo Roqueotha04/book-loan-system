@@ -14,7 +14,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
         FROM User u
         JOIN u.loanList l
         WHERE u.id = :userId
-        AND l.active = true
+        AND l.endDate = null
         """)
     boolean hasActiveLoans(Long userId);
 }

@@ -9,15 +9,15 @@ import java.util.List;
 
 @Repository
 public interface LoanRepository extends JpaRepository<Loan, Long> {
-    public Boolean existsByBookCopyBookIdAndActiveTrue(Long bookId);
-    public Boolean existsByUserIdAndActiveTrue(Long userId);
-    public Boolean existsByUserIdAndBookCopyIdAndActiveTrue (Long userId, Long bookCopyId);
-    public Boolean existsByUserIdAndActiveTrueAndDueDateBefore(Long userId, LocalDate date);
-    List<Loan> findByUserIdAndActiveTrue(Long userId);
-    List<Loan> findByBookCopyBookIdAndActiveTrue (Long bookCopyId);
-    List<Loan> findByActiveTrueAndDueDateBefore(LocalDate date);
-    List<Loan> findByActiveTrue();
-    List<Loan> findByActiveFalse();
-    public int countByUserIdAndActiveTrue (Long userId);
+    public Boolean existsByBookCopyBookIdAndEndDateIsNull(Long bookId);
+    public Boolean existsByUserIdAndEndDateIsNull(Long userId);
+    public Boolean existsByUserIdAndBookCopyIdAndEndDateIsNull (Long userId, Long bookCopyId);
+    public Boolean existsByUserIdAndEndDateIsNullAndDueDateBefore(Long userId, LocalDate date);
+    List<Loan> findByUserIdAndEndDateIsNull(Long userId);
+    List<Loan> findByBookCopyBookIsbnAndEndDateIsNull (String isbn);
+    List<Loan> findByEndDateIsNullAndDueDateBefore(LocalDate date);
+    List<Loan> findByEndDateIsNull();
+    List<Loan> findByEndDateIsNotNull();
+    public int countByUserIdAndEndDateIsNull (Long userId);
 
 }

@@ -21,6 +21,25 @@ public class LoanController {
     }
 
     @Operation(
+            summary = "Create a new loan",
+            description = "Creates a new loan for a user and a book."
+    )
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    public LoanResponse createLoan(@Valid @RequestBody LoanRequest loanRequest) {
+        return loanService.createLoan(loanRequest);
+    }
+
+    @Operation(
+            summary = "Return a loan",
+            description = "Marks a loan as returned and makes the book copy available again."
+    )
+    @PatchMapping("/{id}/return")
+    public LoanResponse returnLoan(@PathVariable Long id) {
+        return loanService.returnLoan(id);
+    }
+
+    @Operation(
             summary = "Get all loans",
             description = "Returns a list of all loans in the system."
     )
@@ -69,9 +88,9 @@ public class LoanController {
             summary = "Get loans by book",
             description = "Returns all active loans for a specific book."
     )
-    @GetMapping("/book/{bookId}")
-    public List<LoanResponse> findByBook(@PathVariable Long bookId) {
-        return loanService.findByBook(bookId);
+    @GetMapping("/book/{isbn}")
+    public List<LoanResponse> findByBookIsbn(@PathVariable String isbn) {
+        return loanService.findByBook(isbn);
     }
 
     @Operation(
@@ -83,23 +102,6 @@ public class LoanController {
         return loanService.findById(id);
     }
 
-    @Operation(
-            summary = "Create a new loan",
-            description = "Creates a new loan for a user and a book."
-    )
-    @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    public LoanResponse createLoan(@Valid @RequestBody LoanRequest loanRequest) {
-        return loanService.createLoan(loanRequest);
-    }
 
-    @Operation(
-            summary = "Return a loan",
-            description = "Marks a loan as returned and makes the book copy available again."
-    )
-    @PatchMapping("/{id}/return")
-    public LoanResponse returnLoan(@PathVariable Long id) {
-        return loanService.returnLoan(id);
-    }
 
 }

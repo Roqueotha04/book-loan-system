@@ -24,19 +24,18 @@ public class LoanMapperTest {
 
         LocalDate startDate = LocalDate.now();
         LocalDate dueDate = startDate.plusDays(14);
-
         Loan loan = new Loan(user, bookCopy, dueDate);
 
         LoanResponse result = loanMapper.toResponse(loan);
 
         assertEquals(loan.getId(), result.id());
-        assertEquals(bookCopy.getId(), result.bookCopyId());
-        assertEquals(bookCopy.getBook().getIsbn(), result.isbn());
-        assertEquals(bookCopy.getBook().getName(), result.bookName());
-        assertEquals(user.getId(), result.userId());
-        assertEquals(user.getUsername(), result.username());
         assertEquals(loan.getStartDate(), result.startDate());
         assertEquals(loan.getDueDate(), result.dueDate());
         assertEquals(loan.getEndDate(), result.endDate());
+        assertEquals(bookCopy.getId(), result.book().bookCopyId());
+        assertEquals(bookCopy.getBook().getIsbn(), result.book().isbn());
+        assertEquals(bookCopy.getBook().getName(), result.book().bookName());
+        assertEquals(user.getId(), result.user().userId());
+        assertEquals(user.getUsername(), result.user().username());
     }
 }

@@ -23,7 +23,7 @@ public interface LoanService {
 
     List<LoanResponse> findByUser(Long userId);
 
-    List<LoanResponse> findByBook(Long bookId);
+    List<LoanResponse> findByBook(String isbn);
 
     public LoanResponse findById(Long id);
 

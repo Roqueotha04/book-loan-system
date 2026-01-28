@@ -17,22 +17,18 @@ public class Loan {
     public Loan (User user, BookCopy bookCopy, LocalDate dueDate){
         this.bookCopy=bookCopy;
         this.user=user;
-        this.active=true;
         this.startDate= LocalDate.of(LocalDate.now().getYear(), LocalDate.now().getMonth(), LocalDate.now().getDayOfMonth());
         this.dueDate = dueDate;
         this.endDate = null;
     }
 
     public Loan (){
-        this.active=true;
         this.startDate= LocalDate.of(LocalDate.now().getYear(), LocalDate.now().getMonth(), LocalDate.now().getDayOfMonth());
     }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    private Boolean active;
 
     private LocalDate startDate;
 

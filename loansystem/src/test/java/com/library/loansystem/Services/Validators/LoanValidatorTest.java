@@ -86,31 +86,31 @@ public class LoanValidatorTest {
 
     @Test
     void shouldThrowExceptionWhenUserReachedMaxLoans() {
-        when(loanRepository.countByUserIdAndActiveTrue(user.getId()))
+        when(loanRepository.countByUserIdAndEndDateIsNull(user.getId()))
                 .thenReturn(3);
 
         assertThrows(BusinessException.class, () -> loanValidator.validateLoan(user, bookCopy, validDueDate));
 
-        verify(loanRepository).countByUserIdAndActiveTrue(user.getId());
+        verify(loanRepository).countByUserIdAndEndDateIsNull(user.getId());
     }
 
     @Test
     void shouldThrowExceptionWhenUserAlreadyHasBookCopyOnLoan() {
 
-        when(loanRepository.existsByUserIdAndBookCopyIdAndActiveTrue(user.getId(), bookCopy.getId())).thenReturn(true);
+        when(loanRepository.existsByUserIdAndBookCopyIdAndEndDateIsNull(user.getId(), bookCopy.getId())).thenReturn(true);
 
         assertThrows(BusinessException.class, () -> loanValidator.validateLoan(user, bookCopy, validDueDate));
 
-        verify(loanRepository).existsByUserIdAndBookCopyIdAndActiveTrue(user.getId(), bookCopy.getId());
+        verify(loanRepository).existsByUserIdAndBookCopyIdAndEndDateIsNull(user.getId(), bookCopy.getId());
     }
 
     @Test
     void shouldThrowExceptionWhenUserHasOverdueLoans() {
-        when(loanRepository.existsByUserIdAndActiveTrueAndDueDateBefore(eq(user.getId()), any()))
+        when(loanRepository.existsByUserIdAndEndDateIsNullAndDueDateBefore(eq(user.getId()), any()))
                 .thenReturn(true);
 
         assertThrows(BusinessException.class, () -> loanValidator.validateLoan(user, bookCopy, validDueDate));
 
-        verify(loanRepository).existsByUserIdAndActiveTrueAndDueDateBefore(eq(user.getId()), any());
+        verify(loanRepository).existsByUserIdAndEndDateIsNullAndDueDateBefore(eq(user.getId()), any());
     }
 }

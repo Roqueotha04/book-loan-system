@@ -37,13 +37,13 @@ public class LoanValidator {
 
         /// Add available copies validation
 
-        if (loanRepository.countByUserIdAndActiveTrue(user.getId()) >= MAX_LOANS_PER_USER)
+        if (loanRepository.countByUserIdAndEndDateIsNull(user.getId()) >= MAX_LOANS_PER_USER)
             throw new BusinessException("User reached maximum active loans");
 
-        if (loanRepository.existsByUserIdAndBookCopyIdAndActiveTrue(user.getId(), bookCopy.getId()))
+        if (loanRepository.existsByUserIdAndBookCopyIdAndEndDateIsNull(user.getId(), bookCopy.getId()))
             throw new BusinessException("User already has this book on loan");
 
-        if (loanRepository.existsByUserIdAndActiveTrueAndDueDateBefore(user.getId(), LocalDate.now())) {
+        if (loanRepository.existsByUserIdAndEndDateIsNullAndDueDateBefore(user.getId(), LocalDate.now())) {
             throw new BusinessException("User has overdue loans");
         }
     }
