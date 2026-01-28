@@ -9,6 +9,8 @@ import com.library.loansystem.Entities.Enums.BookCopyState;
 import com.library.loansystem.Entities.Enums.LoanStatus;
 import com.library.loansystem.Entities.Loan;
 import com.library.loansystem.Entities.User;
+import com.library.loansystem.Exceptions.BusinessException;
+import com.library.loansystem.Exceptions.ResourceNotFoundException;
 import com.library.loansystem.Mapper.LoanMapper;
 import com.library.loansystem.Repositories.LoanRepository;
 import com.library.loansystem.Services.Validators.LoanValidator;
@@ -60,9 +62,9 @@ public class LoanServiceImplTest {
         book.setId(1L);
         BookCopy bookCopy = DataProvider.bookCopyListMock().get(0);
         bookCopy.setId(1L);
-        LoanRequest loanRequest = new LoanRequest(FIXED_DATE.plusDays(10), user.getId(), book.getId());
+        LoanRequest loanRequest = new LoanRequest(FIXED_DATE.plusDays(10), user.getId(), book.getIsbn());
 
-        when(bookCopyService.selectAvailableCopyOrThrow(1L)).thenReturn(bookCopy);
+        when(bookCopyService.selectAvailableCopyOrThrow(book.getIsbn())).thenReturn(bookCopy);
         when(userService.getUserOrThrow(1L)).thenReturn(user);
         when(loanRepository.save(any(Loan.class)))
                 .thenAnswer(invocation -> invocation.getArgument(0));
@@ -74,7 +76,7 @@ public class LoanServiceImplTest {
         assertEquals(bookCopy.getId(), result.book().bookCopyId());
         assertEquals(loanRequest.userId(), result.user().userId());
 
-        verify(bookCopyService).selectAvailableCopyOrThrow(1L);
+        verify(bookCopyService).selectAvailableCopyOrThrow(book.getIsbn());
         verify(userService).getUserOrThrow(1L);
         verify(bookCopyService).patchState(1L, BookCopyState.LOANED);
         verify(loanRepository).save(any(Loan.class));
@@ -92,14 +94,14 @@ public class LoanServiceImplTest {
                 .when(loanValidator).validateLoan(any(), any(), any());
 
         assertThrows(RuntimeException.class,
-                () -> loanService.createLoan(new LoanRequest(dueDate, 1L, 1L)));
+                () -> loanService.createLoan(new LoanRequest(dueDate, 1L, "123456789")));
 
         verify(loanRepository, never()).save(any(Loan.class));
         verify(bookCopyService, never()).patchState(anyLong(), any(BookCopyState.class));
     }
 
     @Test
-    public void testReturnLoan() {
+    public void testReturnLoan_ok() {
         Loan loan = DataProvider.loanListMock().get(0);
 
         when(loanRepository.findById(1L))
@@ -115,6 +117,18 @@ public class LoanServiceImplTest {
 
         verify(loanRepository).findById(1L);
         verify(loanRepository).save(any(Loan.class));
+    }
+
+    @Test
+    public void testReturnLoan_BussinesException() {
+        Loan loan = DataProvider.loanListMock().get(0);
+        loan.setEndDate(LocalDate.of(2026, 1, 21));
+
+        when(loanRepository.findById(1L)).thenReturn(Optional.of(loan));
+
+        assertThrows(BusinessException.class, ()-> loanService.returnLoan(1L));
+        verify(loanRepository).findById(1L);
+        verify(loanRepository, never()).save(any(Loan.class));
     }
 
 
@@ -313,5 +327,37 @@ public class LoanServiceImplTest {
 
         assertTrue(result);
         verify(loanRepository).existsByBookCopyBookIdAndEndDateIsNull(1L);
+    }
+
+    @Test
+    public void testFindById(){
+        Loan loan = DataProvider.loanListMock().get(1);
+        when(loanRepository.findById(1L)).thenReturn(Optional.of(loan));
+
+        LoanResponse result = loanService.findById(1L);
+        assertEquals(loan.getStartDate(), result.startDate());
+        assertEquals(loan.getUser().getUsername(), result.user().username());
+        assertEquals(loan.getBookCopy().getBook().getIsbn(), result.book().isbn());
+        verify(loanRepository).findById(1L);
+    }
+
+    @Test
+    public void testGetLoanOrThrow_ok(){
+        Loan loan = DataProvider.loanListMock().get(1);
+        when(loanRepository.findById(1L)).thenReturn(Optional.of(loan));
+
+         Loan result = loanService.getLoanOrThrow(1L);
+         assertEquals(loan.getStartDate(), result.getStartDate());
+         assertEquals(loan.getUser().getUsername(), result.getUser().getUsername());
+         assertEquals(loan.getBookCopy().getBook().getName(), result.getBookCopy().getBook().getName());
+         verify(loanRepository).findById(1L);
+    }
+
+    @Test
+    public void testGetLoanOrThrow_notFound(){
+        when(loanRepository.findById(1L)).thenReturn(Optional.empty());
+
+        assertThrows(ResourceNotFoundException.class, ()-> loanService.getLoanOrThrow(1L));
+        verify(loanRepository).findById(1L);
     }
 }

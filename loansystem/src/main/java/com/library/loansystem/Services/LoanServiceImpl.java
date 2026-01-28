@@ -99,7 +99,7 @@ public class LoanServiceImpl implements LoanService {
 
         User user = userService.getUserOrThrow(loanRequest.userId());
         BookCopy bookCopy = bookCopyService.selectAvailableCopyOrThrow(
-                loanRequest.bookId()
+                loanRequest.isbn()
         );
         loanValidator.validateLoan(user, bookCopy, loanRequest.dueDate());
         bookCopyService.patchState(bookCopy.getId(), BookCopyState.LOANED);

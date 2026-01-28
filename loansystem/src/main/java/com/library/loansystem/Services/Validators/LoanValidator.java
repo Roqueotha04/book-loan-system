@@ -34,8 +34,6 @@ public class LoanValidator {
         if (!bookCopy.getBook().getActive())
             throw new BusinessException("Book is inactive");
 
-        /// Add available copies validation
-
         if (loanRepository.countByUserIdAndEndDateIsNull(user.getId()) >= MAX_LOANS_PER_USER)
             throw new BusinessException("User reached maximum active loans");
 

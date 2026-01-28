@@ -85,6 +85,15 @@ public class LoanValidatorTest {
     }
 
     @Test
+    void shouldThrowExceptionWhenBookIsInactive() {
+        bookCopy.getBook().setActive(false);
+
+        assertThrows(BusinessException.class, () -> loanValidator.validateLoan(user, bookCopy, validDueDate));
+
+        verify(loanRepository, never()).countByUserIdAndEndDateIsNull(anyLong());
+    }
+
+    @Test
     void shouldThrowExceptionWhenUserReachedMaxLoans() {
         when(loanRepository.countByUserIdAndEndDateIsNull(user.getId()))
                 .thenReturn(3);
