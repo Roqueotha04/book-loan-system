@@ -7,6 +7,7 @@ import com.library.loansystem.Exceptions.BusinessException;
 import com.library.loansystem.Exceptions.ResourceNotFoundException;
 import com.library.loansystem.Mapper.UserMapper;
 import com.library.loansystem.Repositories.UserRepository;
+import com.library.loansystem.Services.Validators.UserValidator;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -15,10 +16,12 @@ import java.util.List;
 public class UserServiceImpl implements UserService{
     private final UserRepository userRepository;
     private final UserMapper userMapper;
+    private final UserValidator userValidator;
 
-    public UserServiceImpl(UserRepository userRepository, UserMapper userMapper) {
+    public UserServiceImpl(UserRepository userRepository, UserMapper userMapper, UserValidator userValidator) {
         this.userRepository = userRepository;
         this.userMapper = userMapper;
+        this.userValidator = userValidator;
     }
 
     public List<UserResponse> findAll(){
@@ -34,16 +37,16 @@ public class UserServiceImpl implements UserService{
 
     @Override
     public UserResponse save(UserRequest userRequest) {
-       if (userRepository.existsByEmail(userRequest.email())) throw new BusinessException("Email already in use");
-       if (userRepository.existsByUsername(userRequest.username())) throw new BusinessException("Username already in use");
+        userValidator.validateUser(userRequest);
        User user = toUser(userRequest);
        return userMapper.toResponse(userRepository.save(user));
     }
 
     @Override
     public void deletePermanently(Long id) {
-        validateNoActiveLoans(id);
-        userRepository.delete(getUserOrThrow(id));
+        User user = getUserOrThrow(id);
+        validateNoActiveLoans(user.getId());
+        userRepository.delete(user);
     }
 
     @Override
@@ -65,6 +68,7 @@ public class UserServiceImpl implements UserService{
 
     @Override
     public UserResponse update(Long id, UserRequest userRequest) {
+        userValidator.validateUser(userRequest);
         User user = getUserOrThrow(id);
         user.setEmail(userRequest.email());
         user.setUsername(userRequest.username());

@@ -24,7 +24,6 @@ public class LoanValidator {
 
     public void validateLoan(User user, BookCopy bookCopy, LocalDate dueDate) {
 
-        //Error 400
         if (dueDate.isBefore(LocalDate.now().plusDays(MIN_LOAN_DAYS)) || dueDate.isAfter(LocalDate.now().plusDays(MAX_LOAN_DAYS))) {
             throw new BadRequestException("Loan duration must be between 1 and 30 days");
         }

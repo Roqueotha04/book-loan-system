@@ -2,6 +2,7 @@ package com.library.loansystem.Controllers;
 
 import com.library.loansystem.DTO.Request.BookRequest;
 import com.library.loansystem.DTO.Response.BookResponse;
+import com.library.loansystem.Entities.Enums.BookGenre;
 import com.library.loansystem.Services.BookService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
@@ -83,6 +84,33 @@ public class BookController {
     @GetMapping("/isbn/{isbn}")
     public BookResponse findByIsbn (@PathVariable String isbn){
         return bookService.findByIsbn(isbn);
+    }
+
+    @Operation(
+            summary = "Find books by name",
+            description = "Returns a list of books whose name contains the specified string, case-insensitive."
+    )
+    @GetMapping("/search/name")
+    public List<BookResponse> findByNameContaining(@RequestParam String name) {
+        return bookService.findByNameContaining(name);
+    }
+
+    @Operation(
+            summary = "Find books by genre",
+            description = "Returns a list of books belonging to the specified genre."
+    )
+    @GetMapping("/search/genre")
+    public List<BookResponse> findByGenre(@RequestParam BookGenre genre) {
+        return bookService.findByGenre(genre);
+    }
+
+    @Operation(
+            summary = "Find books by author",
+            description = "Returns a list of books written by the author with the specified ID."
+    )
+    @GetMapping("/author/{authorId}")
+    public List<BookResponse> findByAuthor(@PathVariable Long authorId) {
+        return bookService.findByAuthor(authorId);
     }
 
 }

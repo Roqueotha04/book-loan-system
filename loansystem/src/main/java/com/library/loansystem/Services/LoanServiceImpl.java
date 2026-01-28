@@ -109,8 +109,6 @@ public class LoanServiceImpl implements LoanService {
         return loanMapper.toResponse(loanRepository.save(loan));
     }
 
-
-
     @Override
     public LoanResponse returnLoan(Long id) {
         Loan loan = getLoanOrThrow(id);

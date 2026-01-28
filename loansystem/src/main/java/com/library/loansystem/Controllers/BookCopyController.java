@@ -23,30 +23,13 @@ public class BookCopyController {
     }
 
     @Operation(
-            summary = "Get all books",
-            description = "Returns all copies"
-    )
-    @GetMapping()
-    public List <BookCopyResponse> findAll(){
-        return  bookCopyService.findAll();
-    }
-
-    @Operation(
             summary = "Get all book copies by book",
-            description = "Returns all copies of a specific book."
+            description = "Returns all copies of a specific book. Can be filtered by status (available, loaned, damaged, lost)."
     )
-    @GetMapping("/book/{Isbn}")
-    public List<BookCopyResponse> findAllByBook(@PathVariable String Isbn) {
-        return bookCopyService.findAllByBook(Isbn);
-    }
-
-    @Operation(
-            summary = "Get available book copies by book",
-            description = "Returns all available copies of a specific book."
-    )
-    @GetMapping("/book/{Isbn}/available")
-    public List<BookCopyResponse> findAvailableByBook(@PathVariable String Isbn) {
-        return bookCopyService.findAvailableByBook(Isbn);
+    @GetMapping("/book/{isbn}")
+    public List<BookCopyResponse> findAllByBook(@PathVariable String isbn,
+                                                @RequestParam (required = false) BookCopyState state) {
+        return bookCopyService.findAllByBook(isbn, state);
     }
 
     @Operation(

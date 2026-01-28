@@ -9,6 +9,8 @@ import com.library.loansystem.Exceptions.ResourceNotFoundException;
 import com.library.loansystem.Mapper.UserMapper;
 import com.library.loansystem.Repositories.UserRepository;
 import static org.junit.jupiter.api.Assertions.*;
+
+import com.library.loansystem.Services.Validators.UserValidator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -27,12 +29,15 @@ public class UserServiceImplTest {
     @Mock
     private UserRepository userRepository;
 
+    @Mock
+    private UserValidator userValidator;
+
     private UserServiceImpl userService;
 
     @BeforeEach
     void setUp (){
         UserMapper userMapper = new UserMapper();
-        userService = new UserServiceImpl(userRepository, userMapper);
+        userService = new UserServiceImpl(userRepository, userMapper, userValidator);
     }
 
     @Test
@@ -61,7 +66,7 @@ public class UserServiceImplTest {
     }
 
     @Test
-    public void testSave_ok (){
+    public void testSave (){
         UserRequest userRequest = new UserRequest("angeldimaria@gmail.com", "fideo", "dimaria");
         when(userRepository.save(any(User.class)))
                 .thenAnswer(invocation -> invocation.getArgument(0));
@@ -70,14 +75,7 @@ public class UserServiceImplTest {
         assertEquals(userRequest.email(), result.email());
         assertEquals(userRequest.username(), result.username());
         verify(userRepository).save(any(User.class));
-    }
-    @Test
-    public void testSave_BusinessException (){
-        UserRequest userRequest = new UserRequest("angeldimaria@gmail.com", "fideo", "dimaria");
-        when(userRepository.existsByEmail(userRequest.email())).thenReturn(true);
-
-        assertThrows(BusinessException.class, ()-> userService.save(userRequest));
-        verify(userRepository, never()).save(any(User.class));
+        verify(userValidator).validateUser(userRequest);
     }
 
     @Test
@@ -93,12 +91,16 @@ public class UserServiceImplTest {
 
     @Test
     public void testDelete_hasActiveLoans(){
+        User user = DataProvider.userListMock().get(1);
+        user.setId(1L);
+
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
         when(userRepository.hasActiveLoans(1L)).thenReturn(true);
 
-        assertThrows(BusinessException.class, ()-> userService.deletePermanently(1L));
+        assertThrows(BusinessException.class, () -> userService.deletePermanently(1L));
 
+        verify(userRepository).findById(1L);
         verify(userRepository).hasActiveLoans(1L);
-        verify(userRepository, never()).findById(1L);
         verify(userRepository, never()).delete(any(User.class));
     }
 
@@ -178,6 +180,7 @@ public class UserServiceImplTest {
         assertEquals(user.getUsername(), result.username());
 
         verify(userRepository).findById(1L);
+        verify(userValidator).validateUser(userRequest);
         verify(userRepository).save(any(User.class));
     }
 

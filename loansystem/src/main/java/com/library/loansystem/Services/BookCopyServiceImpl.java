@@ -25,27 +25,15 @@ public class BookCopyServiceImpl implements BookCopyService{
         this.bookService = bookService;
     }
 
-
     @Override
-    public List<BookCopyResponse> findAll() {
-        return bookCopyRepository.findAll().stream()
-                .map(bookCopyMapper::toResponse)
-                .toList();
-    }
-
-    @Override
-    public List<BookCopyResponse> findAllByBook(String Isbn) {
-        return bookCopyRepository.findByBookIsbn(Isbn).stream()
-                .map(bookCopyMapper::toResponse)
-                .toList();
-    }
-
-
-    @Override
-    public List<BookCopyResponse> findAvailableByBook(String Isbn) {
-        return bookCopyRepository.findByBookIsbnAndState(Isbn, BookCopyState.AVAILABLE).stream()
-                .map(bookCopyMapper::toResponse)
-                .toList();
+    public List<BookCopyResponse> findAllByBook(String isbn, BookCopyState state) {
+        List<BookCopy>bookCopyList;
+        if (state == null){
+            bookCopyList = bookCopyRepository.findByBookIsbn(isbn);
+        }else{
+            bookCopyList = bookCopyRepository.findByBookIsbnAndState(isbn, state);
+        }
+        return bookCopyList.stream().map(bookCopyMapper::toResponse).toList();
     }
 
     @Override

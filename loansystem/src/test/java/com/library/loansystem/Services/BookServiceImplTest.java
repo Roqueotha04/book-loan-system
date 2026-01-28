@@ -155,7 +155,7 @@ public class BookServiceImplTest {
     }
 
     @Test
-    public void testUpdate (){
+    public void testUpdate_ok (){
         BookRequest bookRequest = new BookRequest("The Age of Extremes",BookGenre.NON_FICTION,"8789876298523", 1L, List.of(1L,2L));
         Book book = new Book("The Age of Extremes 2", BookGenre.NON_FICTION,"8789876298523",new Publisher(1L, "Publisher 2"));
         when(bookRepository.findById(2L))
@@ -198,6 +198,56 @@ public class BookServiceImplTest {
         assertEquals(true, result.getActive());
         verify(bookRepository).findById(2L);
         verify(bookRepository).save(any(Book.class));
+    }
+
+    @Test
+    public void testFindByNameContaining(){
+        List<Book> bookList = DataProvider.bookListMock();
+        String name= "The Lord of the Rings";
+        when(bookRepository.findByNameContainingIgnoreCase(name)).thenReturn(bookList);
+
+        List<BookResponse> result = bookService.findByNameContaining(name);
+        assertEquals(bookList.size(), result.size());
+        verify(bookRepository).findByNameContainingIgnoreCase(name);
+    }
+
+    @Test
+    public void testFindByGenre(){
+        List<Book> bookList = DataProvider.bookListMock();
+        BookGenre genre = BookGenre.NON_FICTION;
+        when(bookRepository.findByGenre(genre)). thenReturn(bookList);
+        List<BookResponse> result = bookService.findByGenre(genre);
+
+        assertEquals(bookList.size(), result.size());
+        verify(bookRepository).findByGenre(genre);
+    }
+
+    @Test
+    public void testFindByAuthor_ok(){
+        List<Book> bookList = DataProvider.bookListMock();
+        Author author = DataProvider.authorListMock().get(1);
+        author.setId(2L);
+
+        when(authorService.getAuthorOrThrow(author.getId())).thenReturn(author);
+        when(bookRepository.findByAuthorXBooks_Author_Id(author.getId())).thenReturn(bookList);
+
+        List<BookResponse> result = bookService.findByAuthor(author.getId());
+
+        assertEquals(bookList.size(), result.size());
+        verify(authorService).getAuthorOrThrow(author.getId());
+        verify(bookRepository).findByAuthorXBooks_Author_Id(author.getId());
+    }
+
+    @Test
+    public void testFindByAuthor_ResourceNotFound(){
+       Long id= 2L;
+
+        when(authorService.getAuthorOrThrow(2L)).thenThrow(new ResourceNotFoundException("Author not found"));
+
+        assertThrows(ResourceNotFoundException.class, ()-> bookService.findByAuthor(2L));
+
+        verify(authorService).getAuthorOrThrow(2L);
+        verify(bookRepository, never()).findByAuthorXBooks_Author_Id(2L);
     }
 
 
