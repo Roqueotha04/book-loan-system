@@ -19,6 +19,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.cglib.core.Local;
 
 import javax.xml.crypto.Data;
 import java.time.LocalDate;
@@ -129,6 +130,127 @@ public class LoanServiceImplTest {
         assertThrows(BusinessException.class, ()-> loanService.returnLoan(1L));
         verify(loanRepository).findById(1L);
         verify(loanRepository, never()).save(any(Loan.class));
+    }
+
+    @Test
+    public void testRenewLoan_ok() {
+        Loan loan = DataProvider.loanListMock().get(0);
+        loan.setId(1L);
+        loan.setEndDate(null);
+        loan.setDueDate(LocalDate.now().plusDays(5));
+
+        LocalDate newDate = LocalDate.now().plusDays(10);
+
+        when(loanRepository.findById(1L)).thenReturn(Optional.of(loan));
+        when(loanRepository.save(any(Loan.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        LoanResponse result = loanService.renewLoan(1L, newDate);
+
+        assertNotNull(result);
+        assertEquals(newDate, result.dueDate());
+        assertEquals(loan.getUser().getId(), result.user().userId());
+
+        verify(loanRepository).findById(1L);
+        verify(loanRepository).save(any(Loan.class));
+    }
+
+    @Test
+    public void testRenewLoan_finishedLoan() {
+        Loan loan = DataProvider.loanListMock().get(0);
+        loan.setId(1L);
+        loan.setEndDate(FIXED_DATE);
+
+        when(loanRepository.findById(1L)).thenReturn(Optional.of(loan));
+
+        assertThrows(BusinessException.class,
+                () -> loanService.renewLoan(1L, FIXED_DATE.plusDays(10)));
+
+        verify(loanRepository).findById(1L);
+        verify(loanRepository, never()).save(any());
+    }
+
+    @Test
+    public void testRenewLoan_overdueLoan() {
+        Loan loan = DataProvider.loanListMock().get(0);
+        loan.setId(1L);
+        loan.setEndDate(null);
+        loan.setDueDate(LocalDate.now().minusDays(1));
+
+        LocalDate newDate = LocalDate.now().plusDays(5);
+
+        when(loanRepository.findById(1L)).thenReturn(Optional.of(loan));
+
+        assertThrows(BusinessException.class,
+                () -> loanService.renewLoan(1L, newDate));
+
+        verify(loanRepository).findById(1L);
+        verify(loanRepository, never()).save(any());
+    }
+
+    @Test
+    public void testRenewLoan_notFound() {
+        when(loanRepository.findById(1L)).thenReturn(Optional.empty());
+
+        assertThrows(ResourceNotFoundException.class,
+                () -> loanService.renewLoan(1L, FIXED_DATE.plusDays(5)));
+
+        verify(loanRepository).findById(1L);
+        verify(loanRepository, never()).save(any());
+    }
+
+    @Test
+    public void testFindByDateRange_ok() {
+        LocalDate startDate = LocalDate.of(2026, 1, 1);
+        LocalDate endDate = LocalDate.of(2026, 1, 31);
+
+        List<Loan> loans = DataProvider.loanListMock();
+        loans.forEach(l -> l.setStartDate(LocalDate.of(2026, 1, 10)));
+
+        when(loanRepository.findByStartDateBetween(startDate, endDate))
+                .thenReturn(loans);
+
+        List<LoanResponse> result = loanService.findByDateRange(startDate, endDate);
+
+        assertNotNull(result);
+        assertEquals(loans.size(), result.size());
+        assertEquals(loans.get(0).getUser().getId(), result.get(0).user().userId());
+
+        verify(loanRepository).findByStartDateBetween(startDate, endDate);
+    }
+
+    @Test
+    public void testFindByDateRange_invalidDates() {
+        LocalDate startDate = LocalDate.of(2026, 2, 1);
+        LocalDate endDate = LocalDate.of(2026, 1, 1);
+
+        assertThrows(BusinessException.class,
+                () -> loanService.findByDateRange(startDate, endDate));
+
+        verify(loanRepository, never()).findByStartDateBetween(any(), any());
+    }
+
+    @Test
+    public void testCountByDateRange_ok() {
+        LocalDate startDate = LocalDate.of(2026, 1, 1);
+        LocalDate endDate = LocalDate.of(2026, 1, 31);
+
+        when(loanRepository.countByStartDateBetween(startDate, endDate))
+                .thenReturn(3);
+
+        int result = loanService.countByDateRange(startDate, endDate);
+
+        assertEquals(3, result);
+        verify(loanRepository).countByStartDateBetween(startDate, endDate);
+    }
+
+    @Test
+    public void testCountByDateRange_invalidDates() {
+        LocalDate startDate = LocalDate.of(2026, 3, 1);
+        LocalDate endDate = LocalDate.of(2026, 2, 1);
+
+        assertThrows(BusinessException.class, () -> loanService.countByDateRange(startDate, endDate));
+
+        verify(loanRepository, never()).countByStartDateBetween(any(), any());
     }
 
 

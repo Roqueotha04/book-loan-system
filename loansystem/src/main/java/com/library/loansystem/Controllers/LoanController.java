@@ -9,6 +9,7 @@ import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -39,6 +40,43 @@ public class LoanController {
     public LoanResponse returnLoan(@PathVariable Long id) {
         return loanService.returnLoan(id);
     }
+
+    @Operation(
+            summary = "Renew a loan",
+            description = "Renews an active loan by updating its due date. The loan must not be finished or overdue."
+    )
+    @PatchMapping("/{id}/renew")
+    public LoanResponse renewLoan(
+            @PathVariable Long id,
+            @RequestParam LocalDate newDate
+    ) {
+        return loanService.renewLoan(id, newDate);
+    }
+
+    @Operation(
+            summary = "Get loans by date range",
+            description = "Returns loans created between the specified start and end dates."
+    )
+    @GetMapping("/date-range")
+    public List<LoanResponse> findByDateRange(
+            @RequestParam LocalDate startDate,
+            @RequestParam LocalDate endDate
+    ) {
+        return loanService.findByDateRange(startDate, endDate);
+    }
+
+    @Operation(
+            summary = "Count loans by date range",
+            description = "Returns the number of loans created between the specified start and end dates."
+    )
+    @GetMapping("/date-range/count")
+    public int countByDateRange(
+            @RequestParam LocalDate startDate,
+            @RequestParam LocalDate endDate
+    ) {
+        return loanService.countByDateRange(startDate, endDate);
+    }
+
 
     @Operation(
             summary = "Get loans with filters",

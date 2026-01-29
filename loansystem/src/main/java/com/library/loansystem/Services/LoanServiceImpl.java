@@ -119,6 +119,36 @@ public class LoanServiceImpl implements LoanService {
     }
 
     @Override
+    public LoanResponse renewLoan(Long loanId, LocalDate newDate) {
+        Loan loan = getLoanOrThrow(loanId);
+        if (loan.getEndDate()!=null) throw new BusinessException("Cannot renew a finished loan");
+        if (newDate.isBefore(loan.getDueDate())) throw new BusinessException("New date must not be before actual due date");
+        if (loan.getDueDate().isBefore(LocalDate.now())) throw new BusinessException("Cannot renew an overdue loan. Please return the book first.");
+
+        loan.setDueDate(newDate);
+        return loanMapper.toResponse(loanRepository.save(loan));
+    }
+
+    @Override
+    public List<LoanResponse> findByDateRange(LocalDate startDate, LocalDate endDate) {
+        if (startDate.isAfter(endDate)) {
+            throw new BusinessException("Start date must be before end date");
+        }
+        return loanRepository.findByStartDateBetween(startDate, endDate).stream()
+                .map(loanMapper::toResponse)
+                .toList();
+    }
+
+    @Override
+    public int countByDateRange(LocalDate startDate, LocalDate endDate) {
+        if (startDate.isAfter(endDate)) {
+            throw new BusinessException("Start date must be before end date");
+        }
+
+        return loanRepository.countByStartDateBetween(startDate, endDate);
+    }
+
+    @Override
     public Loan getLoanOrThrow(Long id) {
         return loanRepository.findById(id).orElseThrow(()-> new ResourceNotFoundException("Could not found Loan with id: " + id));
     }

@@ -36,8 +36,15 @@ public interface LoanRepository extends JpaRepository<Loan, Long> {
     @Query("SELECT l FROM Loan l WHERE l.bookCopy.book.isbn = :isbn AND l.dueDate < :now AND l.endDate IS NULL")
     List<Loan> findOverdueByIsbn(String isbn, LocalDate now);
 
+    /// DATE
+    List<Loan> findByStartDateBetween(LocalDate startDate, LocalDate endDate);
+    int countByStartDateBetween(LocalDate startDate, LocalDate endDate);
+
     ///FILTERS
     List<Loan> findByEndDateIsNullAndDueDateBefore(LocalDate date);
     List<Loan> findByEndDateIsNull();
     List<Loan> findByEndDateIsNotNull();
+
+
+
 }
