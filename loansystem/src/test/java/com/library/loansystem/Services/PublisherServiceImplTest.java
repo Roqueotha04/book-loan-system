@@ -60,6 +60,21 @@ public class PublisherServiceImplTest {
     }
 
     @Test
+    public void testFindByName(){
+        List<Publisher> publisherList = DataProvider.publisherListMock();
+
+        when(publisherRepository.findByNameContainingIgnoreCase("name")).thenReturn(publisherList);
+
+       List<PublisherResponse> result = publisherService.findByName("name");
+
+        assertNotNull(result);
+        assertEquals(publisherList.size(), result.size());
+        assertEquals(publisherList.get(1).getName(), result.get(1).getName());
+
+        verify(publisherRepository).findByNameContainingIgnoreCase("name");
+    }
+
+    @Test
     public void testSave (){
         PublisherRequest publisherRequest = new PublisherRequest("Pearson");
 
@@ -101,7 +116,7 @@ public class PublisherServiceImplTest {
     }
 
     @Test
-    public void testDelete (){
+    public void testDelete_ok (){
         Publisher publisher = new Publisher("Pearson");
 
         when (publisherRepository.findById(2L))
@@ -110,6 +125,18 @@ public class PublisherServiceImplTest {
 
         verify(publisherRepository).findById(2L);
         verify(publisherRepository).delete(any(Publisher.class));
+    }
+
+    @Test
+    public void testDelete_businessException (){
+        Publisher publisher = new Publisher("Pearson");
+
+        when (publisherRepository.findById(2L)).thenReturn(Optional.of(publisher));
+        when(publisherRepository.existsBookByPublisherId(2L)).thenReturn(true);
+
+        assertThrows(BusinessException.class, ()->publisherService.deleteById(2L));
+        verify(publisherRepository).findById(2L);
+        verify(publisherRepository, never()).delete(any(Publisher.class));
     }
 
     @Test

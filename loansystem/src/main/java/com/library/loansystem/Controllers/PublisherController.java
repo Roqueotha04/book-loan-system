@@ -45,6 +45,15 @@ public class PublisherController {
     }
 
     @Operation(
+            summary = "Find publishers by name",
+            description = "Returns a list of publishers whose name contains the search term (case-insensitive)."
+    )
+    @GetMapping("/search")
+    public List<PublisherResponse> findByName(@RequestParam String name) {
+        return publisherService.findByName(name);
+    }
+
+    @Operation(
             summary = "Create a new publisher",
             description = "Adds a new publisher to the system."
     )

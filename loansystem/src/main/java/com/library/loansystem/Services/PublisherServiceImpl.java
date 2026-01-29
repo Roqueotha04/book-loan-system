@@ -32,6 +32,13 @@ public class PublisherServiceImpl implements PublisherService {
     }
 
     @Override
+    public List<PublisherResponse> findByName(String name) {
+        return publisherRepository.findByNameContainingIgnoreCase(name).stream()
+                .map(this::toResponse)
+                .toList();
+    }
+
+    @Override
     public PublisherResponse save(PublisherRequest request) {
         if (publisherRepository.existsByName(request.getName())) {
             throw new BusinessException("Publisher with this name already exists");
@@ -50,6 +57,7 @@ public class PublisherServiceImpl implements PublisherService {
     @Override
     public void deleteById(Long id) {
         Publisher publisher = getPublisherOrThrow(id);
+        if(publisherRepository.existsBookByPublisherId(id)) throw new BusinessException("Cannot delete a Publisher with associated books");
         publisherRepository.delete(publisher);
     }
 
