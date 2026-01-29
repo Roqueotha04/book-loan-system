@@ -57,7 +57,22 @@ public class BookServiceImpl implements BookService{
         book.setName(bookRequest.getName());
         book.setGenre(bookRequest.getGenre());
         book.setIsbn(bookRequest.getIsbn());
+
+        if (!book.getPublisher().getId().equals(bookRequest.getPublisherID())) {
+            Publisher newPublisher = publisherService.getPublisherOrThrow(bookRequest.getPublisherID());
+            book.setPublisher(newPublisher);
+        }
+        updateAuthors(book, bookRequest.getAuthorsIds());
        return bookMapper.toResponse(bookRepository.save(book));
+    }
+
+    private void updateAuthors(Book book, List<Long> authorIds){
+        book.getAuthorXBooks().clear();
+
+        authorIds.forEach(authorId->{
+            Author author = authorService.getAuthorOrThrow(authorId);
+            book.getAuthorXBooks().add(new AuthorXBook(book, author));
+        });
     }
 
     @Override

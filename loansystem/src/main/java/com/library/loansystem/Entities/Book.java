@@ -40,7 +40,7 @@ public class Book {
 
     private Boolean active;
 
-    @OneToMany(mappedBy = "book", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "book", cascade = CascadeType.ALL, orphanRemoval = true)
     private List <AuthorXBook> authorXBooks= new ArrayList<>();
 
     @ManyToOne

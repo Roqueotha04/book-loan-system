@@ -155,13 +155,17 @@ public class BookServiceImplTest {
     }
 
     @Test
-    public void testUpdate_ok (){
-        BookRequest bookRequest = new BookRequest("The Age of Extremes",BookGenre.NON_FICTION,"8789876298523", 1L, List.of(1L,2L));
-        Book book = new Book("The Age of Extremes 2", BookGenre.NON_FICTION,"8789876298523",new Publisher(1L, "Publisher 2"));
-        when(bookRepository.findById(2L))
-                .thenReturn(Optional.of(book));
-        when(bookRepository.save(any(Book.class)))
-                .thenAnswer(iteration -> iteration.getArgument(0));
+    public void testUpdate (){
+        BookRequest bookRequest = new BookRequest("The Age of Extremes", BookGenre.NON_FICTION, "8789876298523", 1L, List.of(1L, 2L));
+
+        Publisher publisher = new Publisher(1L, "Publisher 1");
+        Author author = new Author(1L, "Author", "Test", "Nationality");
+        Book book = new Book("The Age of Extremes 2", BookGenre.NON_FICTION, "8789876298523", new Publisher(2L, "Publisher 2"));
+
+        when(bookRepository.findById(2L)).thenReturn(Optional.of(book));
+        when(publisherService.getPublisherOrThrow(1L)).thenReturn(publisher);
+        when(authorService.getAuthorOrThrow(anyLong())).thenReturn(author);
+        when(bookRepository.save(any(Book.class))).thenAnswer(iteration -> iteration.getArgument(0));
 
         BookResponse result = bookService.update(2L, bookRequest);
 
@@ -169,6 +173,9 @@ public class BookServiceImplTest {
         assertEquals("The Age of Extremes", result.getName());
         assertEquals(BookGenre.NON_FICTION, result.getGenre());
         assertEquals("8789876298523", result.getIsbn());
+        assertNotEquals(2L, result.getPublisher().getId());
+        assertEquals(2, result.getAuthors().size());
+
         verify(bookRepository).findById(2L);
         verify(bookRepository).save(any(Book.class));
     }
