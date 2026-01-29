@@ -66,6 +66,53 @@ public class UserServiceImplTest {
     }
 
     @Test
+    public void testSearchByUsername_ok() {
+        String username = "leo";
+        List<User> userList = DataProvider.userListMock();
+
+        when(userRepository.findByUsernameContainingIgnoreCase(username))
+                .thenReturn(userList);
+
+        List<UserResponse> result = userService.searchByUsername(username);
+
+        assertNotNull(result);
+        assertEquals(userList.size(), result.size());
+        assertEquals(userList.get(0).getUsername(), result.get(0).username());
+
+        verify(userRepository).findByUsernameContainingIgnoreCase(username);
+    }
+
+    @Test
+    public void testFindByEmail_ok() {
+        User user = DataProvider.userListMock().get(0);
+        String email = user.getEmail();
+
+        when(userRepository.findByEmail(email))
+                .thenReturn(Optional.of(user));
+
+        UserResponse result = userService.findByEmail(email);
+
+        assertNotNull(result);
+        assertEquals(user.getEmail(), result.email());
+        assertEquals(user.getUsername(), result.username());
+
+        verify(userRepository).findByEmail(email);
+    }
+
+    @Test
+    public void testFindByEmail_notFound() {
+        String email = "noexiste@mail.com";
+
+        when(userRepository.findByEmail(email)).thenReturn(Optional.empty());
+
+        assertThrows(ResourceNotFoundException.class, () -> userService.findByEmail(email));
+
+        verify(userRepository).findByEmail(email);
+    }
+
+
+
+    @Test
     public void testSave (){
         UserRequest userRequest = new UserRequest("angeldimaria@gmail.com", "fideo", "dimaria");
         when(userRepository.save(any(User.class)))

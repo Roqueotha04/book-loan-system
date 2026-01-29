@@ -10,6 +10,7 @@ import java.util.List;
 
 public interface BookCopyService {
     public List <BookCopyResponse> findAllByBook(String Isbn, BookCopyState state);
+    public BookCopyResponse findById(Long id);
     public BookCopyResponse save(BookCopyRequest bookCopyRequest);
     public BookCopyResponse patchState(Long id, BookCopyState bookCopyState);
     public void delete(Long id);

@@ -38,6 +38,11 @@ public class BookCopyServiceImpl implements BookCopyService{
     }
 
     @Override
+    public BookCopyResponse findById(Long id) {
+        return bookCopyMapper.toResponse(getBookCopyOrThrow(id));
+    }
+
+    @Override
     public BookCopyResponse save(BookCopyRequest bookCopyRequest) {
         Book book = bookService.getBookOrThrow(bookCopyRequest.bookId());
         BookCopy bookCopy = new BookCopy(book, bookCopyRequest.state());

@@ -39,6 +39,24 @@ public class UserController {
     }
 
     @Operation(
+            summary = "Search users by username",
+            description = "Returns a list of users whose username contains the given value (case-insensitive)."
+    )
+    @GetMapping("/search")
+    public List<UserResponse> searchByUsername(@RequestParam String username) {
+        return userService.searchByUsername(username);
+    }
+
+    @Operation(
+            summary = "Find user by email",
+            description = "Returns the user with the specified email, if it exists."
+    )
+    @GetMapping("/by-email")
+    public UserResponse findByEmail(@RequestParam String email) {
+        return userService.findByEmail(email);
+    }
+
+    @Operation(
             summary = "Create a new user",
             description = "Creates a new user if email and username are not already in use."
     )

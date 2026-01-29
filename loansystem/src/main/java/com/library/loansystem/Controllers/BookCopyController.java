@@ -33,6 +33,15 @@ public class BookCopyController {
     }
 
     @Operation(
+            summary = "Get a book copy by ID",
+            description = "Returns a single book copy details based on its unique ID."
+    )
+    @GetMapping("/{id}")
+    public BookCopyResponse findById(@PathVariable Long id) {
+        return bookCopyService.findById(id);
+    }
+
+    @Operation(
             summary = "Create a new book copy",
             description = "Adds a new copy for a specific book."
     )

@@ -36,6 +36,19 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
+    public List<UserResponse> searchByUsername(String username) {
+        return userRepository.findByUsernameContainingIgnoreCase(username).stream()
+                .map(userMapper::toResponse)
+                .toList();
+    }
+
+    @Override
+    public UserResponse findByEmail(String email) {
+        User user =userRepository.findByEmail(email).orElseThrow(() -> new ResourceNotFoundException("Cannot found user with email: " +email));
+        return userMapper.toResponse(user);
+    }
+
+    @Override
     public UserResponse save(UserRequest userRequest) {
         userValidator.validateUser(userRequest);
        User user = toUser(userRequest);

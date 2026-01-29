@@ -69,6 +69,19 @@ public class BookCopyServiceImplTest {
     }
 
     @Test
+    public void testFindById(){
+        BookCopy bookCopy = DataProvider.bookCopyListMock().get(1);
+        bookCopy.setId(1L);
+        when(bookCopyRepository.findById(1L)).thenReturn(Optional.of(bookCopy));
+
+        BookCopyResponse result = bookCopyService.findById(1L);
+
+        assertEquals(bookCopy.getId(), result.id());
+        assertEquals(bookCopy.getBook().getName(), result.bookName());
+        verify(bookCopyRepository).findById(1L);
+    }
+
+    @Test
     public void testSave(){
         BookCopyRequest bookCopyRequest = new BookCopyRequest(2L, BookCopyState.AVAILABLE);
         Book book = DataProvider.bookListMock().get(2);

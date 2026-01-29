@@ -9,6 +9,8 @@ import java.util.List;
 public interface UserService {
     public List<UserResponse> findAll();
     public UserResponse findById(Long id);
+    public List<UserResponse> searchByUsername(String username);
+    public UserResponse findByEmail(String email);
     public UserResponse save(UserRequest userRequest);
     public void deletePermanently (Long id);
     public UserResponse deactivate(Long id);
