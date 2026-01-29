@@ -257,6 +257,16 @@ public class BookServiceImplTest {
         verify(bookRepository, never()).findByAuthorXBooks_Author_Id(2L);
     }
 
+    @Test
+    public void testExistsByIsbn_ok() {
+        String isbn = "8789876298523";
+        when(bookRepository.existsByIsbn(isbn)).thenReturn(true);
+
+        boolean result = bookService.existsByIsbn(isbn);
+
+        assertTrue(result);
+        verify(bookRepository).existsByIsbn(isbn);
+    }
 
     @Test
     public void testGetBookOrThrow (){
@@ -278,5 +288,7 @@ public class BookServiceImplTest {
 
         verify(bookRepository).findById(2L);
     }
+
+
 
 }

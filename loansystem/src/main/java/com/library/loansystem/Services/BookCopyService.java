@@ -13,6 +13,7 @@ public interface BookCopyService {
     public BookCopyResponse save(BookCopyRequest bookCopyRequest);
     public BookCopyResponse patchState(Long id, BookCopyState bookCopyState);
     public void delete(Long id);
+    public int countAvailableByBookIsbn(String isbn);
     public BookCopy selectAvailableCopyOrThrow(String isbn);
     public BookCopy getBookCopyOrThrow (Long id);
 

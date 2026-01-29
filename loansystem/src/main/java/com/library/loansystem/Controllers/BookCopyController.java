@@ -64,4 +64,13 @@ public class BookCopyController {
         bookCopyService.delete(id);
     }
 
+    @Operation(
+            summary = "Count book copies by ISBN",
+            description = "Returns the total number of available copies associated with a specific book ISBN."
+    )
+    @GetMapping("/available/{isbn}")
+    public int countAvailableByBookIsbn(@PathVariable String isbn) {
+        return bookCopyService.countAvailableByBookIsbn(isbn);
+    }
+
 }

@@ -12,13 +12,14 @@ import java.util.List;
 public interface BookService {
     public List<BookResponse> findAll();
     public BookResponse findById(Long id);
+    public BookResponse findByIsbn(String isbn);
     public BookResponse save(BookRequest bookRequest);
     public BookResponse update (Long id, BookRequest bookRequest);
     public void delete (Long id);
     public BookResponse changeStatus (Long id);
-    public BookResponse findByIsbn(String isbn);
-    public Book getBookOrThrow (Long id);
     public List<BookResponse> findByNameContaining(String name);
     public List<BookResponse> findByGenre(BookGenre genre);
     public List<BookResponse> findByAuthor(Long authorId);
+    public boolean existsByIsbn(String isbn);
+    public Book getBookOrThrow (Long id);
 }

@@ -117,6 +117,11 @@ public class BookServiceImpl implements BookService{
                 .toList();
     }
 
+    @Override
+    public boolean existsByIsbn(String isbn) {
+        return bookRepository.existsByIsbn(isbn);
+    }
+
 
     public BookResponse findByIsbn(String isbn){
         Book book=bookRepository.findByIsbn(isbn).orElseThrow(()-> new ResourceNotFoundException("Book not found with isbn: " +isbn));

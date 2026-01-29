@@ -2,6 +2,7 @@ package com.library.loansystem.Services;
 
 import com.library.loansystem.DTO.Request.BookCopyRequest;
 import com.library.loansystem.DTO.Response.BookCopyResponse;
+import com.library.loansystem.DTO.Response.BookResponse;
 import com.library.loansystem.Entities.Book;
 import com.library.loansystem.Entities.BookCopy;
 import com.library.loansystem.Entities.Enums.BookCopyState;
@@ -55,6 +56,12 @@ public class BookCopyServiceImpl implements BookCopyService{
         BookCopy bookCopy = getBookCopyOrThrow(id);
         if (bookCopy.getState().equals(BookCopyState.LOANED)) throw new BusinessException("Cannot delete a loaned copy");
         bookCopyRepository.delete(bookCopy);
+    }
+
+    @Override
+    public int countAvailableByBookIsbn(String isbn) {
+        if (!bookService.existsByIsbn(isbn))throw new ResourceNotFoundException("Cannot found Book with isbn: " + isbn);
+        return bookCopyRepository.countByIsbnAndState(isbn, BookCopyState.AVAILABLE);
     }
 
 

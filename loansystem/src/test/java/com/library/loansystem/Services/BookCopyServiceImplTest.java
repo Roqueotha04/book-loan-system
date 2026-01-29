@@ -156,6 +156,32 @@ public class BookCopyServiceImplTest {
     }
 
     @Test
+    public void testCountAvailableByBookIsbn_ok() {
+        String isbn = "8789876298523";
+
+        when(bookService.existsByIsbn(isbn)).thenReturn(true);
+        when(bookCopyRepository.countByIsbnAndState(isbn, BookCopyState.AVAILABLE)).thenReturn(5);
+
+        int result = bookCopyService.countAvailableByBookIsbn(isbn);
+
+        assertEquals(5, result);
+        verify(bookService).existsByIsbn(isbn);
+        verify(bookCopyRepository).countByIsbnAndState(isbn, BookCopyState.AVAILABLE);
+    }
+
+    @Test
+    public void testCountAvailableByBookIsbn_notFound() {
+        String isbn = "1234567890";
+
+        when(bookService.existsByIsbn(isbn)).thenReturn(false);
+
+        assertThrows(ResourceNotFoundException.class, () -> bookCopyService.countAvailableByBookIsbn(isbn));
+
+        verify(bookService).existsByIsbn(isbn);
+        verify(bookCopyRepository, never()).countByIsbnAndState(anyString(), any(BookCopyState.class));
+    }
+
+    @Test
     public void testGetBookCopyOrThrow_ok(){
         BookCopy bookCopy = DataProvider.bookCopyListMock().get(1);
         bookCopy.setId(1L);
