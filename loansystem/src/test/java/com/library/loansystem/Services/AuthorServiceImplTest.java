@@ -1,5 +1,6 @@
 package com.library.loansystem.Services;
 
+import com.library.loansystem.Exceptions.BusinessException;
 import com.library.loansystem.Exceptions.ResourceNotFoundException;
 import com.library.loansystem.Mapper.AuthorMapper;
 import com.library.loansystem.DTO.Request.AuthorRequest;
@@ -82,7 +83,7 @@ public class AuthorServiceImplTest {
     }
 
     @Test
-    public void testDelete (){
+    public void testDelete_ok (){
         when(authorRepository.findById(1L))
                 .thenReturn(Optional.of(new Author()));
 
@@ -90,6 +91,17 @@ public class AuthorServiceImplTest {
 
         verify(authorRepository).findById(1L);
         verify(authorRepository).delete(any(Author.class));
+    }
+
+    @Test
+    public void testDelete_businessException (){
+        when(authorRepository.findById(1L)).thenReturn(Optional.of(new Author()));
+        when(authorRepository.existsBookByAuthorId(1L)).thenReturn(true);
+        assertThrows(BusinessException.class, () -> authorService.deleteById(1L));
+
+
+        verify(authorRepository).findById(1L);
+        verify(authorRepository, never()).delete(any(Author.class));
     }
 
     @Test

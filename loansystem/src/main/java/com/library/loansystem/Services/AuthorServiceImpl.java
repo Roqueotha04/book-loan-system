@@ -1,5 +1,6 @@
 package com.library.loansystem.Services;
 
+import com.library.loansystem.Exceptions.BusinessException;
 import com.library.loansystem.Mapper.AuthorMapper;
 import com.library.loansystem.DTO.Request.AuthorRequest;
 import com.library.loansystem.DTO.Response.AuthorResponse;
@@ -42,6 +43,7 @@ public class AuthorServiceImpl implements AuthorService {
     @Override
     public void deleteById(Long id) {
         Author author = getAuthorOrThrow(id);
+        if (authorRepository.existsBookByAuthorId(id)) throw new BusinessException("Cannot delete an author with associated books");
         authorRepository.delete(author);
     }
 

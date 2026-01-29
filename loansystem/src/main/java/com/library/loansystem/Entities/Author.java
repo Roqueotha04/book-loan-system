@@ -36,6 +36,6 @@ public class Author {
 
     private String nationality;
 
-    @OneToMany (mappedBy = "author", cascade = { CascadeType.PERSIST, CascadeType.REMOVE }, orphanRemoval = true)
+    @OneToMany (mappedBy = "author", cascade = {CascadeType.PERSIST}, orphanRemoval = true)
     private List<AuthorXBook> authorXBooks=new ArrayList<>();
 }
