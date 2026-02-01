@@ -1,8 +1,8 @@
 package com.library.loansystem.Services.Validators;
 
-import com.library.loansystem.DTO.Request.UserRequest;
+import com.library.loansystem.DTO.Request.UserEntityRequest;
 import com.library.loansystem.Exceptions.BusinessException;
-import com.library.loansystem.Repositories.UserRepository;
+import com.library.loansystem.Repositories.UserEntityRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -13,10 +13,10 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-public class UserValidatorTest {
+public class UserEntityValidatorTest {
 
     @Mock
-    private UserRepository userRepository;
+    private UserEntityRepository userEntityRepository;
 
     @InjectMocks
     private UserValidator userValidator;
@@ -24,22 +24,22 @@ public class UserValidatorTest {
     @Test
     public void testValidateUser_Ok() {
         // Arrange
-        UserRequest request = new UserRequest("nuevo@gmail.com", "nuevoUser", "pass123");
-        when(userRepository.existsByEmail(request.email())).thenReturn(false);
-        when(userRepository.existsByUsername(request.username())).thenReturn(false);
+        UserEntityRequest request = new UserEntityRequest("nuevo@gmail.com", "nuevoUser", "pass123");
+        when(userEntityRepository.existsByEmail(request.email())).thenReturn(false);
+        when(userEntityRepository.existsByUsername(request.username())).thenReturn(false);
 
         // Act & Assert
         assertDoesNotThrow(() -> userValidator.validateUser(request));
 
-        verify(userRepository).existsByEmail(request.email());
-        verify(userRepository).existsByUsername(request.username());
+        verify(userEntityRepository).existsByEmail(request.email());
+        verify(userEntityRepository).existsByUsername(request.username());
     }
 
     @Test
     public void testValidateUser_EmailAlreadyExists() {
         // Arrange
-        UserRequest request = new UserRequest("repetido@gmail.com", "user", "pass");
-        when(userRepository.existsByEmail(request.email())).thenReturn(true);
+        UserEntityRequest request = new UserEntityRequest("repetido@gmail.com", "user", "pass");
+        when(userEntityRepository.existsByEmail(request.email())).thenReturn(true);
 
         // Act & Assert
         BusinessException exception = assertThrows(BusinessException.class,
@@ -48,16 +48,16 @@ public class UserValidatorTest {
         assertEquals("Email already in use", exception.getMessage());
 
         // Verificamos que al fallar el email, NO se chequea el username (ahorro de recursos)
-        verify(userRepository).existsByEmail(request.email());
-        verify(userRepository, never()).existsByUsername(anyString());
+        verify(userEntityRepository).existsByEmail(request.email());
+        verify(userEntityRepository, never()).existsByUsername(anyString());
     }
 
     @Test
     public void testValidateUser_UsernameAlreadyExists() {
         // Arrange
-        UserRequest request = new UserRequest("email@ok.com", "fideo", "pass");
-        when(userRepository.existsByEmail(request.email())).thenReturn(false);
-        when(userRepository.existsByUsername(request.username())).thenReturn(true);
+        UserEntityRequest request = new UserEntityRequest("email@ok.com", "fideo", "pass");
+        when(userEntityRepository.existsByEmail(request.email())).thenReturn(false);
+        when(userEntityRepository.existsByUsername(request.username())).thenReturn(true);
 
         // Act & Assert
         BusinessException exception = assertThrows(BusinessException.class,
@@ -65,7 +65,7 @@ public class UserValidatorTest {
 
         assertEquals("Username already in use", exception.getMessage());
 
-        verify(userRepository).existsByEmail(request.email());
-        verify(userRepository).existsByUsername(request.username());
+        verify(userEntityRepository).existsByEmail(request.email());
+        verify(userEntityRepository).existsByUsername(request.username());
     }
 }

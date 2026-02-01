@@ -3,6 +3,7 @@ package com.library.loansystem.Repositories;
 import com.library.loansystem.Entities.Loan;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
@@ -13,20 +14,20 @@ import java.util.List;
 public interface LoanRepository extends JpaRepository<Loan, Long> {
 
     /// EXISTS
-    Boolean existsByBookCopyBookIdAndEndDateIsNull(Long bookId);
-    Boolean existsByUserIdAndEndDateIsNull(Long userId);
-    Boolean existsByUserIdAndBookCopyIdAndEndDateIsNull(Long userId, Long bookCopyId);
-    Boolean existsByUserIdAndEndDateIsNullAndDueDateBefore(Long userId, LocalDate date);
+    Boolean existsByBookCopyBookIdAndEndDateIsNull(Long userEntityId);
+    Boolean existsByUserEntityIdAndEndDateIsNull(Long userEntityId);
+    Boolean existsByUserEntityIdAndBookCopyIdAndEndDateIsNull(Long userEntityId, Long bookCopyId);
+    Boolean existsByUserEntityIdAndEndDateIsNullAndDueDateBefore(Long userEntityId, LocalDate date);
 
     ///USER
-    List<Loan> findByUserId(Long userId);
-    List<Loan> findByUserIdAndEndDateIsNull(Long userId);
-    List<Loan> findByUserIdAndEndDateIsNotNull(Long userId);
+    List<Loan> findByUserEntityId(Long userEntityId);
+    List<Loan> findByUserEntityIdAndEndDateIsNull(Long userEntityId);
+    List<Loan> findByUserEntityIdAndEndDateIsNotNull(Long userEntityId);
 
-    @Query("SELECT l FROM Loan l WHERE l.user.id = :userId AND l.dueDate < :now AND l.endDate IS NULL")
-    List<Loan> findOverdue(Long userId, LocalDate now);
+    @Query("SELECT l FROM Loan l WHERE l.userEntity.id = :userId AND l.dueDate < :now AND l.endDate IS NULL")
+    List<Loan> findOverdue(@Param("userId") Long userId, @Param("now") LocalDate now);
 
-    int countByUserIdAndEndDateIsNull(Long userId);
+    int countByUserEntityIdAndEndDateIsNull(Long userId);
 
     ///BOOK
     List<Loan> findByBookCopyBookIsbn(String isbn);

@@ -1,8 +1,7 @@
 package com.library.loansystem.Services.Validators;
 
-import com.library.loansystem.Entities.Book;
 import com.library.loansystem.Entities.BookCopy;
-import com.library.loansystem.Entities.User;
+import com.library.loansystem.Entities.UserEntity;
 import com.library.loansystem.Exceptions.BadRequestException;
 import com.library.loansystem.Exceptions.BusinessException;
 import com.library.loansystem.Repositories.LoanRepository;
@@ -22,25 +21,25 @@ public class LoanValidator {
         this.loanRepository = loanRepository;
     }
 
-    public void validateLoan(User user, BookCopy bookCopy, LocalDate dueDate) {
+    public void validateLoan(UserEntity userEntity, BookCopy bookCopy, LocalDate dueDate) {
 
         if (dueDate.isBefore(LocalDate.now().plusDays(MIN_LOAN_DAYS)) || dueDate.isAfter(LocalDate.now().plusDays(MAX_LOAN_DAYS))) {
             throw new BadRequestException("Loan duration must be between 1 and 30 days");
         }
 
-        if (!user.getActive())
+        if (!userEntity.getActive())
             throw new BusinessException("User is inactive");
 
         if (!bookCopy.getBook().getActive())
             throw new BusinessException("Book is inactive");
 
-        if (loanRepository.countByUserIdAndEndDateIsNull(user.getId()) >= MAX_LOANS_PER_USER)
+        if (loanRepository.countByUserEntityIdAndEndDateIsNull(userEntity.getId()) >= MAX_LOANS_PER_USER)
             throw new BusinessException("User reached maximum active loans");
 
-        if (loanRepository.existsByUserIdAndBookCopyIdAndEndDateIsNull(user.getId(), bookCopy.getId()))
+        if (loanRepository.existsByUserEntityIdAndBookCopyIdAndEndDateIsNull(userEntity.getId(), bookCopy.getId()))
             throw new BusinessException("User already has this book on loan");
 
-        if (loanRepository.existsByUserIdAndEndDateIsNullAndDueDateBefore(user.getId(), LocalDate.now())) {
+        if (loanRepository.existsByUserEntityIdAndEndDateIsNullAndDueDateBefore(userEntity.getId(), LocalDate.now())) {
             throw new BusinessException("User has overdue loans");
         }
     }

@@ -1,8 +1,8 @@
 package com.library.loansystem.Controllers;
 
-import com.library.loansystem.DTO.Request.UserRequest;
-import com.library.loansystem.DTO.Response.UserResponse;
-import com.library.loansystem.Services.UserService;
+import com.library.loansystem.DTO.Request.UserEntityRequest;
+import com.library.loansystem.DTO.Response.UserEntityResponse;
+import com.library.loansystem.Services.UserEntityService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -12,12 +12,12 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/users")
-public class UserController {
+public class UserEntityController {
 
-    private final UserService userService;
+    private final UserEntityService userEntityService;
 
-    public UserController(UserService userService) {
-        this.userService = userService;
+    public UserEntityController(UserEntityService userEntityService) {
+        this.userEntityService = userEntityService;
     }
 
     @Operation(
@@ -25,8 +25,8 @@ public class UserController {
             description = "Returns a list of all users in the system."
     )
     @GetMapping
-    public List<UserResponse> findAll() {
-        return userService.findAll();
+    public List<UserEntityResponse> findAll() {
+        return userEntityService.findAll();
     }
 
     @Operation(
@@ -34,8 +34,8 @@ public class UserController {
             description = "Returns the user with the specified ID, if it exists."
     )
     @GetMapping("/{id}")
-    public UserResponse findById(@PathVariable Long id) {
-        return userService.findById(id);
+    public UserEntityResponse findById(@PathVariable Long id) {
+        return userEntityService.findById(id);
     }
 
     @Operation(
@@ -43,8 +43,8 @@ public class UserController {
             description = "Returns a list of users whose username contains the given value (case-insensitive)."
     )
     @GetMapping("/search")
-    public List<UserResponse> searchByUsername(@RequestParam String username) {
-        return userService.searchByUsername(username);
+    public List<UserEntityResponse> searchByUsername(@RequestParam String username) {
+        return userEntityService.searchByUsername(username);
     }
 
     @Operation(
@@ -52,8 +52,8 @@ public class UserController {
             description = "Returns the user with the specified email, if it exists."
     )
     @GetMapping("/by-email")
-    public UserResponse findByEmail(@RequestParam String email) {
-        return userService.findByEmail(email);
+    public UserEntityResponse findByEmail(@RequestParam String email) {
+        return userEntityService.findByEmail(email);
     }
 
     @Operation(
@@ -62,8 +62,8 @@ public class UserController {
     )
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public UserResponse save(@Valid @RequestBody UserRequest userRequest) {
-        return userService.save(userRequest);
+    public UserEntityResponse save(@Valid @RequestBody UserEntityRequest userEntityRequest) {
+        return userEntityService.save(userEntityRequest);
     }
 
     @Operation(
@@ -71,11 +71,11 @@ public class UserController {
             description = "Updates the data of the user with the specified ID."
     )
     @PutMapping("/{id}")
-    public UserResponse update(
+    public UserEntityResponse update(
             @PathVariable Long id,
-            @Valid @RequestBody UserRequest userRequest
+            @Valid @RequestBody UserEntityRequest userEntityRequest
     ) {
-        return userService.update(id, userRequest);
+        return userEntityService.update(id, userEntityRequest);
     }
 
     @Operation(
@@ -85,7 +85,7 @@ public class UserController {
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deletePermanently(@PathVariable Long id) {
-        userService.deletePermanently(id);
+        userEntityService.deletePermanently(id);
     }
 
     @Operation(
@@ -93,8 +93,8 @@ public class UserController {
             description = "Deactivates a user if they have no active loans."
     )
     @PatchMapping("/{id}/deactivate")
-    public UserResponse deactivate(@PathVariable Long id) {
-        return userService.deactivate(id);
+    public UserEntityResponse deactivate(@PathVariable Long id) {
+        return userEntityService.deactivate(id);
     }
 
     @Operation(
@@ -102,7 +102,7 @@ public class UserController {
             description = "Activates a previously deactivated user."
     )
     @PatchMapping("/{id}/activate")
-    public UserResponse activate(@PathVariable Long id) {
-        return userService.activate(id);
+    public UserEntityResponse activate(@PathVariable Long id) {
+        return userEntityService.activate(id);
     }
 }

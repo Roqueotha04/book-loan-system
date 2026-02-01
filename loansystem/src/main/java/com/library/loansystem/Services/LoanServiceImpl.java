@@ -2,12 +2,11 @@ package com.library.loansystem.Services;
 
 import com.library.loansystem.DTO.Request.LoanRequest;
 import com.library.loansystem.DTO.Response.LoanResponse;
-import com.library.loansystem.Entities.Book;
 import com.library.loansystem.Entities.BookCopy;
 import com.library.loansystem.Entities.Enums.BookCopyState;
 import com.library.loansystem.Entities.Enums.LoanStatus;
 import com.library.loansystem.Entities.Loan;
-import com.library.loansystem.Entities.User;
+import com.library.loansystem.Entities.UserEntity;
 import com.library.loansystem.Exceptions.BusinessException;
 import com.library.loansystem.Exceptions.ResourceNotFoundException;
 import com.library.loansystem.Mapper.LoanMapper;
@@ -16,8 +15,6 @@ import com.library.loansystem.Services.Validators.LoanValidator;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -31,14 +28,14 @@ public class LoanServiceImpl implements LoanService {
 
     private final BookCopyService bookCopyService;
 
-    private final UserService userService;
+    private final UserEntityService userEntityService;
 
-    public LoanServiceImpl(LoanValidator loanValidator, LoanRepository loanRepository, LoanMapper loanMapper, BookCopyService bookCopyService, UserService userService) {
+    public LoanServiceImpl(LoanValidator loanValidator, LoanRepository loanRepository, LoanMapper loanMapper, BookCopyService bookCopyService, UserEntityService userEntityService) {
         this.loanValidator = loanValidator;
         this.loanRepository = loanRepository;
         this.loanMapper = loanMapper;
         this.bookCopyService = bookCopyService;
-        this.userService = userService;
+        this.userEntityService = userEntityService;
     }
 
     public List<LoanResponse> findAll(LoanStatus status) {
@@ -62,11 +59,11 @@ public class LoanServiceImpl implements LoanService {
         List<Loan> loans;
 
         if (status == null) {
-            loans=loanRepository.findByUserId(userId);
+            loans=loanRepository.findByUserEntityId(userId);
         }else {
             loans=switch (status) {
-                case ACTIVE -> loanRepository.findByUserIdAndEndDateIsNull(userId);
-                case RETURNED -> loanRepository.findByUserIdAndEndDateIsNotNull(userId);
+                case ACTIVE -> loanRepository.findByUserEntityIdAndEndDateIsNull(userId);
+                case RETURNED -> loanRepository.findByUserEntityIdAndEndDateIsNotNull(userId);
                 case OVERDUE -> loanRepository.findOverdue(userId, LocalDate.now());
             };
         }
@@ -97,14 +94,14 @@ public class LoanServiceImpl implements LoanService {
     @Override
     public LoanResponse createLoan(LoanRequest loanRequest) {
 
-        User user = userService.getUserOrThrow(loanRequest.userId());
+        UserEntity userEntity = userEntityService.getUserOrThrow(loanRequest.userId());
         BookCopy bookCopy = bookCopyService.selectAvailableCopyOrThrow(
                 loanRequest.isbn()
         );
-        loanValidator.validateLoan(user, bookCopy, loanRequest.dueDate());
+        loanValidator.validateLoan(userEntity, bookCopy, loanRequest.dueDate());
         bookCopyService.patchState(bookCopy.getId(), BookCopyState.LOANED);
 
-        Loan loan = new Loan(user, bookCopy, loanRequest.dueDate());
+        Loan loan = new Loan(userEntity, bookCopy, loanRequest.dueDate());
 
         return loanMapper.toResponse(loanRepository.save(loan));
     }
@@ -159,7 +156,7 @@ public class LoanServiceImpl implements LoanService {
     }
 
     @Override
-    public Boolean existsActiveLoanByUserId(Long userId){return loanRepository.existsByUserIdAndEndDateIsNull(userId);}
+    public Boolean existsActiveLoanByUserId(Long userId){return loanRepository.existsByUserEntityIdAndEndDateIsNull(userId);}
 
 
 }

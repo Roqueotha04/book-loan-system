@@ -60,7 +60,7 @@ The system includes **robust DTO validations**, **centralized exception handling
 - `PATCH /books/{id}/STOCK` → Update book stock
 
 ### Loan
-- CRUD for loaning books to users.
+- CRUD for loaning books to userEntities.
 
 ### User
 - CRUD for Users.

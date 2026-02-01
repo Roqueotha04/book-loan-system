@@ -20,11 +20,12 @@ public class DataLoader  implements ApplicationRunner{
 
         @Autowired AuthorRepository authorRepository;
         @Autowired BookRepository bookRepository;
-        @Autowired UserRepository userRepository;
+        @Autowired UserEntityRepository userEntityRepository;
         @Autowired LoanRepository loanRepository;
         @Autowired AuthorXBookRepository authorXBookRepository;
         @Autowired PublisherRepository publisherRepository;
         @Autowired BookCopyRepository bookCopyRepository;
+        @Autowired RoleRepository roleRepository;
 
         @Override
         public void run (ApplicationArguments args) {
@@ -32,6 +33,7 @@ public class DataLoader  implements ApplicationRunner{
             loadAuthors();
             loadBooks();
             loadBookCopies();
+            loadRoles();
             loadUsers();
             loadLoans();
 
@@ -138,49 +140,80 @@ public class DataLoader  implements ApplicationRunner{
         bookCopyRepository.saveAll(bookCopies);
     }
 
-        private void loadUsers(){
-            if (userRepository.count()==0){
-                List<User> users = List.of(
-                        new User("neo@gmail.com", "neo01", "matrix"),
-                        new User("tonystark@gmail.com", "tony", "iron"),
-                        new User("indianajones@gmail.com", "indy", "temple"),
-                        new User("mcfly@gmail.com", "mcfly", "delorean"),
-                        new User("tylerdurden@gmail.com", "tyler", "fightclub")
-                );
-                userRepository.saveAll(users);
-            }
+    private void loadRoles() {
+        if (roleRepository.count() == 0) {
+            List<Role> roles = List.of(
+                    new Role("ROLE_USER"),
+                    new Role("ROLE_ADMIN"),
+                    new Role("ROLE_LIBRARIAN")
+            );
+            roleRepository.saveAll(roles);
         }
+    }
+
+    private void loadUsers() {
+        if (userEntityRepository.count() == 0) {
+
+            List<Role> roles = roleRepository.findAll();
+
+            Role userRole = roles.get(0);
+            Role adminRole = roles.get(1);
+            Role librarianRole = roles.get(2);
+
+            UserEntity neo = new UserEntity("neo@gmail.com", "neo01", "matrix");
+            neo.getRoles().add(userRole);
+
+            UserEntity tony = new UserEntity("tonystark@gmail.com", "tony", "iron");
+            tony.getRoles().add(adminRole);
+            tony.getRoles().add(librarianRole);
+
+            UserEntity indy = new UserEntity("indianajones@gmail.com", "indy", "temple");
+            indy.getRoles().add(userRole);
+            indy.getRoles().add(librarianRole);
+
+            UserEntity mcfly = new UserEntity("mcfly@gmail.com", "mcfly", "delorean");
+            mcfly.getRoles().add(userRole);
+
+            UserEntity tyler = new UserEntity("tylerdurden@gmail.com", "tyler", "fightclub");
+            tyler.getRoles().add(userRole);
+
+            userEntityRepository.saveAll(
+                    List.of(neo, tony, indy, mcfly, tyler)
+            );
+        }
+    }
+
     private void loadLoans() {
 
         if (loanRepository.count() > 0) {
             return;
         }
 
-        List<User> users = userRepository.findAll();
+        List<UserEntity> userEntities = userEntityRepository.findAll();
         List<BookCopy> copies = bookCopyRepository.findAll();
 
         List<Loan> loans = List.of(
                 // Neo (3)
-                new Loan(users.get(0), copies.get(0), LocalDate.now().plusDays(5)),
-                new Loan(users.get(0), copies.get(1), LocalDate.now().plusDays(12)),
-                new Loan(users.get(0), copies.get(2), LocalDate.now().plusDays(20)),
+                new Loan(userEntities.get(0), copies.get(0), LocalDate.now().plusDays(5)),
+                new Loan(userEntities.get(0), copies.get(1), LocalDate.now().plusDays(12)),
+                new Loan(userEntities.get(0), copies.get(2), LocalDate.now().plusDays(20)),
 
                 // Tony Stark (3)
-                new Loan(users.get(1), copies.get(3), LocalDate.now().plusDays(3)),
-                new Loan(users.get(1), copies.get(4), LocalDate.now().plusDays(15)),
-                new Loan(users.get(1), copies.get(5), LocalDate.now().plusDays(25)),
+                new Loan(userEntities.get(1), copies.get(3), LocalDate.now().plusDays(3)),
+                new Loan(userEntities.get(1), copies.get(4), LocalDate.now().plusDays(15)),
+                new Loan(userEntities.get(1), copies.get(5), LocalDate.now().plusDays(25)),
 
                 // Indiana Jones (2)
-                new Loan(users.get(2), copies.get(6), LocalDate.now().plusDays(7)),
-                new Loan(users.get(2), copies.get(7), LocalDate.now().plusDays(18)),
+                new Loan(userEntities.get(2), copies.get(6), LocalDate.now().plusDays(7)),
+                new Loan(userEntities.get(2), copies.get(7), LocalDate.now().plusDays(18)),
 
                 // Marty McFly (2)
-                new Loan(users.get(3), copies.get(1), LocalDate.now().plusDays(10)),
-                new Loan(users.get(3), copies.get(8), LocalDate.now().plusDays(22)),
+                new Loan(userEntities.get(3), copies.get(1), LocalDate.now().plusDays(10)),
+                new Loan(userEntities.get(3), copies.get(8), LocalDate.now().plusDays(22)),
 
                 // Tyler Durden (2)
-                new Loan(users.get(4), copies.get(0), LocalDate.now().plusDays(6)),
-                new Loan(users.get(4), copies.get(3), LocalDate.now().plusDays(28))
+                new Loan(userEntities.get(4), copies.get(0), LocalDate.now().plusDays(6)),
+                new Loan(userEntities.get(4), copies.get(3), LocalDate.now().plusDays(28))
         );
 
         loanRepository.saveAll(loans);

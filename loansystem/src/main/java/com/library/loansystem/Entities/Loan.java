@@ -1,11 +1,8 @@
 package com.library.loansystem.Entities;
 
 import jakarta.persistence.*;
-import lombok.Data;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.cglib.core.Local;
 
 import java.time.LocalDate;
 
@@ -14,9 +11,9 @@ import java.time.LocalDate;
 @Entity
 public class Loan {
 
-    public Loan (User user, BookCopy bookCopy, LocalDate dueDate){
+    public Loan (UserEntity userEntity, BookCopy bookCopy, LocalDate dueDate){
         this.bookCopy=bookCopy;
-        this.user=user;
+        this.userEntity = userEntity;
         this.startDate= LocalDate.of(LocalDate.now().getYear(), LocalDate.now().getMonth(), LocalDate.now().getDayOfMonth());
         this.dueDate = dueDate;
         this.endDate = null;
@@ -37,7 +34,7 @@ public class Loan {
     private LocalDate endDate;
 
     @ManyToOne
-    private User user;
+    private UserEntity userEntity;
 
     @ManyToOne
     private BookCopy bookCopy;

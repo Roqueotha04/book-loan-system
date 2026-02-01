@@ -2,13 +2,11 @@ package com.library.loansystem.Mapper;
 
 import com.library.loansystem.DTO.Response.LoanResponse;
 import com.library.loansystem.DataProvider;
-import com.library.loansystem.Entities.Book;
 import com.library.loansystem.Entities.BookCopy;
 import com.library.loansystem.Entities.Loan;
-import com.library.loansystem.Entities.User;
+import com.library.loansystem.Entities.UserEntity;
 import org.junit.jupiter.api.Test;
 
-import javax.xml.crypto.Data;
 import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -19,12 +17,12 @@ public class LoanMapperTest {
 
     @Test
     public void testToResponse() {
-        User user = DataProvider.userListMock().get(0);
+        UserEntity userEntity = DataProvider.userListMock().get(0);
         BookCopy bookCopy = DataProvider.bookCopyListMock().get(0);
 
         LocalDate startDate = LocalDate.now();
         LocalDate dueDate = startDate.plusDays(14);
-        Loan loan = new Loan(user, bookCopy, dueDate);
+        Loan loan = new Loan(userEntity, bookCopy, dueDate);
 
         LoanResponse result = loanMapper.toResponse(loan);
 
@@ -35,7 +33,7 @@ public class LoanMapperTest {
         assertEquals(bookCopy.getId(), result.book().bookCopyId());
         assertEquals(bookCopy.getBook().getIsbn(), result.book().isbn());
         assertEquals(bookCopy.getBook().getName(), result.book().bookName());
-        assertEquals(user.getId(), result.user().userId());
-        assertEquals(user.getUsername(), result.user().username());
+        assertEquals(userEntity.getId(), result.user().userId());
+        assertEquals(userEntity.getUsername(), result.user().username());
     }
 }

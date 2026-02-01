@@ -8,7 +8,7 @@ import com.library.loansystem.Entities.BookCopy;
 import com.library.loansystem.Entities.Enums.BookCopyState;
 import com.library.loansystem.Entities.Enums.LoanStatus;
 import com.library.loansystem.Entities.Loan;
-import com.library.loansystem.Entities.User;
+import com.library.loansystem.Entities.UserEntity;
 import com.library.loansystem.Exceptions.BusinessException;
 import com.library.loansystem.Exceptions.ResourceNotFoundException;
 import com.library.loansystem.Mapper.LoanMapper;
@@ -19,9 +19,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.cglib.core.Local;
 
-import javax.xml.crypto.Data;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -45,28 +43,28 @@ public class LoanServiceImplTest {
     private BookCopyService bookCopyService;
 
     @Mock
-    private UserService userService;
+    private UserEntityService userEntityService;
 
     private LoanServiceImpl loanService;
 
     @BeforeEach
     void setUp() {
         LoanMapper loanMapper = new LoanMapper();
-        loanService = new LoanServiceImpl(loanValidator, loanRepository, loanMapper, bookCopyService, userService);
+        loanService = new LoanServiceImpl(loanValidator, loanRepository, loanMapper, bookCopyService, userEntityService);
     }
 
     @Test
     public void testCreateLoan() {
-        User user = DataProvider.userListMock().get(0);
-        user.setId(1L);
+        UserEntity userEntity = DataProvider.userListMock().get(0);
+        userEntity.setId(1L);
         Book book = DataProvider.bookListMock().get(0);
         book.setId(1L);
         BookCopy bookCopy = DataProvider.bookCopyListMock().get(0);
         bookCopy.setId(1L);
-        LoanRequest loanRequest = new LoanRequest(FIXED_DATE.plusDays(10), user.getId(), book.getIsbn());
+        LoanRequest loanRequest = new LoanRequest(FIXED_DATE.plusDays(10), userEntity.getId(), book.getIsbn());
 
         when(bookCopyService.selectAvailableCopyOrThrow(book.getIsbn())).thenReturn(bookCopy);
-        when(userService.getUserOrThrow(1L)).thenReturn(user);
+        when(userEntityService.getUserOrThrow(1L)).thenReturn(userEntity);
         when(loanRepository.save(any(Loan.class)))
                 .thenAnswer(invocation -> invocation.getArgument(0));
 
@@ -78,17 +76,17 @@ public class LoanServiceImplTest {
         assertEquals(loanRequest.userId(), result.user().userId());
 
         verify(bookCopyService).selectAvailableCopyOrThrow(book.getIsbn());
-        verify(userService).getUserOrThrow(1L);
+        verify(userEntityService).getUserOrThrow(1L);
         verify(bookCopyService).patchState(1L, BookCopyState.LOANED);
         verify(loanRepository).save(any(Loan.class));
     }
 
     @Test
     void shouldPropagateExceptionFromValidator() {
-        User user = DataProvider.userListMock().get(1);
+        UserEntity userEntity = DataProvider.userListMock().get(1);
         BookCopy bookCopy = DataProvider.bookCopyListMock().get(1);
         LocalDate dueDate = LocalDate.now().plusDays(10);
-        when(userService.getUserOrThrow(any())).thenReturn(user);
+        when(userEntityService.getUserOrThrow(any())).thenReturn(userEntity);
         when(bookCopyService.selectAvailableCopyOrThrow(any())).thenReturn(bookCopy);
 
         doThrow(new RuntimeException())
@@ -113,7 +111,7 @@ public class LoanServiceImplTest {
         LoanResponse result = loanService.returnLoan(1L);
         assertNotNull(result.endDate());
         assertNotNull(loan.getEndDate());
-        assertEquals(loan.getUser().getId(), result.user().userId());
+        assertEquals(loan.getUserEntity().getId(), result.user().userId());
         assertEquals(loan.getBookCopy().getId(), result.book().bookCopyId());
 
         verify(loanRepository).findById(1L);
@@ -148,7 +146,7 @@ public class LoanServiceImplTest {
 
         assertNotNull(result);
         assertEquals(newDate, result.dueDate());
-        assertEquals(loan.getUser().getId(), result.user().userId());
+        assertEquals(loan.getUserEntity().getId(), result.user().userId());
 
         verify(loanRepository).findById(1L);
         verify(loanRepository).save(any(Loan.class));
@@ -213,7 +211,7 @@ public class LoanServiceImplTest {
 
         assertNotNull(result);
         assertEquals(loans.size(), result.size());
-        assertEquals(loans.get(0).getUser().getId(), result.get(0).user().userId());
+        assertEquals(loans.get(0).getUserEntity().getId(), result.get(0).user().userId());
 
         verify(loanRepository).findByStartDateBetween(startDate, endDate);
     }
@@ -264,7 +262,7 @@ public class LoanServiceImplTest {
 
         assertEquals(loanList.size(), result.size());
         assertEquals(loanList.get(1).getBookCopy().getId(), result.get(1).book().bookCopyId());
-        assertEquals(loanList.get(1).getUser().getUsername(), result.get(1).user().username());
+        assertEquals(loanList.get(1).getUserEntity().getUsername(), result.get(1).user().username());
         verify(loanRepository).findAll();
     }
 
@@ -323,7 +321,7 @@ public class LoanServiceImplTest {
         List<LoanResponse> result = loanService.findByUser(userId, null);
 
         assertEquals(userLoans.size(), result.size());
-        assertEquals(userLoans.get(0).getUser().getId(), result.get(0).user().userId());
+        assertEquals(userLoans.get(0).getUserEntity().getId(), result.get(0).user().userId());
         verify(loanRepository).findByUserId(userId);
     }
 
@@ -458,7 +456,7 @@ public class LoanServiceImplTest {
 
         LoanResponse result = loanService.findById(1L);
         assertEquals(loan.getStartDate(), result.startDate());
-        assertEquals(loan.getUser().getUsername(), result.user().username());
+        assertEquals(loan.getUserEntity().getUsername(), result.user().username());
         assertEquals(loan.getBookCopy().getBook().getIsbn(), result.book().isbn());
         verify(loanRepository).findById(1L);
     }
@@ -470,7 +468,7 @@ public class LoanServiceImplTest {
 
          Loan result = loanService.getLoanOrThrow(1L);
          assertEquals(loan.getStartDate(), result.getStartDate());
-         assertEquals(loan.getUser().getUsername(), result.getUser().getUsername());
+         assertEquals(loan.getUserEntity().getUsername(), result.getUserEntity().getUsername());
          assertEquals(loan.getBookCopy().getBook().getName(), result.getBookCopy().getBook().getName());
          verify(loanRepository).findById(1L);
     }

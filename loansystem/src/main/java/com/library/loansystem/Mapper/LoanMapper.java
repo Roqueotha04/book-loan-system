@@ -15,7 +15,7 @@ public class LoanMapper {
                 loan.getDueDate(),
                 loan.getEndDate(),
                 new BookLoanSummary(loan.getBookCopy().getId(),loan.getBookCopy().getBook().getIsbn(), loan.getBookCopy().getBook().getName()),
-                new UserLoanSummary(loan.getUser().getId(), loan.getUser().getUsername())
+                new UserLoanSummary(loan.getUserEntity().getId(), loan.getUserEntity().getUsername())
         );
     }
 }

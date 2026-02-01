@@ -1,8 +1,5 @@
 package com.library.loansystem;
 
-import com.library.loansystem.DTO.Response.AuthorResponse;
-import com.library.loansystem.DTO.Response.BookResponse;
-import com.library.loansystem.DTO.Response.PublisherResponse;
 import com.library.loansystem.Entities.*;
 import com.library.loansystem.Entities.Enums.BookCopyState;
 import com.library.loansystem.Entities.Enums.BookGenre;
@@ -37,11 +34,11 @@ public class DataProvider {
         );
     }
 
-    public static List<User> userListMock(){
+    public static List<UserEntity> userListMock(){
         return List.of(
-                new User("lionelmessi10@gmail.com", "lionel", "messi"),
-                new User("denzelwashington@gmail.com", "denzel", "washington"),
-                new User("cristianocr7@gmail.com", "cristiano", "ronaldo")
+                new UserEntity("lionelmessi10@gmail.com", "lionel", "messi"),
+                new UserEntity("denzelwashington@gmail.com", "denzel", "washington"),
+                new UserEntity("cristianocr7@gmail.com", "cristiano", "ronaldo")
         );
     }
 
