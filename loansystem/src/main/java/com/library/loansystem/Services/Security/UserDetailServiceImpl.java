@@ -9,10 +9,12 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
+import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Service
 public class UserDetailServiceImpl implements UserDetailsService {
 
     private final UserEntityRepository userEntityRepository;
@@ -20,7 +22,6 @@ public class UserDetailServiceImpl implements UserDetailsService {
     public UserDetailServiceImpl(UserEntityRepository userEntityRepository) {
         this.userEntityRepository = userEntityRepository;
     }
-
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -39,22 +40,5 @@ public class UserDetailServiceImpl implements UserDetailsService {
                 userEntity.isCredentialsNoExpired(),
                 userEntity.isAccountNoLocked(),
                 authorityList);
-    }
-
-    @Bean
-    public UserDetailsService userDetailsService(){
-        List<UserDetails> userDetailsList = new ArrayList<>();
-        userDetailsList.add(User.withUsername("Roque")
-                .password("1234")
-                .roles("ADMIN")
-                .authorities("READ", "CREATE", "UPDATE", "DELETE", "REFACTO")
-                .build());
-        userDetailsList.add(User.withUsername("Roque 2")
-                .password("12345")
-                .roles("USER")
-                .authorities("READ", "LOAN")
-                .build());
-
-        return new InMemoryUserDetailsManager(userDetailsList);
     }
 }

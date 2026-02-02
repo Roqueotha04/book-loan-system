@@ -316,13 +316,13 @@ public class LoanServiceImplTest {
         List<Loan> userLoans = DataProvider.loanListMock();
         Long userId = 1L;
 
-        when(loanRepository.findByUserId(userId)).thenReturn(userLoans);
+        when(loanRepository.findByUserEntityId(userId)).thenReturn(userLoans);
 
         List<LoanResponse> result = loanService.findByUser(userId, null);
 
         assertEquals(userLoans.size(), result.size());
         assertEquals(userLoans.get(0).getUserEntity().getId(), result.get(0).user().userId());
-        verify(loanRepository).findByUserId(userId);
+        verify(loanRepository).findByUserEntityId(userId);
     }
 
     @Test
@@ -331,13 +331,13 @@ public class LoanServiceImplTest {
         activeLoans.forEach(l -> l.setEndDate(null));
         Long userId = 1L;
 
-        when(loanRepository.findByUserIdAndEndDateIsNull(userId)).thenReturn(activeLoans);
+        when(loanRepository.findByUserEntityIdAndEndDateIsNull(userId)).thenReturn(activeLoans);
 
         List<LoanResponse> result = loanService.findByUser(userId, LoanStatus.ACTIVE);
 
         assertEquals(activeLoans.size(), result.size());
         assertNull(result.get(0).endDate());
-        verify(loanRepository).findByUserIdAndEndDateIsNull(userId);
+        verify(loanRepository).findByUserEntityIdAndEndDateIsNull(userId);
     }
 
     @Test
@@ -346,13 +346,13 @@ public class LoanServiceImplTest {
         returnedLoans.forEach(l -> l.setEndDate(LocalDate.now()));
         Long userId = 1L;
 
-        when(loanRepository.findByUserIdAndEndDateIsNotNull(userId)).thenReturn(returnedLoans);
+        when(loanRepository.findByUserEntityIdAndEndDateIsNotNull(userId)).thenReturn(returnedLoans);
 
         List<LoanResponse> result = loanService.findByUser(userId, LoanStatus.RETURNED);
 
         assertEquals(returnedLoans.size(), result.size());
         assertNotNull(result.get(0).endDate());
-        verify(loanRepository).findByUserIdAndEndDateIsNotNull(userId);
+        verify(loanRepository).findByUserEntityIdAndEndDateIsNotNull(userId);
     }
 
     @Test
@@ -429,13 +429,13 @@ public class LoanServiceImplTest {
 
     @Test
     public void testExistsActiveLoanByUserId(){
-        when(loanRepository.existsByUserIdAndEndDateIsNull(1L))
+        when(loanRepository.existsByUserEntityIdAndEndDateIsNull(1L))
                 .thenReturn(true);
 
         Boolean result = loanService.existsActiveLoanByUserId(1L);
 
         assertTrue(result);
-        verify(loanRepository).existsByUserIdAndEndDateIsNull(1L);
+        verify(loanRepository).existsByUserEntityIdAndEndDateIsNull(1L);
     }
 
     @Test
