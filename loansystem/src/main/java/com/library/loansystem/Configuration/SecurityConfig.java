@@ -27,6 +27,13 @@ import java.util.List;
 @EnableMethodSecurity
 public class    SecurityConfig {
 
+    private final UserDetailsService userDetailsService;
+
+    public SecurityConfig(UserDetailsService userDetailsService) {
+        this.userDetailsService = userDetailsService;
+    }
+
+
     @Bean
     public SecurityFilterChain securityFilterChain (HttpSecurity httpSecurity)throws Exception{
         return httpSecurity
@@ -52,26 +59,11 @@ public class    SecurityConfig {
     public AuthenticationProvider authenticationProvider(){
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
         provider.setPasswordEncoder(passwordEncoder());
-        provider.setUserDetailsService(userDetailsService());
+        provider.setUserDetailsService(userDetailsService);
         return provider;
     }
 
-    @Bean
-    public UserDetailsService userDetailsService(){
-        List<UserDetails> userDetailsList = new ArrayList<>();
-        userDetailsList.add(User.withUsername("Roque")
-                .password("1234")
-                .roles("ADMIN")
-                .authorities("READ", "CREATE", "UPDATE", "DELETE", "REFACTO")
-                .build());
-        userDetailsList.add(User.withUsername("Roque 2")
-                .password("12345")
-                .roles("USER")
-                .authorities("READ", "LOAN")
-                .build());
 
-        return new InMemoryUserDetailsManager(userDetailsList);
-    }
 
     @Bean
     public PasswordEncoder passwordEncoder(){

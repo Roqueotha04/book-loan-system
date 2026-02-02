@@ -13,6 +13,7 @@ public interface UserEntityRepository extends JpaRepository<UserEntity, Long> {
     boolean existsByEmail(String email);
     boolean existsByUsername(String username);
     Optional<UserEntity> findByEmail(String email);
+    Optional<UserEntity> findByUsername(String username);
     List<UserEntity> findByUsernameContainingIgnoreCase(String username);
     @Query("""
         SELECT COUNT(l) > 0
