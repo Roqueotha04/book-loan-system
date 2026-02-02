@@ -4,6 +4,8 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTVerificationException;
+import com.auth0.jwt.exceptions.SignatureVerificationException;
+import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import org.springframework.beans.factory.annotation.Value;
@@ -52,8 +54,12 @@ public class JwtUtils {
                     .build();
 
             return verifier.verify(token);
-        }catch (JWTVerificationException exception){
-            throw new JWTVerificationException("Invalid Token, Unauthorized");
+        }catch (TokenExpiredException exception) {
+            throw new JWTVerificationException("Token has expired");
+        } catch (SignatureVerificationException exception) {
+            throw new JWTVerificationException("Token signature is invalid (Tampering detected)");
+        } catch (JWTVerificationException exception) {
+            throw new JWTVerificationException("Token is invalid: " + exception.getMessage());
         }
     }
 
