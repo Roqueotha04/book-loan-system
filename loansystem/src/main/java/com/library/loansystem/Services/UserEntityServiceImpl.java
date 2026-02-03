@@ -2,24 +2,29 @@ package com.library.loansystem.Services;
 
 import com.library.loansystem.DTO.Request.UserEntityRequest;
 import com.library.loansystem.DTO.Response.UserEntityResponse;
+import com.library.loansystem.Entities.Role;
 import com.library.loansystem.Entities.UserEntity;
 import com.library.loansystem.Exceptions.BusinessException;
 import com.library.loansystem.Exceptions.ResourceNotFoundException;
 import com.library.loansystem.Mapper.UserEntityMapper;
+import com.library.loansystem.Repositories.RoleRepository;
 import com.library.loansystem.Repositories.UserEntityRepository;
 import com.library.loansystem.Services.Validators.UserValidator;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class UserEntityServiceImpl implements UserEntityService {
     private final UserEntityRepository userEntityRepository;
+    private final RoleRepository roleRepository;
     private final UserEntityMapper userEntityMapper;
     private final UserValidator userValidator;
 
-    public UserEntityServiceImpl(UserEntityRepository userEntityRepository, UserEntityMapper userEntityMapper, UserValidator userValidator) {
+    public UserEntityServiceImpl(UserEntityRepository userEntityRepository, RoleRepository roleRepository, UserEntityMapper userEntityMapper, UserValidator userValidator) {
         this.userEntityRepository = userEntityRepository;
+        this.roleRepository = roleRepository;
         this.userEntityMapper = userEntityMapper;
         this.userValidator = userValidator;
     }
@@ -43,6 +48,11 @@ public class UserEntityServiceImpl implements UserEntityService {
     }
 
     @Override
+    public UserEntity findByUsername(String username) {
+        return userEntityRepository.findByUsername(username).orElseThrow(()-> new ResourceNotFoundException("User not found with username: " + username));
+    }
+
+    @Override
     public UserEntityResponse findByEmail(String email) {
         UserEntity userEntity = userEntityRepository.findByEmail(email).orElseThrow(() -> new ResourceNotFoundException("Cannot found user with email: " +email));
         return userEntityMapper.toResponse(userEntity);
@@ -52,6 +62,10 @@ public class UserEntityServiceImpl implements UserEntityService {
     public UserEntityResponse save(UserEntityRequest userEntityRequest) {
         userValidator.validateUser(userEntityRequest);
        UserEntity userEntity = toUser(userEntityRequest);
+        Role defaultRole = roleRepository.findByRole("ROLE_USER")
+                .orElseThrow(() -> new ResourceNotFoundException("Error: Role ROLE_USER not found in DB"));
+        Set<Role> roles = Set.of(defaultRole);
+       userEntity.setRoles(roles);
        return userEntityMapper.toResponse(userEntityRepository.save(userEntity));
     }
 

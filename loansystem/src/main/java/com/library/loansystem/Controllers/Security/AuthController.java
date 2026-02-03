@@ -1,6 +1,7 @@
 package com.library.loansystem.Controllers.Security;
 
-import com.library.loansystem.DTO.Security.AuthRequest;
+import com.library.loansystem.DTO.Security.AuthLoginRequest;
+import com.library.loansystem.DTO.Security.AuthRegisterRequest;
 import com.library.loansystem.DTO.Security.AuthResponse;
 import com.library.loansystem.Services.Security.UserDetailServiceImpl;
 import jakarta.validation.Valid;
@@ -21,9 +22,15 @@ public class AuthController {
         this.userDetailServiceImpl = userDetailServiceImpl;
     }
 
+    @PostMapping("sign-up")
+    public ResponseEntity<AuthResponse> register (@Valid @RequestBody AuthRegisterRequest authRegisterRequest){
+        return new ResponseEntity<>(this.userDetailServiceImpl.createUser(authRegisterRequest), HttpStatus.CREATED);
+
+    }
+
     @PostMapping("log-in")
-    public ResponseEntity<AuthResponse> login (@Valid @RequestBody AuthRequest authRequest){
-        return new ResponseEntity<>(userDetailServiceImpl.login(authRequest), HttpStatus.OK);
+    public ResponseEntity<AuthResponse> login (@Valid @RequestBody AuthLoginRequest authLoginRequest){
+        return new ResponseEntity<>(userDetailServiceImpl.login(authLoginRequest), HttpStatus.OK);
 
     }
 }
