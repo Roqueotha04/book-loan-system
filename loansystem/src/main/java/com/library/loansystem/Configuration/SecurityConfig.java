@@ -4,6 +4,7 @@ import com.library.loansystem.Configuration.Filters.JwtTokenValidator;
 import com.library.loansystem.Utils.JwtUtils;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -32,10 +33,12 @@ public class    SecurityConfig {
 
     private final UserDetailsService userDetailsService;
     private final JwtUtils jwtUtils;
+    private final PasswordEncoder passwordEncoder;
 
-    public SecurityConfig(UserDetailsService userDetailsService, JwtUtils jwtUtils) {
+    public SecurityConfig(UserDetailsService userDetailsService, JwtUtils jwtUtils, PasswordEncoder passwordEncoder) {
         this.userDetailsService = userDetailsService;
         this.jwtUtils = jwtUtils;
+        this.passwordEncoder = passwordEncoder;
     }
 
 
@@ -46,6 +49,7 @@ public class    SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
+                                "auth/**",
                                 "/swagger-ui/**",
                                 "/v3/api-docs/**"
                         ).permitAll()
@@ -64,18 +68,10 @@ public class    SecurityConfig {
     @Bean
     public AuthenticationProvider authenticationProvider(){
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
-        provider.setPasswordEncoder(passwordEncoder());
+        provider.setPasswordEncoder(passwordEncoder);
         provider.setUserDetailsService(userDetailsService);
         return provider;
     }
-
-
-
-    @Bean
-    public PasswordEncoder passwordEncoder(){
-        return NoOpPasswordEncoder.getInstance();
-    }
-
 
 
 }

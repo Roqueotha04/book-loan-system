@@ -7,6 +7,7 @@ import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -21,7 +22,7 @@ public class AuthController {
     }
 
     @PostMapping("log-in")
-    public ResponseEntity<AuthResponse> login (@Valid AuthRequest authRequest){
+    public ResponseEntity<AuthResponse> login (@Valid @RequestBody AuthRequest authRequest){
         return new ResponseEntity<>(userDetailServiceImpl.login(authRequest), HttpStatus.OK);
 
     }
