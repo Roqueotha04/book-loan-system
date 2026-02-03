@@ -48,12 +48,13 @@ public class    SecurityConfig {
                 .csrf(csrf->csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(
-                                "auth/**",
-                                "/swagger-ui/**",
-                                "/v3/api-docs/**"
-                        ).permitAll()
-                        .anyRequest().authenticated()
+                        .requestMatchers("auth/**", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/publishers/**", "/authors/**", "/books/**", "/book-copies/**").hasAnyRole("LIBRARIAN", "ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/publishers/**", "/authors/**", "/books/**", "/book-copies/**").hasAnyRole("LIBRARIAN", "ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/publishers/**", "/authors/**", "/books/**", "/book-copies/**").hasAnyRole("LIBRARIAN","ADMIN")
+                        .requestMatchers(HttpMethod.PATCH, "/publishers/**", "/authors/**", "/books/**", "/book-copies/**").hasAnyRole("LIBRARIAN","ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/publishers/**", "/authors/**", "/books/**", "/book-copies/**").authenticated()
+                        .anyRequest().denyAll()
                 )
                 .httpBasic(Customizer.withDefaults())
                 .addFilterBefore(new JwtTokenValidator(jwtUtils), BasicAuthenticationFilter.class)

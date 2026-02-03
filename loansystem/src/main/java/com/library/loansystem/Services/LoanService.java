@@ -4,14 +4,14 @@ import com.library.loansystem.DTO.Request.LoanRequest;
 import com.library.loansystem.DTO.Response.LoanResponse;
 import com.library.loansystem.Entities.Enums.LoanStatus;
 import com.library.loansystem.Entities.Loan;
+import org.springframework.security.core.Authentication;
 
 import java.time.LocalDate;
 import java.util.List;
 
 public interface LoanService {
 
-
-    LoanResponse createLoan(LoanRequest loanRequest);
+    LoanResponse createLoan(LoanRequest loanRequest, Authentication auth);
 
     LoanResponse returnLoan(Long loanId);
 

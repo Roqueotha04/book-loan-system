@@ -7,6 +7,7 @@ import com.library.loansystem.Services.LoanService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -22,14 +23,15 @@ public class LoanController {
         this.loanService = loanService;
     }
 
+
     @Operation(
             summary = "Create a new loan",
             description = "Creates a new loan for a user and a book."
     )
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public LoanResponse createLoan(@Valid @RequestBody LoanRequest loanRequest) {
-        return loanService.createLoan(loanRequest);
+    public LoanResponse createLoan(@Valid @RequestBody LoanRequest loanRequest, Authentication auth) {
+        return loanService.createLoan(loanRequest, auth);
     }
 
     @Operation(

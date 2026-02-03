@@ -12,10 +12,14 @@ import com.library.loansystem.Exceptions.ResourceNotFoundException;
 import com.library.loansystem.Mapper.LoanMapper;
 import com.library.loansystem.Repositories.LoanRepository;
 import com.library.loansystem.Services.Validators.LoanValidator;
+import org.apache.catalina.User;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class LoanServiceImpl implements LoanService {
@@ -92,17 +96,22 @@ public class LoanServiceImpl implements LoanService {
     }
 
     @Override
-    public LoanResponse createLoan(LoanRequest loanRequest) {
+    public LoanResponse createLoan(LoanRequest loanRequest, Authentication auth) {
+        UserEntity userEntity;
+        if (auth.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ROLE_LIBRARIAN") || a.getAuthority().equals("ROLE_ADMIN"))){
+            userEntity = userEntityService.getUserOrThrow(loanRequest.userId());
+        }else{
+            userEntity = userEntityService.findByUsername(auth.getName());
+            if (!userEntity.getId().equals(loanRequest.userId())) throw new AccessDeniedException("UserId sent does not equals to current UserId ");
+        }
 
-        UserEntity userEntity = userEntityService.getUserOrThrow(loanRequest.userId());
-        BookCopy bookCopy = bookCopyService.selectAvailableCopyOrThrow(
-                loanRequest.isbn()
-        );
+
+        BookCopy bookCopy = bookCopyService.selectAvailableCopyOrThrow(loanRequest.isbn());
         loanValidator.validateLoan(userEntity, bookCopy, loanRequest.dueDate());
+
         bookCopyService.patchState(bookCopy.getId(), BookCopyState.LOANED);
-
         Loan loan = new Loan(userEntity, bookCopy, loanRequest.dueDate());
-
         return loanMapper.toResponse(loanRepository.save(loan));
     }
 
