@@ -53,7 +53,12 @@ public class    SecurityConfig {
                         .requestMatchers(HttpMethod.PUT, "/publishers/**", "/authors/**", "/books/**", "/book-copies/**").hasAnyRole("LIBRARIAN", "ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/publishers/**", "/authors/**", "/books/**", "/book-copies/**").hasAnyRole("LIBRARIAN","ADMIN")
                         .requestMatchers(HttpMethod.PATCH, "/publishers/**", "/authors/**", "/books/**", "/book-copies/**").hasAnyRole("LIBRARIAN","ADMIN")
-                        .requestMatchers(HttpMethod.GET, "/publishers/**", "/authors/**", "/books/**", "/book-copies/**").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/publishers/**", "/authors/**", "/books/**", "/book-copies/**").permitAll()
+                        /// Loan
+                        .requestMatchers(HttpMethod.POST, "/loans").hasAnyRole("USER", "LIBRARIAN", "ADMIN")
+                        .requestMatchers(HttpMethod.PATCH, "/loans/{id}/renew").hasAnyRole("USER", "LIBRARIAN", "ADMIN")
+                        //.requestMatchers(HttpMethod.GET, "/loans/my-loans").hasRole("USER")
+                        .requestMatchers("/loans/**").hasAnyRole("LIBRARIAN", "ADMIN")
                         .anyRequest().denyAll()
                 )
                 .httpBasic(Customizer.withDefaults())
