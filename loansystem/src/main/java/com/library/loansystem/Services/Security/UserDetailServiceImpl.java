@@ -23,6 +23,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,6 +31,7 @@ import java.util.Set;
 
 
 @Service
+@Transactional(readOnly = true)
 public class UserDetailServiceImpl implements UserDetailsService {
 
    // private final UserEntityRepository userEntityRepository;
@@ -89,6 +91,7 @@ public class UserDetailServiceImpl implements UserDetailsService {
         return new UsernamePasswordAuthenticationToken(username, null, userDetails.getAuthorities());
     }
 
+    @Transactional
     public AuthResponse createUser(AuthRegisterRequest authRegisterRequest){
         saveUser(authRegisterRequest);
         Authentication authentication = this.authenticate(authRegisterRequest.username(), authRegisterRequest.password());
@@ -98,6 +101,7 @@ public class UserDetailServiceImpl implements UserDetailsService {
 
     }
 
+    @Transactional
     public void saveUser(AuthRegisterRequest authRegisterRequest){
         UserEntityRequest userEntityRequest = new UserEntityRequest(authRegisterRequest.email(), authRegisterRequest.username(), authRegisterRequest.password());
         userEntityService.save(userEntityRequest);

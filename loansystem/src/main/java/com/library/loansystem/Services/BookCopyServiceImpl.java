@@ -11,10 +11,12 @@ import com.library.loansystem.Exceptions.ResourceNotFoundException;
 import com.library.loansystem.Mapper.BookCopyMapper;
 import com.library.loansystem.Repositories.BookCopyRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Service
+@Transactional(readOnly = true)
 public class BookCopyServiceImpl implements BookCopyService{
     private final BookCopyRepository bookCopyRepository;
     private final BookCopyMapper bookCopyMapper;
@@ -43,6 +45,7 @@ public class BookCopyServiceImpl implements BookCopyService{
     }
 
     @Override
+    @Transactional
     public BookCopyResponse save(BookCopyRequest bookCopyRequest) {
         Book book = bookService.getBookOrThrow(bookCopyRequest.bookId());
         BookCopy bookCopy = new BookCopy(book, bookCopyRequest.state());
@@ -50,6 +53,7 @@ public class BookCopyServiceImpl implements BookCopyService{
     }
 
     @Override
+    @Transactional
     public BookCopyResponse patchState(Long id, BookCopyState bookCopyState) {
         BookCopy bookCopy = getBookCopyOrThrow(id);
         bookCopy.setState(bookCopyState);
@@ -57,6 +61,7 @@ public class BookCopyServiceImpl implements BookCopyService{
     }
 
     @Override
+    @Transactional
     public void delete(Long id) {
         BookCopy bookCopy = getBookCopyOrThrow(id);
         if (bookCopy.getState().equals(BookCopyState.LOANED)) throw new BusinessException("Cannot delete a loaned copy");

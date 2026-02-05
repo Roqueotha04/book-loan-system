@@ -8,10 +8,12 @@ import com.library.loansystem.Entities.Author;
 import com.library.loansystem.Exceptions.ResourceNotFoundException;
 import com.library.loansystem.Repositories.AuthorRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Service
+@Transactional(readOnly = true)
 public class AuthorServiceImpl implements AuthorService {
 
     private final AuthorRepository authorRepository;
@@ -35,12 +37,14 @@ public class AuthorServiceImpl implements AuthorService {
     }
 
     @Override
+    @Transactional
     public AuthorResponse save(AuthorRequest authorAux) {
         Author author = new Author(authorAux.getName(), authorAux.getLastName(), authorAux.getNationality());
         return authorMapper.toResponse(authorRepository.save(author));
     }
 
     @Override
+    @Transactional
     public void deleteById(Long id) {
         Author author = getAuthorOrThrow(id);
         if (authorRepository.existsBookByAuthorId(id)) throw new BusinessException("Cannot delete an author with associated books");
@@ -48,6 +52,7 @@ public class AuthorServiceImpl implements AuthorService {
     }
 
     @Override
+    @Transactional
     public AuthorResponse update(Long id, AuthorRequest authorAux) {
         Author author = getAuthorOrThrow(id);
         author.setName(authorAux.getName());

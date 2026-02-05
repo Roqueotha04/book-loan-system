@@ -18,6 +18,7 @@ import org.apache.catalina.User;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Set;
@@ -26,6 +27,7 @@ import java.util.stream.Collectors;
 import static java.util.stream.Collectors.toList;
 
 @Service
+@Transactional(readOnly = true)
 public class UserEntityServiceImpl implements UserEntityService {
     private final UserEntityRepository userEntityRepository;
     private final RoleRepository roleRepository;
@@ -73,6 +75,7 @@ public class UserEntityServiceImpl implements UserEntityService {
     }
 
     @Override
+    @Transactional
     public UserEntityResponse save(UserEntityRequest userEntityRequest) {
         userValidator.validateUser(userEntityRequest.email(), userEntityRequest.username());
        UserEntity userEntity = toUser(userEntityRequest);
@@ -84,6 +87,7 @@ public class UserEntityServiceImpl implements UserEntityService {
     }
 
     @Override
+    @Transactional
     public void deletePermanently(Long id) {
         UserEntity userEntity = getUserOrThrow(id);
         validateNoActiveLoans(userEntity.getId());
@@ -91,6 +95,7 @@ public class UserEntityServiceImpl implements UserEntityService {
     }
 
     @Override
+    @Transactional
     public UserEntityResponse deactivate(Long id, Authentication auth) {
         validateNoActiveLoans(id);
         UserEntity userEntity = userValidator.validateUserRole(id, auth);
@@ -100,6 +105,7 @@ public class UserEntityServiceImpl implements UserEntityService {
     }
 
     @Override
+    @Transactional
     public UserEntityResponse activate(Long id, Authentication auth) {
         UserEntity userEntity = userValidator.validateUserRole(id, auth);
         if (userEntity.getActive()) throw new BusinessException("User is already active");
@@ -108,6 +114,7 @@ public class UserEntityServiceImpl implements UserEntityService {
     }
 
     @Override
+    @Transactional
     public UserEntityUpdateResponse update(Long id, UserEntityUpdateRequest userEntityUpdateRequest, Authentication auth) {
         UserEntity userEntity = userValidator.validateUserRole(id, auth);
         userValidator.validateUpdateUser(userEntity, userEntityUpdateRequest.email(), userEntityUpdateRequest.username());
@@ -125,6 +132,7 @@ public class UserEntityServiceImpl implements UserEntityService {
     }
 
     @Override
+    @Transactional
     public UserEntityResponse changePassword(Long userId, ResetPasswordRequest resetPasswordRequest, Authentication auth) {
         UserEntity userEntity = userValidator.validateUserRole(userId, auth);
         userValidator.validatePassword(userEntity, resetPasswordRequest.currentPassword(), resetPasswordRequest.newPassword());
@@ -134,6 +142,7 @@ public class UserEntityServiceImpl implements UserEntityService {
     }
 
     @Override
+    @Transactional
     public UserEntityResponse changeRoles(Long userId, List<String> roleList) {
         Set <Role> userRoles = roleList.stream()
                 .map(role -> roleRepository.findByRole(role).orElseThrow(()-> new ResourceNotFoundException("Role not found with name: " + role)))

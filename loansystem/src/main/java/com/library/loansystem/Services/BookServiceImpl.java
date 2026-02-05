@@ -14,11 +14,13 @@ import com.library.loansystem.Exceptions.BusinessException;
 import com.library.loansystem.Exceptions.ResourceNotFoundException;
 import com.library.loansystem.Repositories.BookRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@Transactional(readOnly = true)
 public class BookServiceImpl implements BookService{
 
     private final BookMapper bookMapper;
@@ -46,12 +48,14 @@ public class BookServiceImpl implements BookService{
     }
 
     @Override
+    @Transactional
     public BookResponse save(BookRequest bookRequest) {
         Book book = toBook(bookRequest);
         return bookMapper.toResponse(bookRepository.save(book));
     }
 
     @Override
+    @Transactional
     public BookResponse update(Long id, BookRequest bookRequest) {
         Book book = getBookOrThrow(id);
         book.setName(bookRequest.getName());
@@ -76,6 +80,7 @@ public class BookServiceImpl implements BookService{
     }
 
     @Override
+    @Transactional
     public void delete(Long id) {
         Book book = getBookOrThrow(id);
 
@@ -84,6 +89,8 @@ public class BookServiceImpl implements BookService{
         bookRepository.delete(book);
     }
 
+    @Override
+    @Transactional
     public BookResponse changeStatus (Long id){
         Book book = getBookOrThrow(id);
         book.setActive(!book.getActive());

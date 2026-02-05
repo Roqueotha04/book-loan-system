@@ -15,12 +15,14 @@ import com.library.loansystem.Services.Validators.LoanValidator;
 import com.library.loansystem.Services.Validators.UserValidator;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
 
 @Service
+@Transactional(readOnly = true)
 public class LoanServiceImpl implements LoanService {
 
     private final LoanValidator loanValidator;
@@ -96,6 +98,7 @@ public class LoanServiceImpl implements LoanService {
     }
 
     @Override
+    @Transactional
     public LoanResponse createLoan(LoanRequest loanRequest, Authentication auth) {
         UserEntity userEntity =  userValidator.validateUserRole(loanRequest.userId(), auth);
 
@@ -108,6 +111,7 @@ public class LoanServiceImpl implements LoanService {
     }
 
     @Override
+    @Transactional
     public LoanResponse returnLoan(Long id) {
         Loan loan = getLoanOrThrow(id);
         if (loan.getEndDate() != null) throw new BusinessException("Loan has been already returned");
@@ -117,6 +121,7 @@ public class LoanServiceImpl implements LoanService {
     }
 
     @Override
+    @Transactional
     public LoanResponse renewLoan(Long loanId, LocalDate newDate, Authentication auth) {
         Loan loan = getLoanOrThrow(loanId);
         UserEntity userEntity =  userValidator.validateUserRole(loan.getUserEntity().getId(), auth);

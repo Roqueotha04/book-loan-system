@@ -7,10 +7,12 @@ import com.library.loansystem.Exceptions.BusinessException;
 import com.library.loansystem.Exceptions.ResourceNotFoundException;
 import com.library.loansystem.Repositories.PublisherRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Service
+@Transactional(readOnly = true)
 public class PublisherServiceImpl implements PublisherService {
 
     private final PublisherRepository publisherRepository;
@@ -39,6 +41,7 @@ public class PublisherServiceImpl implements PublisherService {
     }
 
     @Override
+    @Transactional
     public PublisherResponse save(PublisherRequest request) {
         if (publisherRepository.existsByName(request.getName())) {
             throw new BusinessException("Publisher with this name already exists");
@@ -48,6 +51,7 @@ public class PublisherServiceImpl implements PublisherService {
     }
 
     @Override
+    @Transactional
     public PublisherResponse update(Long id, PublisherRequest request) {
         Publisher publisher = getPublisherOrThrow(id);
         publisher.setName(request.getName());
@@ -55,6 +59,7 @@ public class PublisherServiceImpl implements PublisherService {
     }
 
     @Override
+    @Transactional
     public void deleteById(Long id) {
         Publisher publisher = getPublisherOrThrow(id);
         if(publisherRepository.existsBookByPublisherId(id)) throw new BusinessException("Cannot delete a Publisher with associated books");
