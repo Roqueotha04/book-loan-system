@@ -1,20 +1,26 @@
 # Book Loan System
 
-## Overview
-Book Loan System is a backend application built with **Java and Spring Boot** to manage books, authors, publishers, and book loans.  
-The system includes **robust DTO validations**, **centralized exception handling**, and is fully prepared for **Swagger documentation** and **unit test coverage with JaCoCo**.
+Overview
+
+Book Loan System is a backend application built with Java and Spring Boot to manage books, authors, publishers, and loans efficiently. It features DTO validations, centralized exception handling, and role-based access control with secure JWT authentication, ensuring reliability and security for library operations.
+
+Fully documented with Swagger/OpenAPI and covered with unit tests and JaCoCo reports, the system is production-ready, scalable, and designed to handle real-world scenarios, including inventory management, loan processing, and business rule enforcement.
 
 ---
 
 ## Technologies
-- **Java 17**
-- **Spring Boot 3**
-- **Maven**
-- **Spring Data JPA / MySQL**
-- **Bean Validation** (`@Valid`, `@NotBlank`, `@Size`, `@NotNull`, `@Positive`)
-- **Swagger / OpenAPI** for API documentation
-- **JaCoCo** for test coverage
-- **JUnit 5 & Mockito** for unit testing
+-- **Java 17**  
+- **Spring Boot 3**  
+- **Maven**  
+- **Spring Data JPA / MySQL**  
+- **Spring Security 6**
+- **JWT** for authentication and role-based access control  
+- **Bean Validation** (`@Valid`, `@NotBlank`, `@Size`, `@NotNull`, `@Positive`)  
+- **Global Exception Handling** (`@ControllerAdvice`)   
+- **Swagger / OpenAPI** for API documentation  
+- **JaCoCo** for test coverage  
+- **JUnit 5 & Mockito** for unit testing  
+
 ---
 ## Project Structure
 
