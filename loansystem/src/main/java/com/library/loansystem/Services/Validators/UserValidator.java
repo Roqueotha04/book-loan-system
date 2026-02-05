@@ -7,14 +7,17 @@ import com.library.loansystem.Exceptions.ResourceNotFoundException;
 import com.library.loansystem.Repositories.UserEntityRepository;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 @Component
 public class UserValidator {
     private final UserEntityRepository userEntityRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public UserValidator(UserEntityRepository userEntityRepository) {
+    public UserValidator(UserEntityRepository userEntityRepository, PasswordEncoder passwordEncoder) {
         this.userEntityRepository = userEntityRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public void validateUser(UserEntityRequest userEntityRequest){
@@ -35,5 +38,26 @@ public class UserValidator {
         }
 
         return userEntity;
+    }
+
+    public void validatePassword(UserEntity user , String currentPassword, String newPassword) {
+        if (currentPassword != null){
+            if (!passwordEncoder.matches(currentPassword, user.getPassword())) {
+                throw new BusinessException("Current password is incorrect");
+            }
+
+            if (passwordEncoder.matches(newPassword, user.getPassword())) {
+                throw new BusinessException("New password must be different from current password");
+            }
+        }
+
+        if (newPassword.length() < 8) {
+             throw new BusinessException("Password must be at least 8 characters long");
+        }
+
+        if (newPassword.equalsIgnoreCase(user.getUsername())
+                || newPassword.equalsIgnoreCase(user.getEmail())) {
+            throw new BusinessException("Password is too weak");
+        }
     }
 }

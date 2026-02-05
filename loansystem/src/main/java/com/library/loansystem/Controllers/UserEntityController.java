@@ -2,10 +2,12 @@ package com.library.loansystem.Controllers;
 
 import com.library.loansystem.DTO.Request.UserEntityRequest;
 import com.library.loansystem.DTO.Response.UserEntityResponse;
+import com.library.loansystem.DTO.Security.ResetPasswordRequest;
 import com.library.loansystem.Services.UserEntityService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -67,18 +69,6 @@ public class UserEntityController {
     }
 
     @Operation(
-            summary = "Update a user",
-            description = "Updates the data of the user with the specified ID."
-    )
-    @PutMapping("/{id}")
-    public UserEntityResponse update(
-            @PathVariable Long id,
-            @Valid @RequestBody UserEntityRequest userEntityRequest
-    ) {
-        return userEntityService.update(id, userEntityRequest);
-    }
-
-    @Operation(
             summary = "Delete user permanently",
             description = "Deletes a user permanently if they have no active loans."
     )
@@ -89,12 +79,34 @@ public class UserEntityController {
     }
 
     @Operation(
+            summary = "Update a user",
+            description = "Updates the data of the user with the specified ID."
+    )
+    @PutMapping("/{id}")
+    public UserEntityResponse update(
+            @PathVariable Long id,
+            @Valid @RequestBody UserEntityRequest userEntityRequest,
+            Authentication auth
+    ) {
+        return userEntityService.update(id, userEntityRequest, auth);
+    }
+
+    @Operation(
+            summary = "Change user password",
+            description = "Changes the current password by assigning a new one."
+    )
+    @PatchMapping("/change-password")
+    public UserEntityResponse changePassword(@Valid @RequestBody ResetPasswordRequest resetPasswordRequest, Authentication auth) {
+        return userEntityService.changePassword(resetPasswordRequest, auth);
+    }
+
+    @Operation(
             summary = "Deactivate user",
             description = "Deactivates a user if they have no active loans."
     )
     @PatchMapping("/{id}/deactivate")
-    public UserEntityResponse deactivate(@PathVariable Long id) {
-        return userEntityService.deactivate(id);
+    public UserEntityResponse deactivate(@PathVariable Long id, Authentication auth) {
+        return userEntityService.deactivate(id, auth);
     }
 
     @Operation(
@@ -102,7 +114,19 @@ public class UserEntityController {
             description = "Activates a previously deactivated user."
     )
     @PatchMapping("/{id}/activate")
-    public UserEntityResponse activate(@PathVariable Long id) {
-        return userEntityService.activate(id);
+    public UserEntityResponse activate(@PathVariable Long id, Authentication auth) {
+        return userEntityService.activate(id, auth);
+    }
+
+    @Operation(
+            summary = "Change user roles",
+            description = "Allows an admin to change the roles of a user."
+    )
+    @PatchMapping("/{id}/roles")
+    public UserEntityResponse changeRoles(
+            @PathVariable("id") Long userId,
+            @RequestBody List<String> roles
+    ) {
+        return userEntityService.changeRoles(userId, roles);
     }
 }
