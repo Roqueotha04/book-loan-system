@@ -47,7 +47,7 @@ public class LoanController {
             summary = "Renew a loan",
             description = "Renews an active loan by updating its due date. The loan must not be finished or overdue."
     )
-    @PatchMapping("/{id}/renew")
+        @PatchMapping("/{id}/renew")
     public LoanResponse renewLoan(
             @PathVariable Long id,
             @RequestParam LocalDate newDate,
@@ -96,8 +96,9 @@ public class LoanController {
     )
     @GetMapping("/user/{userId}")
     public List <LoanResponse> findByUser(@PathVariable ("userId") Long userId,
-                                          @RequestParam(required = false) LoanStatus status){
-        return loanService.findByUser(userId, status);
+                                          @RequestParam(required = false) LoanStatus status,
+                                          Authentication auth){
+        return loanService.findByUser(userId, status, auth);
     }
 
     @Operation(

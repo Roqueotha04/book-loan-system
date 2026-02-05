@@ -58,16 +58,17 @@ public class LoanServiceImpl implements LoanService {
     }
 
     @Override
-    public List<LoanResponse> findByUser(Long userId, LoanStatus status) {
+    public List<LoanResponse> findByUser(Long userId, LoanStatus status, Authentication auth) {
+        UserEntity userEntity =  userValidator.validateUserRole(userId, auth);
         List<Loan> loans;
 
         if (status == null) {
-            loans=loanRepository.findByUserEntityId(userId);
+            loans=loanRepository.findByUserEntityId(userEntity.getId());
         }else {
             loans=switch (status) {
-                case ACTIVE -> loanRepository.findByUserEntityIdAndEndDateIsNull(userId);
-                case RETURNED -> loanRepository.findByUserEntityIdAndEndDateIsNotNull(userId);
-                case OVERDUE -> loanRepository.findOverdue(userId, LocalDate.now());
+                case ACTIVE -> loanRepository.findByUserEntityIdAndEndDateIsNull(userEntity.getId());
+                case RETURNED -> loanRepository.findByUserEntityIdAndEndDateIsNotNull(userEntity.getId());
+                case OVERDUE -> loanRepository.findOverdue(userEntity.getId(), LocalDate.now());
             };
         }
         return loans.stream().map(loanMapper::toResponse).toList();

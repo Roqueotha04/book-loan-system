@@ -57,7 +57,7 @@ public class    SecurityConfig {
                         /// Loan
                         .requestMatchers(HttpMethod.POST, "/loans").hasAnyRole("USER", "LIBRARIAN", "ADMIN")
                         .requestMatchers(HttpMethod.PATCH, "/loans/{id}/renew").hasAnyRole("USER", "LIBRARIAN", "ADMIN")
-                        //.requestMatchers(HttpMethod.GET, "/loans/my-loans").hasRole("USER")
+                        .requestMatchers(HttpMethod.GET, "/loans/user/**").hasAnyRole("USER", "LIBRARIAN", "ADMIN")
                         .requestMatchers("/loans/**").hasAnyRole("LIBRARIAN", "ADMIN")
                         .anyRequest().denyAll()
                 )

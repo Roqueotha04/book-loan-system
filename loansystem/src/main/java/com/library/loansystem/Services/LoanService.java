@@ -23,7 +23,7 @@ public interface LoanService {
 
     List<LoanResponse> findAll(LoanStatus status);
 
-    List<LoanResponse> findByUser(Long userId, LoanStatus status);
+    List<LoanResponse> findByUser(Long userId, LoanStatus status, Authentication auth);
 
     List<LoanResponse> findByBook(String isbn, LoanStatus status);
 

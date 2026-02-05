@@ -31,7 +31,7 @@ public class UserValidator {
             userEntity= userEntityRepository.findById(targetUserId).orElseThrow(()-> new ResourceNotFoundException("Could not found user with Id: " + targetUserId));
         }else{
             userEntity = userEntityRepository.findByUsername(authentication.getName()).orElseThrow(()-> new ResourceNotFoundException("Could not found user with username: " + authentication.getName()));
-            if (!userEntity.getId().equals(targetUserId)) throw new AccessDeniedException("Users can only create loans for themselves");
+            if (!userEntity.getId().equals(targetUserId)) throw new AccessDeniedException("Users can only act on it´s own account");
         }
 
         return userEntity;
