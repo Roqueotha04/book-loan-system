@@ -3,6 +3,7 @@ package com.library.loansystem.Services.Validators;
 import com.library.loansystem.DTO.Request.UserEntityRequest;
 import com.library.loansystem.Entities.UserEntity;
 import com.library.loansystem.Exceptions.BusinessException;
+import com.library.loansystem.Exceptions.ResourceNotFoundException;
 import com.library.loansystem.Repositories.UserEntityRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -116,40 +117,83 @@ public class UserEntityValidatorTest {
     }
 
     @Test
-    void validateUserRole_shouldPassForAdmin() {
-        GrantedAuthority adminAuthority = new SimpleGrantedAuthority("ROLE_ADMIN");
-        Collection<? extends GrantedAuthority> authorities = List.of(adminAuthority);
+    void validateUserRole_AsAdmin_Success() {
+        Long targetUserId = 1L;
+        UserEntity expectedUser = new UserEntity();
+        expectedUser.setId(targetUserId);
 
+        Collection<? extends GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority("ROLE_ADMIN"));
         doReturn(authorities).when(authentication).getAuthorities();
-        when(userEntityRepository.findById(1L)).thenReturn(Optional.of(userEntity));
-        UserEntity result = userValidator.validateUserRole(1L, authentication);
+        when(userEntityRepository.findById(targetUserId)).thenReturn(Optional.of(expectedUser));
+
+        UserEntity result = userValidator.validateUserRole(targetUserId, authentication);
 
         assertNotNull(result);
-        assertEquals(userEntity, result);
-        verify(userEntityRepository).findById(1L);
-    }
-
-
-    @Test
-    void validateUserRole_shouldPassForUserOwnAccount() {
-        when(authentication.getAuthorities()).thenReturn(Collections.emptyList());
-        when(authentication.getName()).thenReturn("testUser");
-        when(userEntityRepository.findByUsername("testUser")).thenReturn(Optional.of(userEntity));
-
-        UserEntity result = userValidator.validateUserRole(1L, authentication);
-        assertEquals(userEntity, result);
+        assertEquals(targetUserId, result.getId());
+        verify(userEntityRepository).findById(targetUserId);
+        verify(userEntityRepository, never()).findByUsername(anyString());
     }
 
     @Test
-    void validateUserRole_shouldFailForUserOtherAccount() {
-        UserEntity otherUser = new UserEntity("other@gmail.com", "otherUser", "pass");
-        otherUser.setId(2L);
+    void validateUserRole_AsLibrarian_Success() {
+        Long targetUserId = 2L;
+        UserEntity expectedUser = new UserEntity();
+        expectedUser.setId(targetUserId);
 
-        when(authentication.getAuthorities()).thenReturn(Collections.emptyList());
-        when(authentication.getName()).thenReturn("otherUser");
-        when(userEntityRepository.findByUsername("otherUser")).thenReturn(Optional.of(otherUser));
+        Collection<? extends GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority("ROLE_LIBRARIAN"));
+        doReturn(authorities).when(authentication).getAuthorities();
+        when(userEntityRepository.findById(targetUserId)).thenReturn(Optional.of(expectedUser));
 
-        assertThrows(AccessDeniedException.class, () -> userValidator.validateUserRole(1L, authentication));
+        UserEntity result = userValidator.validateUserRole(targetUserId, authentication);
+
+        assertNotNull(result);
+        verify(userEntityRepository).findById(targetUserId);
+    }
+
+    @Test
+    void validateUserRole_OwnAccount_Success() {
+        Long targetUserId = 10L;
+        String username = "ownUser";
+        UserEntity ownUser = new UserEntity();
+        ownUser.setId(targetUserId);
+        ownUser.setUsername(username);
+
+        doReturn(List.of(new SimpleGrantedAuthority("ROLE_USER"))).when(authentication).getAuthorities();
+        when(authentication.getName()).thenReturn(username);
+        when(userEntityRepository.findByUsername(username)).thenReturn(Optional.of(ownUser));
+
+        UserEntity result = userValidator.validateUserRole(targetUserId, authentication);
+
+        assertNotNull(result);
+        assertEquals(targetUserId, result.getId());
+        verify(userEntityRepository).findByUsername(username);
+    }
+
+    @Test
+    void validateUserRole_OtherAccount_ThrowsAccessDenied() {
+        Long targetUserId = 99L;
+        Long myActualId = 10L;
+        String username = "attackerUser";
+
+        UserEntity myUser = new UserEntity();
+        myUser.setId(myActualId);
+
+        doReturn(List.of(new SimpleGrantedAuthority("ROLE_USER"))).when(authentication).getAuthorities();
+        when(authentication.getName()).thenReturn(username);
+        when(userEntityRepository.findByUsername(username)).thenReturn(Optional.of(myUser));
+
+        assertThrows(AccessDeniedException.class,
+                () -> userValidator.validateUserRole(targetUserId, authentication));
+    }
+
+    @Test
+    void validateUserRole_AdminTargetNotFound_ThrowsException() {
+        Long targetUserId = 1L;
+        doReturn(List.of(new SimpleGrantedAuthority("ROLE_ADMIN"))).when(authentication).getAuthorities();
+        when(userEntityRepository.findById(targetUserId)).thenReturn(Optional.empty());
+
+        assertThrows(ResourceNotFoundException.class,
+                () -> userValidator.validateUserRole(targetUserId, authentication));
     }
 
     @Test
