@@ -50,9 +50,10 @@ public class LoanController {
     @PatchMapping("/{id}/renew")
     public LoanResponse renewLoan(
             @PathVariable Long id,
-            @RequestParam LocalDate newDate
+            @RequestParam LocalDate newDate,
+            Authentication auth
     ) {
-        return loanService.renewLoan(id, newDate);
+        return loanService.renewLoan(id, newDate, auth);
     }
 
     @Operation(

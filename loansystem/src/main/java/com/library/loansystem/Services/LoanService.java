@@ -15,7 +15,7 @@ public interface LoanService {
 
     LoanResponse returnLoan(Long loanId);
 
-    LoanResponse renewLoan(Long loanId, LocalDate newDate);
+    LoanResponse renewLoan(Long loanId, LocalDate newDate, Authentication auth);
 
     List<LoanResponse> findByDateRange(LocalDate startDate, LocalDate endDate);
 

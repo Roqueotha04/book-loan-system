@@ -108,8 +108,6 @@ public class LoanServiceImpl implements LoanService {
 
     @Override
     public LoanResponse returnLoan(Long id) {
-
-
         Loan loan = getLoanOrThrow(id);
         if (loan.getEndDate() != null) throw new BusinessException("Loan has been already returned");
         loan.setEndDate(LocalDate.now());
@@ -118,8 +116,9 @@ public class LoanServiceImpl implements LoanService {
     }
 
     @Override
-    public LoanResponse renewLoan(Long loanId, LocalDate newDate) {
+    public LoanResponse renewLoan(Long loanId, LocalDate newDate, Authentication auth) {
         Loan loan = getLoanOrThrow(loanId);
+        UserEntity userEntity =  userValidator.validateUserRole(loan.getUserEntity().getId(), auth);
         if (loan.getEndDate()!=null) throw new BusinessException("Cannot renew a finished loan");
         if (newDate.isBefore(loan.getDueDate())) throw new BusinessException("New date must not be before actual due date");
         if (loan.getDueDate().isBefore(LocalDate.now())) throw new BusinessException("Cannot renew an overdue loan. Please return the book first.");
