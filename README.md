@@ -34,92 +34,100 @@ The system includes **robust DTO validations**, **centralized exception handling
 - **JaCoCo** coverage on services & mappers, target **80%+**
   
 ---
-📚 Book Loan System
+# 📚 Book Loan System
 
-A fully-featured library management system built with Spring Boot 3, Spring Security 6, and MySQL 8. Handles users, books, copies, and loans with secure authentication and role-based access control.
+A fully-featured library management system built with **Spring Boot 3**, **Spring Security 6**, and **MySQL 8**. Handles users, books, copies, and loans with secure authentication and role-based access control.
 
-🔒 Security & Authentication
+---
 
-The system uses Spring Security 6 and JWT to provide a secure, stateless authentication layer.
+## 🔒 Security & Authentication
 
-Key Implementation:
+The system uses **Spring Security 6** and **JWT** to provide a secure, stateless authentication layer.
 
-JWT Stateless Auth: Tokens are generated upon login and validated via a custom security filter on every request.
+**Key Implementation:**
+- **JWT Stateless Auth:** Tokens are generated upon login and validated via a custom security filter on every request.
+- **Role-Based Access Control (RBAC):** Specific permissions for `USER`, `ADMIN`, and `LIBRARIAN` roles to protect sensitive operations.
+- **Password Safety:** Industry-standard encryption using `BCryptPasswordEncoder`.
+- **JWT Provider (Utils):** Centralized logic for token generation, signature validation, and expiration handling.
+- **Secure Header:** Protected resources require the `Authorization: Bearer <token>` header.
 
-Role-Based Access Control (RBAC): Specific permissions for USER, ADMIN, and LIBRARIAN roles to protect sensitive operations.
+---
 
-Password Safety: Industry-standard encryption using BCryptPasswordEncoder.
+## 🧪 Testing & Coverage
 
-JWT Provider (Utils): Centralized logic for token generation, signature validation, and expiration handling.
+- **Unit tests** cover services and mappers using **JUnit 5** and **Mockito**.
+- **Minimal integration tests** for REST endpoints.
+- **Coverage reports** are generated with **JaCoCo**.
 
-Secure Header: Protected resources require the Authorization: Bearer <token> header.
+---
 
-🧪 Testing & Coverage
+## 📄 Documentation
 
-Unit tests cover services and mappers using JUnit 5 and Mockito.
+**Swagger/OpenAPI** is integrated for easy exploration of endpoints.
 
-Minimal integration tests for REST endpoints.
+- **Swagger UI:** [http://localhost:8080/swagger-ui.html](http://localhost:8080/swagger-ui.html)
 
-Coverage reports are generated with JaCoCo.
+### 🚀 Key API Endpoints
 
-📄 Documentation
+#### 🔐 Authentication & Security
+| Method | Endpoint | Description |
+|--------|---------|-------------|
+| POST | `/auth/sign-up` | Register a new account |
+| POST | `/auth/log-in` | Authenticate and receive a JWT token |
 
-Swagger/OpenAPI is integrated for easy exploration of endpoints.
+#### 👥 User Management
+| Method | Endpoint | Description |
+|--------|---------|-------------|
+| GET | `/users` | List all users |
+| GET | `/users/search?username={val}` | Search users by username (case-insensitive) |
+| POST | `/users` | Create a new user with manual validation |
+| PUT | `/users/{id}` | Update existing user profile |
+| PATCH | `/users/{id}/deactivate` | Deactivate user account (checks for active loans) |
+| PATCH | `/users/{id}/roles` | **[Admin Only]** Update user permissions and roles |
 
-Swagger UI: http://localhost:8080/swagger-ui.html
+#### 📚 Books (Catalog)
+| Method | Endpoint | Description |
+|--------|---------|-------------|
+| GET | `/books` | List all books |
+| GET | `/books/isbn/{isbn}` | Find book details by ISBN |
+| POST | `/books` | Add a new book |
+| PATCH | `/books/{id}/STOCK` | Adjust the global stock of a title |
 
-🚀 Key API Endpoints
-🔐 Authentication & Security
-Method	Endpoint	Description
-POST	/auth/sign-up	Register a new account
-POST	/auth/log-in	Authenticate and receive a JWT token
-👥 User Management
-Method	Endpoint	Description
-GET	/users	List all users
-GET	/users/search?username={val}	Search users by username (case-insensitive)
-POST	/users	Create a new user with manual validation
-PUT	/users/{id}	Update existing user profile
-PATCH	/users/{id}/deactivate	Deactivate user account (checks for active loans)
-PATCH	/users/{id}/roles	[Admin Only] Update user permissions and roles
-📚 Books (Catalog)
-Method	Endpoint	Description
-GET	/books	List all books
-GET	/books/isbn/{isbn}	Find book details by ISBN
-POST	/books	Add a new book
-PATCH	/books/{id}/STOCK	Adjust the global stock of a title
-📖 Book Copies (Inventory)
-Method	Endpoint	Description
-GET	/book-copies/book/{isbn}	List all copies of a specific book
-GET	/book-copies/available/{isbn}	Count available copies
-POST	/book-copies	Register a new physical copy/unit
-PATCH	/book-copies/{id}/state	Update copy condition (Available, Damaged, Lost, etc.)
-🤝 Loans (Core Business Logic)
-Method	Endpoint	Description
-GET	/loans	List all loans (filterable by active, overdue, returned)
-GET	/loans/user/{userId}	Retrieve loan history for a user
-POST	/loans	Register a new loan (updates copy status and validates user)
-PATCH	/loans/{id}/return	Process a return (makes copy available again)
-PATCH	/loans/{id}/renew	Extend the loan due date according to rules
-🛠️ Requirements & Configuration
+#### 📖 Book Copies (Inventory)
+| Method | Endpoint | Description |
+|--------|---------|-------------|
+| GET | `/book-copies/book/{isbn}` | List all copies of a specific book |
+| GET | `/book-copies/available/{isbn}` | Count available copies |
+| POST | `/book-copies` | Register a new physical copy/unit |
+| PATCH | `/book-copies/{id}/state` | Update copy condition (Available, Damaged, Lost, etc.) |
 
-Java Version: 17+ (Required for Records & Spring Boot 3)
+#### 🤝 Loans (Core Business Logic)
+| Method | Endpoint | Description |
+|--------|---------|-------------|
+| GET | `/loans` | List all loans (filterable by active, overdue, returned) |
+| GET | `/loans/user/{userId}` | Retrieve loan history for a user |
+| POST | `/loans` | Register a new loan (updates copy status and validates user) |
+| PATCH | `/loans/{id}/return` | Process a return (makes copy available again) |
+| PATCH | `/loans/{id}/renew` | Extend the loan due date according to rules |
 
-Database: MySQL 8.0+
+---
 
-License: MIT License
+## 🛠️ Requirements & Configuration
 
-Environment Profiles:
+- **Java Version:** 17+ (Required for Records & Spring Boot 3)
+- **Database:** MySQL 8.0+
+- **License:** MIT License
 
-application-dev.properties: Hardcoded credentials for local development.
+**Environment Profiles:**
+- `application-dev.properties`: Hardcoded credentials for local development.
+- `application.properties`: Production-ready configuration.
 
-application.properties: Production-ready configuration.
-
-Security Best Practices:
+**Security Best Practices:**  
 For production, load credentials via environment variables to avoid exposing sensitive data:
 
-DB_USERNAME / DB_PASSWORD → Database credentials
+- `DB_USERNAME` / `DB_PASSWORD` → Database credentials
+- `JWT_SECRET` → Secure key for token signing
 
-JWT_SECRET → Secure key for token signing
 
 ### How to Run
 
