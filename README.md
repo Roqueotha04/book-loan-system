@@ -34,22 +34,27 @@ The system includes **robust DTO validations**, **centralized exception handling
 - **JaCoCo** coverage on services & mappers, target **80%+**
   
 ---
-###  Security & Authentication 🔒
+📚 Book Loan System
+
+A fully-featured library management system built with Spring Boot 3, Spring Security 6, and MySQL 8. Handles users, books, copies, and loans with secure authentication and role-based access control.
+
+🔒 Security & Authentication
+
 The system uses Spring Security 6 and JWT to provide a secure, stateless authentication layer.
 
-Key Implementation
-*JWT Stateless Auth*: Tokens are generated upon login and validated via a Custom Security Filter in every request.
+Key Implementation:
 
-*Role-Based Access Control (RBAC)*: Specific permissions for USER, ADMIN and LIBRARIAN roles to protect sensitive operations.
+JWT Stateless Auth: Tokens are generated upon login and validated via a custom security filter on every request.
 
-*Password Safety*: Industry-standard encryption using BCryptPasswordEncoder.
+Role-Based Access Control (RBAC): Specific permissions for USER, ADMIN, and LIBRARIAN roles to protect sensitive operations.
 
-*JWT Provider (Utils)*: Centralized logic for token generation, signature validation, and expiration handling.
+Password Safety: Industry-standard encryption using BCryptPasswordEncoder.
 
-*Secure Header*: Protected resources require the Authorization: Bearer <token> header.
+JWT Provider (Utils): Centralized logic for token generation, signature validation, and expiration handling.
 
----
-### Testing & Coverage
+Secure Header: Protected resources require the Authorization: Bearer <token> header.
+
+🧪 Testing & Coverage
 
 Unit tests cover services and mappers using JUnit 5 and Mockito.
 
@@ -57,83 +62,64 @@ Minimal integration tests for REST endpoints.
 
 Coverage reports are generated with JaCoCo.
 
----
-### Documentation
+📄 Documentation
 
-Swagger/OpenAPI is integrated:
-Visit: http://localhost:8080/swagger-ui.html
+Swagger/OpenAPI is integrated for easy exploration of endpoints.
 
-🚀 KEY API Endpoints
-💡 Full Documentation: For a complete list of all endpoints, parameters, and schemas, please refer to the Swagger UI at: http://localhost:8080/swagger-ui.html (with the app running).
+Swagger UI: http://localhost:8080/swagger-ui.html
 
+🚀 Key API Endpoints
 🔐 Authentication & Security
-POST /auth/sign-up -> Register a new account.
-
-POST /auth/log-in -> Authenticate and receive a JWT Token.
-
+Method	Endpoint	Description
+POST	/auth/sign-up	Register a new account
+POST	/auth/log-in	Authenticate and receive a JWT token
 👥 User Management
-GET /users -> List all users.
-
-GET /users/search?username={val} -> Search users by username (case-insensitive).
-
-POST /users -> Create a new user with manual validation.
-
-PUT /users/{id} -> Update existing user profile.
-
-PATCH /users/{id}/deactivate -> Deactivate user account (Logic: checks for active loans).
-
-PATCH /users/{id}/roles -> [Admin Only] Update user permissions and roles.
-
+Method	Endpoint	Description
+GET	/users	List all users
+GET	/users/search?username={val}	Search users by username (case-insensitive)
+POST	/users	Create a new user with manual validation
+PUT	/users/{id}	Update existing user profile
+PATCH	/users/{id}/deactivate	Deactivate user account (checks for active loans)
+PATCH	/users/{id}/roles	[Admin Only] Update user permissions and roles
 📚 Books (Catalog)
-GET /books -> List all books in the catalog.
-
-GET /books/isbn/{isbn} -> Find book details by its unique ISBN.
-
-POST /books -> Add a new book title to the system.
-
-PATCH /books/{id}/STOCK -> Manually adjust the global stock of a title.
-
+Method	Endpoint	Description
+GET	/books	List all books
+GET	/books/isbn/{isbn}	Find book details by ISBN
+POST	/books	Add a new book
+PATCH	/books/{id}/STOCK	Adjust the global stock of a title
 📖 Book Copies (Inventory)
-GET /book-copies/book/{isbn} -> List all physical units/copies of a specific book.
-
-GET /book-copies/available/{isbn} -> Count units currently available for loan.
-
-POST /book-copies -> Register a new physical copy/unit.
-
-PATCH /book-copies/{id}/state -> Update copy condition (Available, Damaged, Lost, etc.).
-
+Method	Endpoint	Description
+GET	/book-copies/book/{isbn}	List all copies of a specific book
+GET	/book-copies/available/{isbn}	Count available copies
+POST	/book-copies	Register a new physical copy/unit
+PATCH	/book-copies/{id}/state	Update copy condition (Available, Damaged, Lost, etc.)
 🤝 Loans (Core Business Logic)
-GET /loans -> List all loans (Filterable by: active, overdue, returned).
+Method	Endpoint	Description
+GET	/loans	List all loans (filterable by active, overdue, returned)
+GET	/loans/user/{userId}	Retrieve loan history for a user
+POST	/loans	Register a new loan (updates copy status and validates user)
+PATCH	/loans/{id}/return	Process a return (makes copy available again)
+PATCH	/loans/{id}/renew	Extend the loan due date according to rules
+🛠️ Requirements & Configuration
 
-GET /loans/user/{userId} -> Retrieve loan history for a specific user.
+Java Version: 17+ (Required for Records & Spring Boot 3)
 
-POST /loans -> Register a new loan (Updates copy status and validates user).
+Database: MySQL 8.0+
 
-PATCH /loans/{id}/return -> Process a return (Makes the copy available again).
+License: MIT License
 
-PATCH /loans/{id}/renew -> Extend the loan due date based on business rules.
+Environment Profiles:
 
----
+application-dev.properties: Hardcoded credentials for local development.
 
-### 🛠️ Requirements & Configuration
+application.properties: Production-ready configuration.
 
-Java Version: 17+ (Required for Records & Spring Boot 3).
-Database: MySQL 8.0+.
-License: MIT License.
+Security Best Practices:
+For production, load credentials via environment variables to avoid exposing sensitive data:
 
-Environment Profiles
-The project includes two configuration files:
+DB_USERNAME / DB_PASSWORD → Database credentials
 
-application-dev.properties: Pre-configured with hardcoded credentials for local development and immediate testing.
-
-application.properties: Main configuration prepared for production environments.
-
-Security Best Practices
-For production deployments, credentials must be loaded via Environment Variables to avoid exposing sensitive data:
-
-DB_USERNAME / DB_PASSWORD: Database credentials.
-
-JWT_SECRET: Secure key for token signing.
+JWT_SECRET → Secure key for token signing
 
 ### How to Run
 
