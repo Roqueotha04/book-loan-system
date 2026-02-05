@@ -36,7 +36,7 @@ public class LoanValidator {
         if (loanRepository.countByUserEntityIdAndEndDateIsNull(userEntity.getId()) >= MAX_LOANS_PER_USER)
             throw new BusinessException("User reached maximum active loans");
 
-        if (loanRepository.existsByUserEntityIdAndBookCopyIdAndEndDateIsNull(userEntity.getId(), bookCopy.getId()))
+        if (loanRepository.existsByUserEntityIdAndBookCopyBookIsbnAndEndDateIsNull(userEntity.getId(), bookCopy.getBook().getIsbn()))
             throw new BusinessException("User already has this book on loan");
 
         if (loanRepository.existsByUserEntityIdAndEndDateIsNullAndDueDateBefore(userEntity.getId(), LocalDate.now())) {

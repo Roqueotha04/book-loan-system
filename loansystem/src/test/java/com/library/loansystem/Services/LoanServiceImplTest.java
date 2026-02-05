@@ -14,6 +14,7 @@ import com.library.loansystem.Exceptions.ResourceNotFoundException;
 import com.library.loansystem.Mapper.LoanMapper;
 import com.library.loansystem.Repositories.LoanRepository;
 import com.library.loansystem.Services.Validators.LoanValidator;
+import com.library.loansystem.Services.Validators.UserValidator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -43,14 +44,14 @@ public class LoanServiceImplTest {
     private BookCopyService bookCopyService;
 
     @Mock
-    private UserEntityService userEntityService;
+    private UserValidator userValidator;
 
     private LoanServiceImpl loanService;
 
     @BeforeEach
     void setUp() {
         LoanMapper loanMapper = new LoanMapper();
-        loanService = new LoanServiceImpl(loanValidator, loanRepository, loanMapper, bookCopyService, userEntityService);
+        loanService = new LoanServiceImpl(loanValidator, loanRepository, loanMapper, bookCopyService, userValidator);
     }
 
     @Test

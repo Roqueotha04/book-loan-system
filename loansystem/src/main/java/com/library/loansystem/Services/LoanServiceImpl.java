@@ -12,8 +12,7 @@ import com.library.loansystem.Exceptions.ResourceNotFoundException;
 import com.library.loansystem.Mapper.LoanMapper;
 import com.library.loansystem.Repositories.LoanRepository;
 import com.library.loansystem.Services.Validators.LoanValidator;
-import org.apache.catalina.User;
-import org.springframework.security.access.AccessDeniedException;
+import com.library.loansystem.Services.Validators.UserValidator;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
@@ -32,14 +31,14 @@ public class LoanServiceImpl implements LoanService {
 
     private final BookCopyService bookCopyService;
 
-    private final UserEntityService userEntityService;
+    private final UserValidator userValidator;
 
-    public LoanServiceImpl(LoanValidator loanValidator, LoanRepository loanRepository, LoanMapper loanMapper, BookCopyService bookCopyService, UserEntityService userEntityService) {
+    public LoanServiceImpl(LoanValidator loanValidator, LoanRepository loanRepository, LoanMapper loanMapper, BookCopyService bookCopyService, UserValidator userValidator) {
         this.loanValidator = loanValidator;
         this.loanRepository = loanRepository;
         this.loanMapper = loanMapper;
         this.bookCopyService = bookCopyService;
-        this.userEntityService = userEntityService;
+        this.userValidator = userValidator;
     }
 
     public List<LoanResponse> findAll(LoanStatus status) {
@@ -97,15 +96,7 @@ public class LoanServiceImpl implements LoanService {
 
     @Override
     public LoanResponse createLoan(LoanRequest loanRequest, Authentication auth) {
-        UserEntity userEntity;
-        if (auth.getAuthorities().stream()
-                .anyMatch(a -> a.getAuthority().equals("ROLE_LIBRARIAN") || a.getAuthority().equals("ROLE_ADMIN"))){
-            userEntity = userEntityService.getUserOrThrow(loanRequest.userId());
-        }else{
-            userEntity = userEntityService.findByUsername(auth.getName());
-            if (!userEntity.getId().equals(loanRequest.userId())) throw new AccessDeniedException("UserId sent does not equals to current UserId ");
-        }
-
+        UserEntity userEntity =  userValidator.validateUserRole(loanRequest.userId(), auth);
 
         BookCopy bookCopy = bookCopyService.selectAvailableCopyOrThrow(loanRequest.isbn());
         loanValidator.validateLoan(userEntity, bookCopy, loanRequest.dueDate());
@@ -117,6 +108,8 @@ public class LoanServiceImpl implements LoanService {
 
     @Override
     public LoanResponse returnLoan(Long id) {
+
+
         Loan loan = getLoanOrThrow(id);
         if (loan.getEndDate() != null) throw new BusinessException("Loan has been already returned");
         loan.setEndDate(LocalDate.now());
