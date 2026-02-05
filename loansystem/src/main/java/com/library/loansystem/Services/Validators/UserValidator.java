@@ -20,9 +20,16 @@ public class UserValidator {
         this.passwordEncoder = passwordEncoder;
     }
 
-    public void validateUser(UserEntityRequest userEntityRequest){
-        if (userEntityRepository.existsByEmail(userEntityRequest.email())) throw new BusinessException("Email already in use");
-        if (userEntityRepository.existsByUsername(userEntityRequest.username())) throw new BusinessException("Username already in use");
+    public void validateUser(String email, String username){
+
+        if (userEntityRepository.existsByEmail(email)) throw new BusinessException("Email already in use");
+        if (userEntityRepository.existsByUsername(username)) throw new BusinessException("Username already in use");
+    }
+
+    public void validateUpdateUser(UserEntity user, String email, String username){
+
+        if (userEntityRepository.existsByEmail(email) && !email.equals(user.getEmail())) throw new BusinessException("Email already in use");
+        if (userEntityRepository.existsByUsername(username) && !username.equals(user.getUsername())) throw new BusinessException("Username already in use");
     }
 
     public UserEntity validateUserRole (Long targetUserId, Authentication authentication){

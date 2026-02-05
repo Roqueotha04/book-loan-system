@@ -64,7 +64,7 @@ public class    SecurityConfig {
                         .requestMatchers(HttpMethod.PATCH, "/users/{id}/activate").hasAnyRole("USER", "LIBRARIAN", "ADMIN")
                         .requestMatchers(HttpMethod.PATCH, "/users/change-password").hasAnyRole("USER", "ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/users/{id}").hasAnyRole("USER", "ADMIN")
-                        .requestMatchers(HttpMethod.GET, "/users/**").hasAnyRole("LIBRARIAN, ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/users/**").hasAnyRole("LIBRARIAN", "ADMIN")
                         .requestMatchers(HttpMethod.POST, "/users").hasRole("ADMIN")
                         .requestMatchers("/users/**").hasAnyRole("ADMIN")
 

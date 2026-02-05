@@ -1,6 +1,7 @@
 package com.library.loansystem.Controllers;
 
 import com.library.loansystem.DTO.Request.UserEntityRequest;
+import com.library.loansystem.DTO.Request.UserEntityUpdateRequest;
 import com.library.loansystem.DTO.Response.UserEntityResponse;
 import com.library.loansystem.DTO.Security.ResetPasswordRequest;
 import com.library.loansystem.Services.UserEntityService;
@@ -85,19 +86,19 @@ public class UserEntityController {
     @PutMapping("/{id}")
     public UserEntityResponse update(
             @PathVariable Long id,
-            @Valid @RequestBody UserEntityRequest userEntityRequest,
+            @Valid @RequestBody UserEntityUpdateRequest userEntityUpdateRequest,
             Authentication auth
     ) {
-        return userEntityService.update(id, userEntityRequest, auth);
+        return userEntityService.update(id, userEntityUpdateRequest, auth);
     }
 
     @Operation(
             summary = "Change user password",
             description = "Changes the current password by assigning a new one."
     )
-    @PatchMapping("/change-password")
-    public UserEntityResponse changePassword(@Valid @RequestBody ResetPasswordRequest resetPasswordRequest, Authentication auth) {
-        return userEntityService.changePassword(resetPasswordRequest, auth);
+    @PatchMapping("{userId}/change-password")
+    public UserEntityResponse changePassword(@PathVariable Long userId, @Valid @RequestBody ResetPasswordRequest resetPasswordRequest, Authentication auth) {
+        return userEntityService.changePassword(userId, resetPasswordRequest, auth);
     }
 
     @Operation(

@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
@@ -22,10 +23,10 @@ public class DataLoader  implements ApplicationRunner{
         @Autowired BookRepository bookRepository;
         @Autowired UserEntityRepository userEntityRepository;
         @Autowired LoanRepository loanRepository;
-        @Autowired AuthorXBookRepository authorXBookRepository;
         @Autowired PublisherRepository publisherRepository;
         @Autowired BookCopyRepository bookCopyRepository;
         @Autowired RoleRepository roleRepository;
+        @Autowired PasswordEncoder passwordEncoder;
 
         @Override
         public void run (ApplicationArguments args) {
@@ -160,25 +161,25 @@ public class DataLoader  implements ApplicationRunner{
             Role adminRole = roles.get(1);
             Role librarianRole = roles.get(2);
 
-            UserEntity neo = new UserEntity("neo@gmail.com", "neo01", "matrix");
+            UserEntity neo = new UserEntity("neo@gmail.com", "neo01", passwordEncoder.encode("matrix"));
             neo.getRoles().add(userRole);
 
-            UserEntity tony = new UserEntity("tonystark@gmail.com", "tony", "iron");
-            tony.getRoles().add(adminRole);
-            tony.getRoles().add(librarianRole);
+            UserEntity frodo = new UserEntity("tonystark@gmail.com", "baggins", passwordEncoder.encode("frodo"));
+            frodo.getRoles().add(adminRole);
+            frodo.getRoles().add(librarianRole);
 
-            UserEntity indy = new UserEntity("indianajones@gmail.com", "indy", "temple");
+            UserEntity indy = new UserEntity("indianajones@gmail.com", "indy", passwordEncoder.encode("temple"));
             indy.getRoles().add(userRole);
             indy.getRoles().add(librarianRole);
 
-            UserEntity mcfly = new UserEntity("mcfly@gmail.com", "mcfly", "delorean");
+            UserEntity mcfly = new UserEntity("mcfly@gmail.com", "mcfly", passwordEncoder.encode("delorean"));
             mcfly.getRoles().add(userRole);
 
-            UserEntity tyler = new UserEntity("tylerdurden@gmail.com", "tyler", "fightclub");
+            UserEntity tyler = new UserEntity("tylerdurden@gmail.com", "tyler", passwordEncoder.encode("fightclub"));
             tyler.getRoles().add(userRole);
 
             userEntityRepository.saveAll(
-                    List.of(neo, tony, indy, mcfly, tyler)
+                    List.of(neo, frodo, indy, mcfly, tyler)
             );
         }
     }

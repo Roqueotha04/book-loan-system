@@ -1,7 +1,9 @@
 package com.library.loansystem.Services;
 
 import com.library.loansystem.DTO.Request.UserEntityRequest;
+import com.library.loansystem.DTO.Request.UserEntityUpdateRequest;
 import com.library.loansystem.DTO.Response.UserEntityResponse;
+import com.library.loansystem.DTO.Response.UserEntityUpdateResponse;
 import com.library.loansystem.DTO.Security.ResetPasswordRequest;
 import com.library.loansystem.Entities.Role;
 import com.library.loansystem.Entities.UserEntity;
@@ -11,6 +13,7 @@ import com.library.loansystem.Mapper.UserEntityMapper;
 import com.library.loansystem.Repositories.RoleRepository;
 import com.library.loansystem.Repositories.UserEntityRepository;
 import com.library.loansystem.Services.Validators.UserValidator;
+import com.library.loansystem.Utils.JwtUtils;
 import org.apache.catalina.User;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -29,13 +32,15 @@ public class UserEntityServiceImpl implements UserEntityService {
     private final UserEntityMapper userEntityMapper;
     private final UserValidator userValidator;
     private final PasswordEncoder passwordEncoder;
+    private final JwtUtils jwtUtils;
 
-    public UserEntityServiceImpl(UserEntityRepository userEntityRepository, RoleRepository roleRepository, UserEntityMapper userEntityMapper, UserValidator userValidator, PasswordEncoder passwordEncoder) {
+    public UserEntityServiceImpl(UserEntityRepository userEntityRepository, RoleRepository roleRepository, UserEntityMapper userEntityMapper, UserValidator userValidator, PasswordEncoder passwordEncoder, JwtUtils jwtUtils) {
         this.userEntityRepository = userEntityRepository;
         this.roleRepository = roleRepository;
         this.userEntityMapper = userEntityMapper;
         this.userValidator = userValidator;
         this.passwordEncoder = passwordEncoder;
+        this.jwtUtils = jwtUtils;
     }
 
     public List<UserEntityResponse> findAll(){
@@ -69,7 +74,7 @@ public class UserEntityServiceImpl implements UserEntityService {
 
     @Override
     public UserEntityResponse save(UserEntityRequest userEntityRequest) {
-        userValidator.validateUser(userEntityRequest);
+        userValidator.validateUser(userEntityRequest.email(), userEntityRequest.username());
        UserEntity userEntity = toUser(userEntityRequest);
         Role defaultRole = roleRepository.findByRole("ROLE_USER")
                 .orElseThrow(() -> new ResourceNotFoundException("Error: Role ROLE_USER not found in DB"));
@@ -103,17 +108,25 @@ public class UserEntityServiceImpl implements UserEntityService {
     }
 
     @Override
-    public UserEntityResponse update(Long id, UserEntityRequest userEntityRequest, Authentication auth) {
-        userValidator.validateUser(userEntityRequest);
+    public UserEntityUpdateResponse update(Long id, UserEntityUpdateRequest userEntityUpdateRequest, Authentication auth) {
         UserEntity userEntity = userValidator.validateUserRole(id, auth);
-        userEntity.setEmail(userEntityRequest.email());
-        userEntity.setUsername(userEntityRequest.username());
-        return userEntityMapper.toResponse(userEntityRepository.save(userEntity));
+        userValidator.validateUpdateUser(userEntity, userEntityUpdateRequest.email(), userEntityUpdateRequest.username());
+        String oldUsername = userEntity.getUsername();
+        userEntity.setEmail(userEntityUpdateRequest.email());
+        userEntity.setUsername(userEntityUpdateRequest.username());
+
+        String newToken = null;
+        if (auth.getName().equals(oldUsername)) {
+            newToken = jwtUtils.createTokenFromEntity(userEntity);
+        }
+
+        UserEntity updatedUser = userEntityRepository.save(userEntity);
+        return new UserEntityUpdateResponse(userEntityMapper.toResponse(updatedUser), newToken);
     }
 
     @Override
-    public UserEntityResponse changePassword(ResetPasswordRequest resetPasswordRequest, Authentication auth) {
-        UserEntity userEntity = userValidator.validateUserRole(resetPasswordRequest.userId(), auth);
+    public UserEntityResponse changePassword(Long userId, ResetPasswordRequest resetPasswordRequest, Authentication auth) {
+        UserEntity userEntity = userValidator.validateUserRole(userId, auth);
         userValidator.validatePassword(userEntity, resetPasswordRequest.currentPassword(), resetPasswordRequest.newPassword());
         userEntity.setPassword(passwordEncoder.encode(resetPasswordRequest.newPassword()));
 
@@ -137,7 +150,7 @@ public class UserEntityServiceImpl implements UserEntityService {
     }
 
     private UserEntity toUser (UserEntityRequest userEntityRequest){
-        return new UserEntity(userEntityRequest.email(), userEntityRequest.username(), userEntityRequest.password());
+        return new UserEntity(userEntityRequest.email(), userEntityRequest.username(), passwordEncoder.encode(userEntityRequest.password()));
     }
 
     private void validateNoActiveLoans(Long userId) {

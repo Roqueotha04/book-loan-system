@@ -8,6 +8,8 @@ import com.auth0.jwt.exceptions.SignatureVerificationException;
 import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import com.library.loansystem.Entities.Role;
+import com.library.loansystem.Entities.UserEntity;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -30,12 +32,23 @@ public class JwtUtils {
 
     public String createToken(Authentication authentication){
         Algorithm algorithm = Algorithm.HMAC256(this.secretKey);
-
         String username = authentication.getName();
         String authorities = authentication.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.joining(","));
+        return buildToken(username, authorities, algorithm);
+    }
 
+    public String createTokenFromEntity(UserEntity user){
+        Algorithm algorithm = Algorithm.HMAC256(this.secretKey);
+        String authorities = user.getRoles().stream()
+                .map(Role::getRole)
+                .collect(Collectors.joining(","));
+
+        return buildToken(user.getUsername(), authorities, algorithm);
+    }
+
+    public String buildToken(String username, String authorities, Algorithm algorithm){
         return JWT.create()
                 .withIssuer(this.userGenerator)
                 .withSubject(username)

@@ -99,7 +99,7 @@ public class UserDetailServiceImpl implements UserDetailsService {
     }
 
     public void saveUser(AuthRegisterRequest authRegisterRequest){
-        UserEntityRequest userEntityRequest = new UserEntityRequest(authRegisterRequest.email(), authRegisterRequest.username(), passwordEncoder.encode(authRegisterRequest.password()));
+        UserEntityRequest userEntityRequest = new UserEntityRequest(authRegisterRequest.email(), authRegisterRequest.username(), authRegisterRequest.password());
         userEntityService.save(userEntityRequest);
     }
 }
