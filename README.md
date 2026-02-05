@@ -34,11 +34,6 @@ The system includes **robust DTO validations**, **centralized exception handling
 - **JaCoCo** coverage on services & mappers, target **80%+**
   
 ---
-# 📚 Book Loan System
-
-A fully-featured library management system built with **Spring Boot 3**, **Spring Security 6**, and **MySQL 8**. Handles users, books, copies, and loans with secure authentication and role-based access control.
-
----
 
 ## 🔒 Security & Authentication
 
