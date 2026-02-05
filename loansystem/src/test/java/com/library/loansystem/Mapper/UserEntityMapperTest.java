@@ -10,12 +10,15 @@ public class UserEntityMapperTest {
     UserEntityMapper userEntityMapper = new UserEntityMapper();
 
     @Test
-    public void testToResponse(){
+    public void testToResponse() {
         UserEntity userEntity = new UserEntity("lionelmessi@hotmail.com", "lionel", "theGoat");
 
         UserEntityResponse result = userEntityMapper.toResponse(userEntity);
-        assertEquals(userEntity.getId(), result.id());
+
+        assertNull(result.id());
         assertEquals(userEntity.getEmail(), result.email());
         assertEquals(userEntity.getUsername(), result.username());
+        assertEquals(userEntity.getActive(), result.active());
+        assertEquals(userEntity.getRoles(), result.roles());
     }
 }

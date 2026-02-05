@@ -21,12 +21,12 @@ import java.time.LocalDate;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
-@Component
 @ExtendWith(MockitoExtension.class)
 public class LoanValidatorTest {
 
     @Mock
     private LoanRepository loanRepository;
+
     private LoanValidator loanValidator;
 
     private UserEntity userEntity;
@@ -34,31 +34,13 @@ public class LoanValidatorTest {
     private LocalDate validDueDate;
 
     @BeforeEach
-    void setUp(){
+    void setUp() {
         loanValidator = new LoanValidator(loanRepository);
-
-        userEntity = validUser();
-        bookCopy = validBookCopy();
-        validDueDate = validDueDate();
-    }
-
-    private UserEntity validUser() {
-        UserEntity userEntity = new UserEntity();
-        userEntity.setId(1L);
+        userEntity = DataProvider.userListMock().get(0);
         userEntity.setActive(true);
-        return userEntity;
-    }
-
-    private BookCopy validBookCopy() {
-        BookCopy bookCopy = new BookCopy();
-        bookCopy.setId(1L);
-        bookCopy.setBook(DataProvider.bookListMock().get(1));
+        bookCopy = DataProvider.bookCopyListMock().get(0);
         bookCopy.setState(BookCopyState.AVAILABLE);
-        return bookCopy;
-    }
-
-    private LocalDate validDueDate() {
-        return LocalDate.now().plusDays(10);
+        validDueDate = LocalDate.now().plusDays(10);
     }
 
     @Test
@@ -79,45 +61,54 @@ public class LoanValidatorTest {
     void shouldThrowExceptionWhenUserIsInactive() {
         userEntity.setActive(false);
 
-        assertThrows(BusinessException.class, () -> loanValidator.validateLoan(userEntity, bookCopy, validDueDate));
+        assertThrows(BusinessException.class,
+                () -> loanValidator.validateLoan(userEntity, bookCopy, validDueDate));
     }
 
     @Test
     void shouldThrowExceptionWhenBookIsInactive() {
         bookCopy.getBook().setActive(false);
 
-        assertThrows(BusinessException.class, () -> loanValidator.validateLoan(userEntity, bookCopy, validDueDate));
+        assertThrows(BusinessException.class,
+                () -> loanValidator.validateLoan(userEntity, bookCopy, validDueDate));
 
-        verify(loanRepository, never()).countByUserIdAndEndDateIsNull(anyLong());
+        verify(loanRepository, never()).countByUserEntityIdAndEndDateIsNull(anyLong());
     }
 
     @Test
     void shouldThrowExceptionWhenUserReachedMaxLoans() {
-        when(loanRepository.countByUserIdAndEndDateIsNull(userEntity.getId()))
+        when(loanRepository.countByUserEntityIdAndEndDateIsNull(userEntity.getId()))
                 .thenReturn(3);
 
-        assertThrows(BusinessException.class, () -> loanValidator.validateLoan(userEntity, bookCopy, validDueDate));
+        assertThrows(BusinessException.class,
+                () -> loanValidator.validateLoan(userEntity, bookCopy, validDueDate));
 
-        verify(loanRepository).countByUserIdAndEndDateIsNull(userEntity.getId());
+        verify(loanRepository).countByUserEntityIdAndEndDateIsNull(userEntity.getId());
     }
 
     @Test
     void shouldThrowExceptionWhenUserAlreadyHasBookCopyOnLoan() {
+        when(loanRepository.existsByUserEntityIdAndBookCopyBookIsbnAndEndDateIsNull(
+                userEntity.getId(), bookCopy.getBook().getIsbn()))
+                .thenReturn(true);
 
-        when(loanRepository.existsByUserIdAndBookCopyIdAndEndDateIsNull(userEntity.getId(), bookCopy.getId())).thenReturn(true);
+        assertThrows(BusinessException.class,
+                () -> loanValidator.validateLoan(userEntity, bookCopy, validDueDate));
 
-        assertThrows(BusinessException.class, () -> loanValidator.validateLoan(userEntity, bookCopy, validDueDate));
-
-        verify(loanRepository).existsByUserIdAndBookCopyIdAndEndDateIsNull(userEntity.getId(), bookCopy.getId());
+        verify(loanRepository).existsByUserEntityIdAndBookCopyBookIsbnAndEndDateIsNull(
+                userEntity.getId(), bookCopy.getBook().getIsbn());
     }
 
     @Test
     void shouldThrowExceptionWhenUserHasOverdueLoans() {
-        when(loanRepository.existsByUserIdAndEndDateIsNullAndDueDateBefore(eq(userEntity.getId()), any()))
+        when(loanRepository.existsByUserEntityIdAndEndDateIsNullAndDueDateBefore(
+                eq(userEntity.getId()), any(LocalDate.class)))
                 .thenReturn(true);
 
-        assertThrows(BusinessException.class, () -> loanValidator.validateLoan(userEntity, bookCopy, validDueDate));
+        assertThrows(BusinessException.class,
+                () -> loanValidator.validateLoan(userEntity, bookCopy, validDueDate));
 
-        verify(loanRepository).existsByUserIdAndEndDateIsNullAndDueDateBefore(eq(userEntity.getId()), any());
+        verify(loanRepository).existsByUserEntityIdAndEndDateIsNullAndDueDateBefore(
+                eq(userEntity.getId()), any(LocalDate.class));
     }
 }

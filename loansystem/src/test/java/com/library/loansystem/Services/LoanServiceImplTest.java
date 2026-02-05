@@ -20,6 +20,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.core.Authentication;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -63,42 +64,44 @@ public class LoanServiceImplTest {
         BookCopy bookCopy = DataProvider.bookCopyListMock().get(0);
         bookCopy.setId(1L);
         LoanRequest loanRequest = new LoanRequest(FIXED_DATE.plusDays(10), userEntity.getId(), book.getIsbn());
+        Authentication auth = mock(Authentication.class);
 
+        when(userValidator.validateUserRole(loanRequest.userId(), auth)).thenReturn(userEntity);
         when(bookCopyService.selectAvailableCopyOrThrow(book.getIsbn())).thenReturn(bookCopy);
-        when(userEntityService.getUserOrThrow(1L)).thenReturn(userEntity);
-        when(loanRepository.save(any(Loan.class)))
-                .thenAnswer(invocation -> invocation.getArgument(0));
+        when(loanRepository.save(any(Loan.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
-        LoanResponse result = loanService.createLoan(loanRequest);
+        LoanResponse result = loanService.createLoan(loanRequest, auth);
 
         assertEquals(loanRequest.dueDate(), result.dueDate());
         assertEquals(book.getIsbn(), result.book().isbn());
         assertEquals(bookCopy.getId(), result.book().bookCopyId());
         assertEquals(loanRequest.userId(), result.user().userId());
 
+        verify(userValidator).validateUserRole(loanRequest.userId(), auth);
         verify(bookCopyService).selectAvailableCopyOrThrow(book.getIsbn());
-        verify(userEntityService).getUserOrThrow(1L);
-        verify(bookCopyService).patchState(1L, BookCopyState.LOANED);
+        verify(bookCopyService).patchState(bookCopy.getId(), BookCopyState.LOANED);
         verify(loanRepository).save(any(Loan.class));
     }
 
     @Test
-    void shouldPropagateExceptionFromValidator() {
+    public void testCreateLoan_shouldPropagateExceptionFromValidator() {
         UserEntity userEntity = DataProvider.userListMock().get(1);
         BookCopy bookCopy = DataProvider.bookCopyListMock().get(1);
         LocalDate dueDate = LocalDate.now().plusDays(10);
-        when(userEntityService.getUserOrThrow(any())).thenReturn(userEntity);
-        when(bookCopyService.selectAvailableCopyOrThrow(any())).thenReturn(bookCopy);
+        Authentication auth = mock(Authentication.class);
 
+        when(userValidator.validateUserRole(anyLong(), eq(auth))).thenReturn(userEntity);
+        when(bookCopyService.selectAvailableCopyOrThrow(any())).thenReturn(bookCopy);
         doThrow(new RuntimeException())
                 .when(loanValidator).validateLoan(any(), any(), any());
 
         assertThrows(RuntimeException.class,
-                () -> loanService.createLoan(new LoanRequest(dueDate, 1L, "123456789")));
+                () -> loanService.createLoan(new LoanRequest(dueDate, 1L, "123456789"), auth));
 
         verify(loanRepository, never()).save(any(Loan.class));
         verify(bookCopyService, never()).patchState(anyLong(), any(BookCopyState.class));
     }
+
 
     @Test
     public void testReturnLoan_ok() {
@@ -137,19 +140,21 @@ public class LoanServiceImplTest {
         loan.setId(1L);
         loan.setEndDate(null);
         loan.setDueDate(LocalDate.now().plusDays(5));
-
         LocalDate newDate = LocalDate.now().plusDays(10);
+        Authentication auth = mock(Authentication.class);
 
         when(loanRepository.findById(1L)).thenReturn(Optional.of(loan));
+        when(userValidator.validateUserRole(loan.getUserEntity().getId(), auth)).thenReturn(loan.getUserEntity());
         when(loanRepository.save(any(Loan.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
-        LoanResponse result = loanService.renewLoan(1L, newDate);
+        LoanResponse result = loanService.renewLoan(1L, newDate, auth);
 
         assertNotNull(result);
         assertEquals(newDate, result.dueDate());
         assertEquals(loan.getUserEntity().getId(), result.user().userId());
 
         verify(loanRepository).findById(1L);
+        verify(userValidator).validateUserRole(loan.getUserEntity().getId(), auth);
         verify(loanRepository).save(any(Loan.class));
     }
 
@@ -158,13 +163,15 @@ public class LoanServiceImplTest {
         Loan loan = DataProvider.loanListMock().get(0);
         loan.setId(1L);
         loan.setEndDate(FIXED_DATE);
+        Authentication auth = mock(Authentication.class);
 
         when(loanRepository.findById(1L)).thenReturn(Optional.of(loan));
 
         assertThrows(BusinessException.class,
-                () -> loanService.renewLoan(1L, FIXED_DATE.plusDays(10)));
+                () -> loanService.renewLoan(1L, FIXED_DATE.plusDays(10), auth));
 
         verify(loanRepository).findById(1L);
+        verify(userValidator, never()).validateUserRole(anyLong(), any());
         verify(loanRepository, never()).save(any());
     }
 
@@ -174,28 +181,33 @@ public class LoanServiceImplTest {
         loan.setId(1L);
         loan.setEndDate(null);
         loan.setDueDate(LocalDate.now().minusDays(1));
-
         LocalDate newDate = LocalDate.now().plusDays(5);
+        Authentication auth = mock(Authentication.class);
 
         when(loanRepository.findById(1L)).thenReturn(Optional.of(loan));
+        when(userValidator.validateUserRole(loan.getUserEntity().getId(), auth)).thenReturn(loan.getUserEntity());
 
         assertThrows(BusinessException.class,
-                () -> loanService.renewLoan(1L, newDate));
+                () -> loanService.renewLoan(1L, newDate, auth));
 
         verify(loanRepository).findById(1L);
+        verify(userValidator).validateUserRole(loan.getUserEntity().getId(), auth);
         verify(loanRepository, never()).save(any());
     }
 
     @Test
     public void testRenewLoan_notFound() {
+        Authentication auth = mock(Authentication.class);
         when(loanRepository.findById(1L)).thenReturn(Optional.empty());
 
         assertThrows(ResourceNotFoundException.class,
-                () -> loanService.renewLoan(1L, FIXED_DATE.plusDays(5)));
+                () -> loanService.renewLoan(1L, FIXED_DATE.plusDays(5), auth));
 
         verify(loanRepository).findById(1L);
+        verify(userValidator, never()).validateUserRole(anyLong(), any());
         verify(loanRepository, never()).save(any());
     }
+
 
     @Test
     public void testFindByDateRange_ok() {
@@ -315,14 +327,19 @@ public class LoanServiceImplTest {
     @Test
     public void testFindByUser_NullStatus() {
         List<Loan> userLoans = DataProvider.loanListMock();
+        UserEntity mockUser = DataProvider.userListMock().get(0);
         Long userId = 1L;
+        mockUser.setId(userId);
 
+        Authentication auth = mock(Authentication.class);
+
+        when(userValidator.validateUserRole(userId, auth)).thenReturn(mockUser);
         when(loanRepository.findByUserEntityId(userId)).thenReturn(userLoans);
 
-        List<LoanResponse> result = loanService.findByUser(userId, null);
+        List<LoanResponse> result = loanService.findByUser(userId, null, auth);
 
         assertEquals(userLoans.size(), result.size());
-        assertEquals(userLoans.get(0).getUserEntity().getId(), result.get(0).user().userId());
+        verify(userValidator).validateUserRole(userId, auth);
         verify(loanRepository).findByUserEntityId(userId);
     }
 
@@ -330,14 +347,20 @@ public class LoanServiceImplTest {
     public void testFindByUser_ActiveStatus() {
         List<Loan> activeLoans = DataProvider.loanListMock();
         activeLoans.forEach(l -> l.setEndDate(null));
+        UserEntity mockUser = DataProvider.userListMock().get(0);
         Long userId = 1L;
+        mockUser.setId(userId);
 
+        Authentication auth = mock(Authentication.class);
+
+        when(userValidator.validateUserRole(userId, auth)).thenReturn(mockUser);
         when(loanRepository.findByUserEntityIdAndEndDateIsNull(userId)).thenReturn(activeLoans);
 
-        List<LoanResponse> result = loanService.findByUser(userId, LoanStatus.ACTIVE);
+        List<LoanResponse> result = loanService.findByUser(userId, LoanStatus.ACTIVE, auth);
 
         assertEquals(activeLoans.size(), result.size());
         assertNull(result.get(0).endDate());
+        verify(userValidator).validateUserRole(userId, auth);
         verify(loanRepository).findByUserEntityIdAndEndDateIsNull(userId);
     }
 
@@ -345,14 +368,20 @@ public class LoanServiceImplTest {
     public void testFindByUser_ReturnedStatus() {
         List<Loan> returnedLoans = DataProvider.loanListMock();
         returnedLoans.forEach(l -> l.setEndDate(LocalDate.now()));
+        UserEntity mockUser = DataProvider.userListMock().get(0);
         Long userId = 1L;
+        mockUser.setId(userId);
 
+        Authentication auth = mock(Authentication.class);
+
+        when(userValidator.validateUserRole(userId, auth)).thenReturn(mockUser);
         when(loanRepository.findByUserEntityIdAndEndDateIsNotNull(userId)).thenReturn(returnedLoans);
 
-        List<LoanResponse> result = loanService.findByUser(userId, LoanStatus.RETURNED);
+        List<LoanResponse> result = loanService.findByUser(userId, LoanStatus.RETURNED, auth);
 
         assertEquals(returnedLoans.size(), result.size());
         assertNotNull(result.get(0).endDate());
+        verify(userValidator).validateUserRole(userId, auth);
         verify(loanRepository).findByUserEntityIdAndEndDateIsNotNull(userId);
     }
 
@@ -360,13 +389,19 @@ public class LoanServiceImplTest {
     public void testFindByUser_OverdueStatus() {
         List<Loan> overdueLoans = DataProvider.loanListMock();
         overdueLoans.forEach(l -> l.setEndDate(null));
+        UserEntity mockUser = DataProvider.userListMock().get(0);
         Long userId = 1L;
+        mockUser.setId(userId);
 
+        Authentication auth = mock(Authentication.class);
+
+        when(userValidator.validateUserRole(userId, auth)).thenReturn(mockUser);
         when(loanRepository.findOverdue(eq(userId), any(LocalDate.class))).thenReturn(overdueLoans);
 
-        List<LoanResponse> result = loanService.findByUser(userId, LoanStatus.OVERDUE);
+        List<LoanResponse> result = loanService.findByUser(userId, LoanStatus.OVERDUE, auth);
 
         assertEquals(overdueLoans.size(), result.size());
+        verify(userValidator).validateUserRole(userId, auth);
         verify(loanRepository).findOverdue(eq(userId), any(LocalDate.class));
     }
 

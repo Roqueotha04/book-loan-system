@@ -3,6 +3,7 @@ package com.library.loansystem.Controllers;
 import com.library.loansystem.DTO.Request.UserEntityRequest;
 import com.library.loansystem.DTO.Request.UserEntityUpdateRequest;
 import com.library.loansystem.DTO.Response.UserEntityResponse;
+import com.library.loansystem.DTO.Response.UserEntityUpdateResponse;
 import com.library.loansystem.DTO.Security.ResetPasswordRequest;
 import com.library.loansystem.Services.UserEntityService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -84,7 +85,7 @@ public class UserEntityController {
             description = "Updates the data of the user with the specified ID."
     )
     @PutMapping("/{id}")
-    public UserEntityResponse update(
+    public UserEntityUpdateResponse update(
             @PathVariable Long id,
             @Valid @RequestBody UserEntityUpdateRequest userEntityUpdateRequest,
             Authentication auth

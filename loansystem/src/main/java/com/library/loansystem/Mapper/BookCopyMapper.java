@@ -7,6 +7,6 @@ import org.springframework.stereotype.Component;
 @Component
 public class BookCopyMapper {
     public BookCopyResponse toResponse (BookCopy bookCopy){
-        return new BookCopyResponse(bookCopy.getId(), bookCopy.getBook().getName(), bookCopy.getState());
+        return new BookCopyResponse(bookCopy.getId(), bookCopy.getBook().getIsbn(), bookCopy.getBook().getName(), bookCopy.getState());
     }
 }
