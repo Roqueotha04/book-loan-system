@@ -19,9 +19,9 @@ public class AuthorMapperTest {
         AuthorResponse authorResponse = authorMapper.toResponse(author);
 
         //Then
-        assertEquals(author.getId(), authorResponse.getId());
-        assertEquals(author.getName(), authorResponse.getName());
-        assertEquals(author.getLastName(), authorResponse.getLastName());
-        assertEquals(author.getNationality(), authorResponse.getNationality());
+        assertEquals(author.getId(), authorResponse.id());
+        assertEquals(author.getName(), authorResponse.name());
+        assertEquals(author.getLastName(), authorResponse.lastName());
+        assertEquals(author.getNationality(), authorResponse.nationality());
     }
 }

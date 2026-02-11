@@ -52,7 +52,7 @@ public class AuthorServiceImplTest {
 
         //Then
         assertFalse (result.isEmpty());
-        assertEquals("Mariano", result.get(0).getName());
+        assertEquals("Mariano", result.get(0).name());
         verify(this.authorRepository).findAll();
     }
 
@@ -64,10 +64,10 @@ public class AuthorServiceImplTest {
         AuthorResponse result = authorService.findById(1L);
 
         assertNotNull(result);
-        assertEquals(author.getId(), result.getId());
-        assertEquals(author.getName(), result.getName());
-        assertEquals(author.getLastName(), result.getLastName());
-        assertEquals(author.getNationality(), result.getNationality());
+        assertEquals(author.getId(), result.id());
+        assertEquals(author.getName(), result.name());
+        assertEquals(author.getLastName(), result.lastName());
+        assertEquals(author.getNationality(), result.nationality());
     }
 
     @Test
@@ -78,7 +78,7 @@ public class AuthorServiceImplTest {
 
         AuthorResponse result = authorService.save(authorRequest);
 
-        assertEquals(authorRequest.getName(), result.getName());
+        assertEquals(authorRequest.getName(), result.name());
         verify(authorRepository).save(any(Author.class));
     }
 
@@ -115,7 +115,7 @@ public class AuthorServiceImplTest {
 
         AuthorResponse result = authorService.update(1L, authorRequest);
 
-        assertEquals(result.getName(), authorRequest.getName());
+        assertEquals(result.name(), authorRequest.getName());
         verify(authorRepository).findById(1L);
         verify(authorRepository).save(any(Author.class));
     }
