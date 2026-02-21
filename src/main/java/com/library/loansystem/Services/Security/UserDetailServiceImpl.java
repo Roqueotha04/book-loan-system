@@ -33,19 +33,15 @@ import java.util.Set;
 @Service
 @Transactional(readOnly = true)
 public class UserDetailServiceImpl implements UserDetailsService {
-
-   // private final UserEntityRepository userEntityRepository;
     private final UserEntityService userEntityService;
     private final JwtUtils jwtUtils;
     private final PasswordEncoder passwordEncoder;
-    private final RoleRepository roleRepository;
 
-    public UserDetailServiceImpl(UserEntityRepository userEntityRepository, UserEntityService userEntityService, JwtUtils jwtUtils, PasswordEncoder passwordEncoder, RoleRepository roleRepository) {
+    public UserDetailServiceImpl(UserEntityRepository userEntityRepository, UserEntityService userEntityService, JwtUtils jwtUtils, PasswordEncoder passwordEncoder) {
        // this.userEntityRepository = userEntityRepository;
         this.userEntityService = userEntityService;
         this.jwtUtils = jwtUtils;
         this.passwordEncoder = passwordEncoder;
-        this.roleRepository = roleRepository;
     }
 
     @Override

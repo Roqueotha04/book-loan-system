@@ -34,8 +34,6 @@ class UserDetailServiceImplTest {
     private JwtUtils jwtUtils;
     @Mock
     private PasswordEncoder passwordEncoder;
-    @Mock
-    private RoleRepository roleRepository;
 
     @InjectMocks
     private UserDetailServiceImpl userDetailService;
