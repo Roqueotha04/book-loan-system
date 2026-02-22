@@ -78,7 +78,7 @@ public class AuthorServiceImplTest {
 
         AuthorResponse result = authorService.save(authorRequest);
 
-        assertEquals(authorRequest.getName(), result.name());
+        assertEquals(authorRequest.name(), result.name());
         verify(authorRepository).save(any(Author.class));
     }
 
@@ -115,7 +115,7 @@ public class AuthorServiceImplTest {
 
         AuthorResponse result = authorService.update(1L, authorRequest);
 
-        assertEquals(result.name(), authorRequest.getName());
+        assertEquals(result.name(), authorRequest.name());
         verify(authorRepository).findById(1L);
         verify(authorRepository).save(any(Author.class));
     }

@@ -64,7 +64,7 @@ public class BookServiceImplTest {
         List<BookResponse> result = bookService.findAll();
 
         assertEquals(bookList.size(), result.size());
-        assertEquals(bookList.get(1).getName(), result.get(1).getName());
+        assertEquals(bookList.get(1).getName(), result.get(1).name());
         verify(bookRepository).findAll();
     }
 
@@ -76,7 +76,7 @@ public class BookServiceImplTest {
 
         BookResponse result = bookService.findById(2L);
 
-        assertEquals(book.getName(), result.getName());
+        assertEquals(book.getName(), result.name());
         verify(bookRepository).findById(2L);
     }
 
@@ -87,7 +87,7 @@ public class BookServiceImplTest {
         when(bookRepository.findByIsbn("1234")).thenReturn(Optional.of(book));
         BookResponse result = bookService.findByIsbn("1234");
 
-        assertEquals(book.getName(), result.getName());
+        assertEquals(book.getName(), result.name());
         verify(bookRepository).findByIsbn("1234");
     }
 
@@ -114,7 +114,7 @@ public class BookServiceImplTest {
 
         BookResponse result = bookService.save(book);
 
-        assertEquals(book.getName(),result.getName());
+        assertEquals(book.name(),result.name());
         verify(bookRepository).save(any(Book.class));
         verify(publisherService).getPublisherOrThrow(1L);
         verify(authorService, atLeastOnce()).getAuthorOrThrow(anyLong());
@@ -169,12 +169,12 @@ public class BookServiceImplTest {
 
         BookResponse result = bookService.update(2L, bookRequest);
 
-        assertNotEquals("The Age of Extremes 2", result.getName());
-        assertEquals("The Age of Extremes", result.getName());
-        assertEquals(BookGenre.NON_FICTION, result.getGenre());
-        assertEquals("8789876298523", result.getIsbn());
-        assertNotEquals(2L, result.getPublisher().id());
-        assertEquals(2, result.getAuthors().size());
+        assertNotEquals("The Age of Extremes 2", result.name());
+        assertEquals("The Age of Extremes", result.name());
+        assertEquals(BookGenre.NON_FICTION, result.genre());
+        assertEquals("8789876298523", result.isbn());
+        assertNotEquals(2L, result.publisher().id());
+        assertEquals(2, result.authors().size());
 
         verify(bookRepository).findById(2L);
         verify(bookRepository).save(any(Book.class));
@@ -188,7 +188,7 @@ public class BookServiceImplTest {
         when(bookRepository.save(any(Book.class)))
                 .thenAnswer(invocation -> invocation.getArgument(0));
         BookResponse result = bookService.changeStatus(2L);
-        assertEquals(false, result.getActive());
+        assertEquals(false, result.active());
         verify(bookRepository).findById(2L);
         verify(bookRepository).save(any(Book.class));
     }
@@ -202,7 +202,7 @@ public class BookServiceImplTest {
                 .thenAnswer(invocation -> invocation.getArgument(0));
 
         BookResponse result = bookService.changeStatus(2L);
-        assertEquals(true, result.getActive());
+        assertEquals(true, result.active());
         verify(bookRepository).findById(2L);
         verify(bookRepository).save(any(Book.class));
     }

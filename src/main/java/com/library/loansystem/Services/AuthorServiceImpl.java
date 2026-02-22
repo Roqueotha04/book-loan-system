@@ -39,7 +39,7 @@ public class AuthorServiceImpl implements AuthorService {
     @Override
     @Transactional
     public AuthorResponse save(AuthorRequest authorAux) {
-        Author author = new Author(authorAux.getName(), authorAux.getLastName(), authorAux.getNationality());
+        Author author = new Author(authorAux.name(), authorAux.lastName(), authorAux.nationality());
         return authorMapper.toResponse(authorRepository.save(author));
     }
 
@@ -55,9 +55,9 @@ public class AuthorServiceImpl implements AuthorService {
     @Transactional
     public AuthorResponse update(Long id, AuthorRequest authorAux) {
         Author author = getAuthorOrThrow(id);
-        author.setName(authorAux.getName());
-        author.setLastName(authorAux.getLastName());
-        author.setNationality(authorAux.getNationality());
+        author.setName(authorAux.name());
+        author.setLastName(authorAux.lastName());
+        author.setNationality(authorAux.nationality());
 
         return authorMapper.toResponse(authorRepository.save(author));
     }

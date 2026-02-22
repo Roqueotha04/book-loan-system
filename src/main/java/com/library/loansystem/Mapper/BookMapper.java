@@ -19,22 +19,18 @@ public class BookMapper {
     }
 
     public BookResponse toResponse (Book book){
-        BookResponse bookResponse = new BookResponse();
-        bookResponse.setId(book.getId());
-        bookResponse.setName(book.getName());
-        bookResponse.setGenre(book.getGenre());
-        bookResponse.setIsbn(book.getIsbn());
-        bookResponse.setActive(book.getActive());
-        bookResponse.setPublisher(new PublisherResponse(book.getPublisher().getId(),book.getPublisher().getName()));
-
-        //Maps the AuthorxBook List to AuthorResponse objects
         List<AuthorResponse> authorResponseList = book.getAuthorXBooks().stream()
                 .map(AuthorXBook::getAuthor)
                 .map(authorMapper::toResponse)
                 .toList();
 
-        bookResponse.setAuthors(authorResponseList);
-        return bookResponse;
+        return new BookResponse(book.getId(),
+                book.getName(),
+                book.getGenre(),
+                book.getActive(),
+                book.getIsbn(),
+                new PublisherResponse(book.getPublisher().getId(),book.getPublisher().getName()),
+                authorResponseList);
     }
 
 }

@@ -6,18 +6,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-public class AuthorRequest {
-    @Size(max = 50)
-    @NotBlank
-    String name;
+public record AuthorRequest (@Size(max = 50) @NotBlank String name, @Size(max = 50) @NotBlank String lastName, @Size(max = 50) String nationality){
 
-    @Size(max = 50)
-    @NotBlank
-    String lastName;
-
-    @Size(max = 50)
-    String nationality;
 }

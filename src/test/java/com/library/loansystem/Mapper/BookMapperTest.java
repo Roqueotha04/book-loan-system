@@ -20,12 +20,12 @@ public class BookMapperTest {
         BookResponse result = bookMapper.toResponse(book);
 
         assertNotNull(result);
-        assertEquals(book.getId(), result.getId());
-        assertEquals(book.getName(), result.getName());
-        assertEquals(book.getGenre(), result.getGenre());
-        assertEquals(book.getActive(), result.getActive());
-        assertEquals(book.getIsbn(), result.getIsbn());
-        assertEquals(book.getPublisher().getId(), result.getPublisher().id());
-        assertEquals(book.getPublisher().getName(), result.getPublisher().name());
+        assertEquals(book.getId(), result.id());
+        assertEquals(book.getName(), result.name());
+        assertEquals(book.getGenre(), result.genre());
+        assertEquals(book.getActive(), result.active());
+        assertEquals(book.getIsbn(), result.isbn());
+        assertEquals(book.getPublisher().getId(), result.publisher().id());
+        assertEquals(book.getPublisher().getName(), result.publisher().name());
     }
 }

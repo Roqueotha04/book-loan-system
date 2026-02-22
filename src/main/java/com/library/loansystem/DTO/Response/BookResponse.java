@@ -7,15 +7,12 @@ import lombok.NoArgsConstructor;
 
 import java.util.List;
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-public class BookResponse {
-    private Long id;
-    private String name;
-    private BookGenre genre;
-    private Boolean active;
-    private String isbn;
-    private PublisherResponse publisher;
-    private List<AuthorResponse> authors;
+public record BookResponse(Long id,
+                            String name,
+                            BookGenre genre,
+                            Boolean active,
+                            String isbn,
+                            PublisherResponse publisher,
+                            List<AuthorResponse> authors) {
+
 }

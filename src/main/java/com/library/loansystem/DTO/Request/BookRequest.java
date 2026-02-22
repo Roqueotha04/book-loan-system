@@ -9,25 +9,9 @@ import lombok.NoArgsConstructor;
 import java.util.ArrayList;
 import java.util.List;
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-public class BookRequest {
-    @Size(max = 50)
-    @NotBlank
-    private String name;
-
-    @NotNull
-    private BookGenre genre;
-
-    @NotBlank
-    @Pattern(regexp = "\\d{10}|\\d{13}", message = "ISBN must be 10 or 13 digits")
-    private String isbn;
-
-    @NotNull
-    private Long publisherID;
-
-    @NotEmpty
-    private List<Long> authorsIds = new ArrayList<>();
-
+public record BookRequest( @Size(max = 50) @NotBlank String name,
+                           @NotNull BookGenre genre,
+                           @NotBlank @Pattern(regexp = "\\d{10}|\\d{13}", message = "ISBN must be 10 or 13 digits")String isbn,
+                           @NotNull Long publisherID,
+                           @NotEmpty List<Long> authorsIds) {
 }

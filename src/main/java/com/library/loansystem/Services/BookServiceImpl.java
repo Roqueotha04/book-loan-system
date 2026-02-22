@@ -58,15 +58,15 @@ public class BookServiceImpl implements BookService{
     @Transactional
     public BookResponse update(Long id, BookRequest bookRequest) {
         Book book = getBookOrThrow(id);
-        book.setName(bookRequest.getName());
-        book.setGenre(bookRequest.getGenre());
-        book.setIsbn(bookRequest.getIsbn());
+        book.setName(bookRequest.name());
+        book.setGenre(bookRequest.genre());
+        book.setIsbn(bookRequest.isbn());
 
-        if (!book.getPublisher().getId().equals(bookRequest.getPublisherID())) {
-            Publisher newPublisher = publisherService.getPublisherOrThrow(bookRequest.getPublisherID());
+        if (!book.getPublisher().getId().equals(bookRequest.publisherID())) {
+            Publisher newPublisher = publisherService.getPublisherOrThrow(bookRequest.publisherID());
             book.setPublisher(newPublisher);
         }
-        updateAuthors(book, bookRequest.getAuthorsIds());
+        updateAuthors(book, bookRequest.authorsIds());
        return bookMapper.toResponse(bookRepository.save(book));
     }
 
@@ -137,15 +137,15 @@ public class BookServiceImpl implements BookService{
 
     private Book toBook (BookRequest bookRequest){
         Book book = new Book();
-        book.setName(bookRequest.getName());
-        book.setGenre(bookRequest.getGenre());
-        book.setIsbn(bookRequest.getIsbn());
+        book.setName(bookRequest.name());
+        book.setGenre(bookRequest.genre());
+        book.setIsbn(bookRequest.isbn());
         book.setBookCopyList(new ArrayList<>());
         //Publisher
-        Publisher publisher =  publisherService.getPublisherOrThrow(bookRequest.getPublisherID());
+        Publisher publisher =  publisherService.getPublisherOrThrow(bookRequest.publisherID());
         book.setPublisher(publisher);
         //Author
-        List<AuthorXBook> authorXBooks = bookRequest.getAuthorsIds().stream()
+        List<AuthorXBook> authorXBooks = bookRequest.authorsIds().stream()
                 .map(id -> {
                     Author author = authorService.getAuthorOrThrow(id);
                     return new AuthorXBook(book, author);
