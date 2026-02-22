@@ -43,10 +43,10 @@ public class PublisherServiceImpl implements PublisherService {
     @Override
     @Transactional
     public PublisherResponse save(PublisherRequest request) {
-        if (publisherRepository.existsByName(request.getName())) {
+        if (publisherRepository.existsByName(request.name())) {
             throw new BusinessException("Publisher with this name already exists");
         }
-        Publisher publisher = new Publisher(request.getName());
+        Publisher publisher = new Publisher(request.name());
         return toResponse(publisherRepository.save(publisher));
     }
 
@@ -54,7 +54,7 @@ public class PublisherServiceImpl implements PublisherService {
     @Transactional
     public PublisherResponse update(Long id, PublisherRequest request) {
         Publisher publisher = getPublisherOrThrow(id);
-        publisher.setName(request.getName());
+        publisher.setName(request.name());
         return toResponse(publisherRepository.save(publisher));
     }
 

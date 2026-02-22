@@ -173,7 +173,7 @@ public class BookServiceImplTest {
         assertEquals("The Age of Extremes", result.getName());
         assertEquals(BookGenre.NON_FICTION, result.getGenre());
         assertEquals("8789876298523", result.getIsbn());
-        assertNotEquals(2L, result.getPublisher().getId());
+        assertNotEquals(2L, result.getPublisher().id());
         assertEquals(2, result.getAuthors().size());
 
         verify(bookRepository).findById(2L);

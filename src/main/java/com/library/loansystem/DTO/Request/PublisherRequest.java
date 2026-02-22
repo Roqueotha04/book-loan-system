@@ -6,11 +6,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-public class PublisherRequest {
-    @Size(max = 50)
-    @NotBlank
-    private String name;
+public record PublisherRequest(@Size(max = 50) @NotBlank String name) {
+
 }

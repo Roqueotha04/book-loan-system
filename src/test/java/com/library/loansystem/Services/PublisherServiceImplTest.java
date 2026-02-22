@@ -38,7 +38,7 @@ public class PublisherServiceImplTest {
         when(publisherRepository.findAll()).thenReturn(publisherResponseList);
         List<PublisherResponse> result=publisherService.findAll();
 
-        assertEquals(publisherResponseList.get(1).getName(), result.get(1).getName());
+        assertEquals(publisherResponseList.get(1).getName(), result.get(1).name());
         assertEquals(publisherResponseList.size(), result.size());
 
         verify(publisherRepository).findAll();
@@ -53,8 +53,8 @@ public class PublisherServiceImplTest {
         PublisherResponse result = publisherService.findById(0L);
 
         assertNotNull(result);
-        assertEquals(publisher.getId(), result.getId());
-        assertEquals(publisher.getName(), result.getName());
+        assertEquals(publisher.getId(), result.id());
+        assertEquals(publisher.getName(), result.name());
 
         verify(publisherRepository).findById(0L);
     }
@@ -69,7 +69,7 @@ public class PublisherServiceImplTest {
 
         assertNotNull(result);
         assertEquals(publisherList.size(), result.size());
-        assertEquals(publisherList.get(1).getName(), result.get(1).getName());
+        assertEquals(publisherList.get(1).getName(), result.get(1).name());
 
         verify(publisherRepository).findByNameContainingIgnoreCase("name");
     }
@@ -83,14 +83,14 @@ public class PublisherServiceImplTest {
 
         PublisherResponse result = publisherService.save(publisherRequest);
 
-        assertEquals(publisherRequest.getName(), result.getName());
+        assertEquals(publisherRequest.name(), result.name());
         verify(publisherRepository).save(any(Publisher.class));
     }
 
     @Test
     public void testSave_DuplicateName_ThrowsException() {
         PublisherRequest publisherRequest = new PublisherRequest("Pearson");
-        when(publisherRepository.existsByName(publisherRequest.getName())).thenReturn(true);
+        when(publisherRepository.existsByName(publisherRequest.name())).thenReturn(true);
 
         assertThrows(BusinessException.class, () -> publisherService.save(publisherRequest));
 
@@ -110,7 +110,7 @@ public class PublisherServiceImplTest {
 
         PublisherResponse result= publisherService.update(2L, publisherRequest);
 
-        assertEquals(publisherRequest.getName(), result.getName());
+        assertEquals(publisherRequest.name(), result.name());
         verify(publisherRepository).findById(2L);
         verify(publisherRepository).save(any(Publisher.class));
     }
