@@ -11,7 +11,7 @@ RUN chmod +x mvnw
 RUN ./mvnw dependency:go-offline
 
 COPY ./src /root/src
-RUN ./mvnw clean install
+RUN ./mvnw clean install -DskipTests
 
 FROM eclipse-temurin:17-jre-alpine
 WORKDIR /app

@@ -2,6 +2,10 @@ services:
   app:
     build: .
     container_name: loansystem_app
+    env_file:
+      - .env
+    environment:
+        - SPRING_PROFILES_ACTIVE=prod
     ports:
       - "8080:8080"
     networks:
