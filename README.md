@@ -61,6 +61,16 @@ The system uses **Spring Security 6** and **JWT** to provide a secure, stateless
 - **Coverage reports** are generated with **JaCoCo**.
 
 ---
+## 🐳 Docker
+
+- The system can be run with Docker, quickly and consistently starting both the application and the database.
+- **Environment variables are configured in .env.**
+-To run use the default commands:
+
+    docker-compose up --build
+    docker-compose down
+
+---
 
 ## 📄 Documentation
 
