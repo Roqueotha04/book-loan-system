@@ -19,7 +19,8 @@ Fully documented with Swagger/OpenAPI and covered with unit tests and JaCoCo rep
 - **Global Exception Handling** (`@ControllerAdvice`)   
 - **Swagger / OpenAPI** for API documentation  
 - **JaCoCo** for test coverage  
-- **JUnit 5 & Mockito** for unit testing  
+- **JUnit 5 & Mockito** for unit testing
+- **Docker** for containerization
 
 ---
 ## Project Structure
@@ -68,9 +69,7 @@ The system uses **Spring Security 6** and **JWT** to provide a secure, stateless
 -To run use the default commands:
 
       docker-compose up --build
--  
-
-       docker-compose down
+      docker-compose down
 
 ---
 
