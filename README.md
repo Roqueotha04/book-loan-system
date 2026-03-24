@@ -6,6 +6,8 @@ Book Loan System is a backend application built with Java and Spring Boot to man
 
 Fully documented with Swagger/OpenAPI and covered with unit tests and JaCoCo reports, the system is production-ready, scalable, and designed to handle real-world scenarios, including inventory management, loan processing, and business rule enforcement.
 
+You can run the project whether with MySQL on 'Main' branch or SQLServer in 'feature/sql-server' branch.
+
 ---
 
 ## Technologies
@@ -136,13 +138,15 @@ For production, load credentials via environment variables to avoid exposing sen
 
     git clone <repo-url>
 
-2_Configure your database in application.properties and .env variables
+2_ Select MySQL or SQLServer branch.
 
-3_ Run the application with Maven:
+3_Configure your database in application.properties and .env variables
+
+4_ Run the application with Maven:
 
     mvn spring-boot:run
 
-4_Run tests and generate coverage:
+5_Run tests and generate coverage:
 
     mvn verify
 
@@ -153,8 +157,12 @@ For production, load credentials via environment variables to avoid exposing sen
 
     git clone <repo-url>
 
-2_Configure your database in application.properties and .env variables
+2_ Select MySQL or SQLServer branch.
 
-3_Run with docker 
+3_Configure your database in application.properties and .env variables
+
+4_Run with docker 
 
     docker compose up -d
+
+Note: When running the project on the SQL Server branch, startup time may take up to 90 seconds. This delay is due to SQL Server's initialization process, which requires more resources than MySQL during container startup. Once initialized, the application performs normally.
