@@ -1,31 +1,41 @@
 services:
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_SA_PASSWORD: ${DB_SA_PASSWORD}
+    ports:
+      - "1434:1433"
+    volumes:
+      - sqlserver-data:/var/opt/mssql
+      - ./docker-init:/docker-init
+    entrypoint: /bin/bash
+    command:
+      - -c
+      - |
+        /opt/mssql/bin/sqlservr &
+        pid=$!
+        sleep 60
+        /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P "$${MSSQL_SA_PASSWORD}" -C -i /docker-init/init.sql
+        wait $pid
+
   app:
     build: .
-    container_name: loansystem_app
     env_file:
       - .env
     environment:
-        - SPRING_PROFILES_ACTIVE=prod
+      - SPRING_PROFILES_ACTIVE=prod
     ports:
       - "8080:8080"
-    networks:
-      - spring-network
     depends_on:
-      - mysql
+      - sqlserver
+    restart: on-failure
+    entrypoint: /bin/sh
+    command:
+      - -c
+      - |
+        sleep 65
+        java -jar /app/app.jar
 
-  mysql:
-    image: mysql:8.0
-    container_name: mysql_database
-    environment:
-      MYSQL_ROOT_PASSWORD: bddroque
-      MYSQL_DATABASE: book_loan_system
-    ports:
-      - "3307:3306"
-    networks:
-      - spring-network
-    volumes:
-      - mysql-data:/var/lib/mysql
-networks:
-  spring-network:
 volumes:
-  mysql-data:
+  sqlserver-data:
