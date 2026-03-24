@@ -151,7 +151,7 @@ For production, load credentials via environment variables to avoid exposing sen
     mvn verify
 
 
-## You can also run the project using Docker
+## How to Run with docker
 
 1_Clone the repository:
 
