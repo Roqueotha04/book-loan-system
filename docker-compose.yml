@@ -15,7 +15,7 @@ services:
       - |
         /opt/mssql/bin/sqlservr &
         pid=$!
-        sleep 60
+        sleep 80
         /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P "$${MSSQL_SA_PASSWORD}" -C -i /docker-init/init.sql
         wait $pid
 
@@ -34,7 +34,7 @@ services:
     command:
       - -c
       - |
-        sleep 65
+        sleep 90
         java -jar /app/app.jar
 
 volumes:
