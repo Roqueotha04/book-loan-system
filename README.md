@@ -130,13 +130,13 @@ For production, load credentials via environment variables to avoid exposing sen
 - `JWT_SECRET` → Secure key for token signing
 
 
-### How to Run
+### How to Run in local
 
 1_Clone the repository:
 
     git clone <repo-url>
 
-2_Configure your database in application.properties.
+2_Configure your database in application.properties and .env variables
 
 3_ Run the application with Maven:
 
@@ -147,3 +147,14 @@ For production, load credentials via environment variables to avoid exposing sen
     mvn verify
 
 
+## You can also run the project using Docker
+
+1_Clone the repository:
+
+    git clone <repo-url>
+
+2_Configure your database in application.properties and .env variables
+
+3_Run with docker 
+
+    docker compose up -d
