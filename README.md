@@ -6,6 +6,8 @@ Book Loan System is a backend application built with Java and Spring Boot to man
 
 Fully documented with Swagger/OpenAPI and covered with unit tests and JaCoCo reports, the system is production-ready, scalable, and designed to handle real-world scenarios, including inventory management, loan processing, and business rule enforcement.
 
+You can run the project whether with MySQL on 'Main' branch or SQLServer in 'feature/sql-server' branch.
+
 ---
 
 ## Technologies
@@ -19,8 +21,7 @@ Fully documented with Swagger/OpenAPI and covered with unit tests and JaCoCo rep
 - **Global Exception Handling** (`@ControllerAdvice`)   
 - **Swagger / OpenAPI** for API documentation  
 - **JaCoCo** for test coverage  
-- **JUnit 5 & Mockito** for unit testing
-- **Docker** for containerization
+- **JUnit 5 & Mockito** for unit testing  
 
 ---
 ## Project Structure
@@ -60,16 +61,6 @@ The system uses **Spring Security 6** and **JWT** to provide a secure, stateless
 - **Unit tests** cover services and mappers using **JUnit 5** and **Mockito**.
 - **Minimal integration tests** for REST endpoints.
 - **Coverage reports** are generated with **JaCoCo**.
-
----
-## 🐳 Docker
-
-- The system can be run with Docker, quickly and consistently starting both the application and the database.
-- **Environment variables are configured in .env.**
--To run use the default commands:
-
-      docker-compose up --build
-      docker-compose down
 
 ---
 
@@ -141,20 +132,38 @@ For production, load credentials via environment variables to avoid exposing sen
 - `JWT_SECRET` → Secure key for token signing
 
 
-### How to Run
+### How to Run in local
 
 1_Clone the repository:
 
     git clone <repo-url>
 
-2_Configure your database in application.properties.
+2_ Select MySQL or SQLServer branch.
 
-3_ Run the application with Maven:
+3_Configure your database in application.properties and .env variables
+
+4_ Run the application with Maven:
 
     mvn spring-boot:run
 
-4_Run tests and generate coverage:
+5_Run tests and generate coverage:
 
     mvn verify
 
+
+## You can also run the project using Docker
+
+1_Clone the repository:
+
+    git clone <repo-url>
+
+2_ Select MySQL or SQLServer branch.
+
+3_Configure your database in application.properties and .env variables
+
+4_Run with docker 
+
+    docker compose up -d
+
+Note: When running the project on the SQL Server branch, startup time may take up to 90 seconds. This delay is due to SQL Server's initialization process, which requires more resources than MySQL during container startup. Once initialized, the application performs normally.
 
