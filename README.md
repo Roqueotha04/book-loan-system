@@ -6,7 +6,7 @@ Book Loan System is a backend application built with Java and Spring Boot to man
 
 Fully documented with Swagger/OpenAPI and covered with unit tests and JaCoCo reports, the system is production-ready, scalable, and designed to handle real-world scenarios, including inventory management, loan processing, and business rule enforcement.
 
-You can run the project whether with MySQL on 'Main' branch or SQLServer in 'feature/sql-server' branch.
+You can run the project whether with MySQL on 'Main' branch or SQLServer in 'feature/sql-server' branch
 
 ---
 
