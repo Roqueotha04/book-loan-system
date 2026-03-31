@@ -63,16 +63,16 @@ public class PublisherServiceImpl implements PublisherService {
     @Transactional
     public void deleteById(Long id) {
         Publisher publisher = getPublisherOrThrow(id);
-        if(publisherRepository.existsBookByPublisherId(id)) throw new BusinessException("Cannot delete a Publisher with associated books");
+        if (publisherRepository.existsBookByPublisherId(id)) {
+            throw new BusinessException("Cannot delete a Publisher with associated books");
+        }
         publisherRepository.delete(publisher);
     }
-
-    // Private utility methods
 
     public Publisher getPublisherOrThrow(Long id) {
         return publisherRepository.findById(id)
                 .orElseThrow(() ->
-                        new ResourceNotFoundException("Publisher not found" + id));
+                        new ResourceNotFoundException("Publisher not found with id: " + id));
     }
 
     private PublisherResponse toResponse(Publisher publisher) {
