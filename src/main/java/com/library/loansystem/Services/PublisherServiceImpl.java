@@ -35,7 +35,6 @@ public class PublisherServiceImpl implements PublisherService {
 
     @Override
     public List<PublisherResponse> findByName(String name) {
-        validateNameNotBlank(name);
         return publisherRepository.findByNameContainingIgnoreCase(name).stream()
                 .map(this::toResponse)
                 .toList();
@@ -44,19 +43,21 @@ public class PublisherServiceImpl implements PublisherService {
     @Override
     @Transactional
     public PublisherResponse save(PublisherRequest request) {
-        validateNameNotBlank(request.name());
-        validateNameNotDuplicated(request.name());
-        Publisher publisher = new Publisher(request.name().trim());
+        if (publisherRepository.existsByName(request.name())) {
+            throw new BusinessException("Publisher with this name already exists");
+        }
+        Publisher publisher = new Publisher(request.name());
         return toResponse(publisherRepository.save(publisher));
     }
 
     @Override
     @Transactional
     public PublisherResponse update(Long id, PublisherRequest request) {
-        validateNameNotBlank(request.name());
-        validateNameNotDuplicated(request.name());
         Publisher publisher = getPublisherOrThrow(id);
-        publisher.setName(request.name().trim());
+        if (publisherRepository.existsByName(request.name())) {
+            throw new BusinessException("Publisher already exists");
+        }
+        publisher.setName(request.name());
         return toResponse(publisherRepository.save(publisher));
     }
 
@@ -68,21 +69,11 @@ public class PublisherServiceImpl implements PublisherService {
         publisherRepository.delete(publisher);
     }
 
+    // Private utility methods
+
     public Publisher getPublisherOrThrow(Long id) {
         return publisherRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Publisher not found with id: " + id));
-    }
-
-    private void validateNameNotBlank(String name) {
-        if (name == null || name.isBlank()) {
-            throw new BusinessException("Publisher name cannot be blank");
-        }
-    }
-
-    private void validateNameNotDuplicated(String name) {
-        if (publisherRepository.existsByName(name.trim())) {
-            throw new BusinessException("Publisher with name '" + name + "' already exists");
-        }
+                .orElseThrow(() -> new ResourceNotFoundException("Publisher not found" + id));
     }
 
     private void validateNoAssociatedBooks(Long id) {
