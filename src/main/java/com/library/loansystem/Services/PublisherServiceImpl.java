@@ -30,12 +30,12 @@ public class PublisherServiceImpl implements PublisherService {
 
     @Override
     public PublisherResponse findById(Long id) {
-        Publisher publisher = getPublisherOrThrow(id);
-        return toResponse(publisher);
+        return toResponse(getPublisherOrThrow(id));
     }
 
     @Override
     public List<PublisherResponse> findByName(String name) {
+        validateNameNotBlank(name);
         return publisherRepository.findByNameContainingIgnoreCase(name).stream()
                 .map(this::toResponse)
                 .toList();
@@ -44,18 +44,19 @@ public class PublisherServiceImpl implements PublisherService {
     @Override
     @Transactional
     public PublisherResponse save(PublisherRequest request) {
-        if (publisherRepository.existsByName(request.name())) {
-            throw new BusinessException("Publisher with this name already exists");
-        }
-        Publisher publisher = new Publisher(request.name());
+        validateNameNotBlank(request.name());
+        validateNameNotDuplicated(request.name());
+        Publisher publisher = new Publisher(request.name().trim());
         return toResponse(publisherRepository.save(publisher));
     }
 
     @Override
     @Transactional
     public PublisherResponse update(Long id, PublisherRequest request) {
+        validateNameNotBlank(request.name());
+        validateNameNotDuplicated(request.name());
         Publisher publisher = getPublisherOrThrow(id);
-        publisher.setName(request.name());
+        publisher.setName(request.name().trim());
         return toResponse(publisherRepository.save(publisher));
     }
 
@@ -63,16 +64,31 @@ public class PublisherServiceImpl implements PublisherService {
     @Transactional
     public void deleteById(Long id) {
         Publisher publisher = getPublisherOrThrow(id);
-        if (publisherRepository.existsBookByPublisherId(id)) {
-            throw new BusinessException("Cannot delete a Publisher with associated books");
-        }
+        validateNoAssociatedBooks(id);
         publisherRepository.delete(publisher);
     }
 
     public Publisher getPublisherOrThrow(Long id) {
         return publisherRepository.findById(id)
-                .orElseThrow(() ->
-                        new ResourceNotFoundException("Publisher not found with id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Publisher not found with id: " + id));
+    }
+
+    private void validateNameNotBlank(String name) {
+        if (name == null || name.isBlank()) {
+            throw new BusinessException("Publisher name cannot be blank");
+        }
+    }
+
+    private void validateNameNotDuplicated(String name) {
+        if (publisherRepository.existsByName(name.trim())) {
+            throw new BusinessException("Publisher with name '" + name + "' already exists");
+        }
+    }
+
+    private void validateNoAssociatedBooks(Long id) {
+        if (publisherRepository.existsBookByPublisherId(id)) {
+            throw new BusinessException("Cannot delete publisher with associated books");
+        }
     }
 
     private PublisherResponse toResponse(Publisher publisher) {
