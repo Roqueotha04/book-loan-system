@@ -30,7 +30,8 @@ public class PublisherServiceImpl implements PublisherService {
 
     @Override
     public PublisherResponse findById(Long id) {
-        return toResponse(getPublisherOrThrow(id));
+        Publisher publisher = getPublisherOrThrow(id);
+        return toResponse(publisher);
     }
 
     @Override
@@ -71,7 +72,7 @@ public class PublisherServiceImpl implements PublisherService {
     public Publisher getPublisherOrThrow(Long id) {
         return publisherRepository.findById(id)
                 .orElseThrow(() ->
-                        new ResourceNotFoundException("Publisher not found with id: " + id));
+                        new ResourceNotFoundException("Publisher not found" + id));
     }
 
     private PublisherResponse toResponse(Publisher publisher) {
