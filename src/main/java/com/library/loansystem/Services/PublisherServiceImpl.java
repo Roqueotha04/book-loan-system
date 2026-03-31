@@ -82,6 +82,7 @@ public class PublisherServiceImpl implements PublisherService {
         }
     }
 
+    // Converts a Publisher entity to a PublisherResponse DTO
     private PublisherResponse toResponse(Publisher publisher) {
         return new PublisherResponse(
                 publisher.getId(),
