@@ -44,8 +44,8 @@ public class PublisherServiceImpl implements PublisherService {
     @Override
     @Transactional
     public PublisherResponse save(PublisherRequest request) {
-        if (request.name() == null || request.name().isBlank()) {
-            throw new BusinessException("Publisher name cannot be empty");
+        if (publisherRepository.existsByName(request.name())) {
+            throw new BusinessException("Publisher already exists");
         }
         Publisher publisher = new Publisher(request.name());
         return toResponse(publisherRepository.save(publisher));
@@ -55,6 +55,9 @@ public class PublisherServiceImpl implements PublisherService {
     @Transactional
     public PublisherResponse update(Long id, PublisherRequest request) {
         Publisher publisher = getPublisherOrThrow(id);
+        if (publisherRepository.existsByName(request.name())) {
+            throw new BusinessException("Publisher already exists");
+        }
         publisher.setName(request.name());
         return toResponse(publisherRepository.save(publisher));
     }
@@ -62,16 +65,13 @@ public class PublisherServiceImpl implements PublisherService {
     @Override
     @Transactional
     public void deleteById(Long id) {
-        if (!publisherRepository.existsById(id)) {
-            throw new ResourceNotFoundException("Publisher not found" + id);
-        }
-        publisherRepository.deleteById(id);
+        Publisher publisher = getPublisherOrThrow(id);
+        publisherRepository.delete(publisher);
     }
 
     public Publisher getPublisherOrThrow(Long id) {
         return publisherRepository.findById(id)
-                .orElseThrow(() ->
-                        new ResourceNotFoundException("No publisher found for id " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Publisher not found" + id));
     }
 
     private PublisherResponse toResponse(Publisher publisher) {
